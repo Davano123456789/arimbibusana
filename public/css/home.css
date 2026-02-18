@@ -1,0 +1,121 @@
+:root {
+  --cream: #F5ECE0;
+  --dark-cream: #E8D9C5;
+  --cream-dark: #B78A58;
+  --accent: #5B3A29;
+}
+body {
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Playfair Display', serif;
+}
+.bg-cream-dark {
+  background-color: var(--cream-dark);
+}
+.btn-cream-dark {
+  background-color: var(--cream-dark);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(87, 52, 34, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+.btn-cream-dark:hover {
+  filter: brightness(0.93);
+}
+.btn-cream-dark:active {
+  transform: translateY(1px);
+}
+.btn-cream-dark i {
+  color: #ffffff;
+}
+.bg-cream {
+  background-color: var(--cream);
+}
+.text-accent {
+  color: var(--accent);
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(13, 12, 11, 0.08);
+}
+.product-card .img-container {
+  overflow: hidden;
+  position: relative;
+}
+.product-card .img-container img {
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.product-card:hover .img-container img {
+  transform: scale(1.1);
+}
+.img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 5;
+}
+.product-card:hover .img-overlay {
+  opacity: 1;
+}
+.slide-img {
+  transition: transform .45s cubic-bezier(.2, .9, .2, 1);
+}
+.slide:hover .slide-img {
+  transform: scale(1.06);
+}
+.slider-track {
+  scroll-behavior: smooth;
+}
+.slider-btn {
+  transition: transform .15s ease;
+}
+.slider-btn:hover {
+  transform: scale(1.05);
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+@keyframes floating {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+.floating-wa {
+  animation: floating 3s ease-in-out infinite;
+  box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.4);
+}
+.floating-wa:hover {
+  animation-play-state: paused;
+  transform: scale(1.1);
+}
+#mobileMenu {
+  transition: visibility 0.4s;
+}
+#mobileMenu.hidden {
+  visibility: hidden;
+  display: flex !important;
+  pointer-events: none;
+}
+#mobileMenuBackdrop {
+  transition: opacity 0.4s ease;
+}
+#mobileMenu.hidden #mobileMenuBackdrop {
+  opacity: 0;
+}
+#mobileMenuContent {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+#mobileMenu.hidden #mobileMenuContent {
+  transform: translateX(100%);
+}
