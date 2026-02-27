@@ -22,11 +22,10 @@
             <a href="#blog" class="hover:text-accent transition">Blog</a>
         </nav>
         <div class="hidden md:flex items-center gap-5 ml-4">
-            <div class="relative w-[180px]">
-                <input type="text" placeholder="Cari..."
-                    class="w-full bg-gray-100 border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-accent/30 outline-none transition-all" />
-                <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            </div>
+            <a href="{{ url('/login') }}" class="flex items-center gap-2 px-5 py-2 bg-accent text-white rounded-full text-sm font-medium hover:brightness-110 transition-all duration-300 shadow-sm shadow-accent/20">
+                <i class="fa-solid fa-user text-xs"></i>
+                Login
+            </a>
             <a href="{{ url('/keranjang') }}" class="relative group text-gray-500 hover:text-accent transition-colors">
                 <i class="fa-solid fa-cart-shopping text-xl"></i>
                 <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">2</span>
@@ -50,11 +49,10 @@
             </div>
             <button id="mobileClose" class="p-2"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div class="relative mb-6">
-            <input type="text" placeholder="Cari busana..."
-                class="w-full bg-gray-100 border-none rounded-xl py-3 pl-11 pr-4 text-sm outline-none" />
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-        </div>
+        <a href="{{ url('/login') }}" class="flex items-center justify-center gap-2 w-full py-3 bg-accent text-white rounded-xl text-sm font-medium hover:brightness-110 transition-all mb-6 shadow-md shadow-accent/20">
+            <i class="fa-solid fa-user text-xs"></i>
+            Login
+        </a>
         <nav class="flex flex-col gap-4">
             <a href="{{ url('/') }}" class="py-2 border-b mobile-nav-link">Beranda</a>
             <a href="{{ url('/produk') }}" class="py-2 border-b mobile-nav-link">Produk</a>

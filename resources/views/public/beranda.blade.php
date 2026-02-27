@@ -316,20 +316,24 @@
 
             <!-- Slides using local images busana1..busana6 -->
 
+            @foreach($bestSellers as $product)
             <article
               class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
               <div class="relative">
-                <img class="slide-img w-full h-52 object-cover" src="images/busana1.jpg" alt="Busana 1"
+                @php
+                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                @endphp
+                <img class="slide-img w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}"
                   loading="lazy" />
                 <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
                     class="fa-regular fa-heart"></i></button>
               </div>
               <div class="p-4">
-                <h4 class="font-medium">Busana 1</h4>
-                <p class="text-sm text-gray-500 mt-1">Deskripsi singkat: bahan lembut, potongan elegan.</p>
-                <p class="text-sm text-gray-500 mt-1">Rp 195.000</p>
+                <h4 class="font-medium">{{ $product->name }}</h4>
+                <p class="text-sm text-gray-500 mt-1 line-clamp-1">{{ $product->description ?? 'Bahan premium, desain elegan.' }}</p>
+                <p class="text-sm font-bold text-accent mt-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
                 <div class="mt-4 flex items-center gap-3">
-                  <a href="{{ url('/detail-produk') }}"
+                  <a href="{{ url('/detail-produk/' . $product->id) }}"
                     class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
                     <i class="fa-solid fa-eye"></i> Lihat Detail
                   </a>
@@ -337,117 +341,7 @@
                 </div>
               </div>
             </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="relative">
-                <img class="slide-img w-full h-52 object-cover" src="images/busana2.jpg" alt="Busana 2"
-                  loading="lazy" />
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Busana 2</h4>
-                <p class="text-sm text-gray-500 mt-1">Deskripsi singkat: motif modern, nyaman dipakai seharian.</p>
-                <p class="text-sm text-gray-500 mt-1">Rp 175.000</p>
-                <div class="mt-4 flex items-center gap-3">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-eye"></i> Lihat Detail
-                  </a>
-                  <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="relative">
-                <img class="slide-img w-full h-52 object-cover" src="images/busana3.jpg" alt="Busana 3"
-                  loading="lazy" />
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Busana 3</h4>
-                <p class="text-sm text-gray-500 mt-1">Deskripsi singkat: warna netral, cocok untuk formal & kasual.</p>
-                <p class="text-sm text-gray-500 mt-1">Rp 205.000</p>
-                <div class="mt-4 flex items-center gap-3">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-eye"></i> Lihat Detail
-                  </a>
-                  <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="relative">
-                <img class="slide-img w-full h-52 object-cover" src="images/busana4.jpg" alt="Busana 4"
-                  loading="lazy" />
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Busana 4</h4>
-                <p class="text-sm text-gray-500 mt-1">Deskripsi singkat: detail bordir halus, finishing rapi.</p>
-                <p class="text-sm text-gray-500 mt-1">Rp 185.000</p>
-                <div class="mt-4 flex items-center gap-3">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-eye"></i> Lihat Detail
-                  </a>
-                  <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="relative">
-                <img class="slide-img w-full h-52 object-cover" src="images/busana5.jpg" alt="Busana 5"
-                  loading="lazy" />
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Busana 5</h4>
-                <p class="text-sm text-gray-500 mt-1">Deskripsi singkat: ringan & mudah dirawat, cocok untuk liburan.
-                </p>
-                <p class="text-sm text-gray-500 mt-1">Rp 175.000</p>
-                <div class="mt-4 flex items-center gap-3">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-eye"></i> Lihat Detail
-                  </a>
-                  <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="relative">
-                <img class="slide-img w-full h-52 object-cover" src="images/busana6.jpg" alt="Busana 6"
-                  loading="lazy" />
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Busana 6</h4>
-                <p class="text-sm text-gray-500 mt-1">Deskripsi singkat: potongan modern, bahan bernapas.</p>
-                <p class="text-sm text-gray-500 mt-1">Rp 215.000</p>
-                <div class="mt-4 flex items-center gap-3">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-eye"></i> Lihat Detail
-                  </a>
-                  <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
+            @endforeach
 
           </div>
         </div>
@@ -462,10 +356,13 @@
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Produk 1 -->
+        @foreach($latestProducts as $product)
         <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
           <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk1.jpg" alt="Produk 1" loading="lazy" />
+            @php
+                $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+            @endphp
+            <img class="w-full h-72 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
             <div class="img-overlay"></div>
             <button
               class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
@@ -473,11 +370,11 @@
             </button>
           </div>
           <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Koleksi Tunik Premium</h4>
-            <p class="text-sm text-gray-500 mt-2">Bahan premium yang lembut dan desain yang sangat elegan.</p>
-            <p class="text-accent font-semibold mt-2">Rp 245.000</p>
+            <h4 class="font-medium text-lg text-gray-900 font-serif">{{ $product->name }}</h4>
+            <p class="text-sm text-gray-500 mt-2 line-clamp-2">{{ $product->description ?? 'Bahan premium yang lembut dan desain yang sangat elegan.' }}</p>
+            <p class="text-accent font-semibold mt-2">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
             <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
+              <a href="{{ url('/detail-produk/' . $product->id) }}"
                 class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
                 <i class="fa-solid fa-eye"></i> Lihat Detail
               </a>
@@ -485,198 +382,7 @@
             </div>
           </div>
         </article>
-
-        <!-- Produk 2 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk2.jpg" alt="Produk 2" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Mukenah Silk Arimbi</h4>
-            <p class="text-sm text-gray-500 mt-2">Sangat nyaman dipakai ibadah dengan bahan silk yang sejuk.</p>
-            <p class="text-accent font-semibold mt-2">Rp 375.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Produk 3 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk3.jpg" alt="Produk 3" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Abaya Modern Navy</h4>
-            <p class="text-sm text-gray-500 mt-2">Tampil syar'i namun tetap modern dengan pilihan warna navy.</p>
-            <p class="text-accent font-semibold mt-2">Rp 420.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Produk 4 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk 4.jpg" alt="Produk 4" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Scarf Silk Exclusive</h4>
-            <p class="text-sm text-gray-500 mt-2">Motif yang unik dan tidak pasaran, menambah kesan mewah.</p>
-            <p class="text-accent font-semibold mt-2">Rp 185.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Produk 5 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk5.jpg" alt="Produk 5" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Gamis Ceruty Baby Doll</h4>
-            <p class="text-sm text-gray-500 mt-2">Bahan ceruty yang jatuh dan anggun saat dipakai berjalan.</p>
-            <p class="text-accent font-semibold mt-2">Rp 310.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Produk 6 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk6.jpg" alt="Produk 6" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Hijab Instan Jersey</h4>
-            <p class="text-sm text-gray-500 mt-2">Simpel dan praktis untuk harian dengan bahan jersey adem.</p>
-            <p class="text-accent font-semibold mt-2">Rp 85.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Produk 7 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk7.jpg" alt="Produk 7" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Khimar Layering Syari</h4>
-            <p class="text-sm text-gray-500 mt-2">Desain dua lapis yang elegan namun tetap menutup dada sempurna.</p>
-            <p class="text-accent font-semibold mt-2">Rp 155.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Produk 8 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk8.jpg" alt="Produk 8" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Outer Lace Lavender</h4>
-            <p class="text-sm text-gray-500 mt-2">Percantik tampilan basic Anda dengan outer lace motif floral.</p>
-            <p class="text-accent font-semibold mt-2">Rp 225.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <!-- Produk 9 -->
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
-            <img class="w-full h-72 object-cover" src="images/produk9.jpg" alt="Produk 9" loading="lazy" />
-            <div class="img-overlay"></div>
-            <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
-            </button>
-          </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">Kaftan Silk Party</h4>
-            <p class="text-sm text-gray-500 mt-2">Kaftan mewah untuk acara pesta atau kondangan keluarga.</p>
-            <p class="text-accent font-semibold mt-2">Rp 550.000</p>
-            <div class="mt-6 flex items-center gap-3">
-              <a href="{{ url('/detail-produk') }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
-              </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white"><i class="fa-solid fa-cart-shopping"></i></a>
-            </div>
-          </div>
-        </article>
+        @endforeach
       </div>
     </section>
 
@@ -702,101 +408,29 @@
         <div id="recommendTrack" class="overflow-hidden">
           <div id="recommendTrackInner" class="flex gap-6 no-scrollbar">
 
-            <!-- Items (Menggunakan gambar produk untuk variasi) -->
+            @foreach($recommended as $product)
             <article
               class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
               <div class="img-container relative">
-                <img class="w-full h-52 object-cover" src="images/produk1.jpg" alt="Produk 1" loading="lazy" />
+                @php
+                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                @endphp
+                <img class="w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
                 <div class="img-overlay"></div>
                 <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
                     class="fa-regular fa-heart"></i></button>
               </div>
               <div class="p-4">
-                <h4 class="font-medium">Koleksi Tunik Premium</h4>
-                <p class="text-xs text-gray-500 mt-1">Rp 245.000</p>
+                <h4 class="font-medium">{{ $product->name }}</h4>
+                <p class="text-xs text-gray-500 mt-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
                 <div class="mt-4 flex items-center gap-2">
-                  <a href="{{ url('/detail-produk') }}"
+                  <a href="{{ url('/detail-produk/' . $product->id) }}"
                     class="flex-1 text-center text-xs btn-cream-dark text-white px-2 py-2 rounded">Lihat Detail</a>
                   <a href="#" class="inline-flex items-center justify-center btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors text-xs"><i class="fa-solid fa-cart-shopping"></i></a>
                 </div>
               </div>
             </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="img-container relative">
-                <img class="w-full h-52 object-cover" src="images/produk2.jpg" alt="Produk 2" loading="lazy" />
-                <div class="img-overlay"></div>
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Mukenah Silk Arimbi</h4>
-                <p class="text-xs text-gray-500 mt-1">Rp 375.000</p>
-                <div class="mt-4 flex items-center gap-2">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center text-xs btn-cream-dark text-white px-2 py-2 rounded">Lihat Detail</a>
-                  <a href="#" class="inline-flex items-center justify-center btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors text-xs"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="img-container relative">
-                <img class="w-full h-52 object-cover" src="images/produk3.jpg" alt="Produk 3" loading="lazy" />
-                <div class="img-overlay"></div>
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Abaya Modern Navy</h4>
-                <p class="text-xs text-gray-500 mt-1">Rp 420.000</p>
-                <div class="mt-4 flex items-center gap-2">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center text-xs btn-cream-dark text-white px-2 py-2 rounded">Lihat Detail</a>
-                  <a href="#" class="inline-flex items-center justify-center btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors text-xs"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="img-container relative">
-                <img class="w-full h-52 object-cover" src="images/produk 4.jpg" alt="Produk 4" loading="lazy" />
-                <div class="img-overlay"></div>
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Scarf Silk Exclusive</h4>
-                <p class="text-xs text-gray-500 mt-1">Rp 185.000</p>
-                <div class="mt-4 flex items-center gap-2">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center text-xs btn-cream-dark text-white px-2 py-2 rounded">Lihat Detail</a>
-                  <a href="#" class="inline-flex items-center justify-center btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors text-xs"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
-
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="img-container relative">
-                <img class="w-full h-52 object-cover" src="images/produk5.jpg" alt="Produk 5" loading="lazy" />
-                <div class="img-overlay"></div>
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">Gamis Ceruty Baby Doll</h4>
-                <p class="text-xs text-gray-500 mt-1">Rp 310.000</p>
-                <div class="mt-4 flex items-center gap-2">
-                  <a href="{{ url('/detail-produk') }}"
-                    class="flex-1 text-center text-xs btn-cream-dark text-white px-2 py-2 rounded">Lihat Detail</a>
-                  <a href="#" class="inline-flex items-center justify-center btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors text-xs"><i class="fa-solid fa-cart-shopping"></i></a>
-                </div>
-              </div>
-            </article>
+            @endforeach
 
           </div>
         </div>

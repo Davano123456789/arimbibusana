@@ -10,19 +10,27 @@
   <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('/dashboard') }}">
+        <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="ni ni-tv-2 text-dark text-sm opacity-10"></i>
+            <i class="fas fa-desktop text-primary text-sm opacity-10"></i>
           </div>
           <span class="nav-link-text ms-1">Dashboard</span>
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{{ url('/dashboard/tables') }}">
+        <a class="nav-link {{ request()->is('dashboard/products*') ? 'active' : '' }}" href="{{ route('dashboard.products.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="ni ni-calendar-grid-58 text-dark text-sm opacity-10"></i>
+            <i class="fas fa-shirt text-warning text-sm opacity-10"></i>
           </div>
-          <span class="nav-link-text ms-1">Tables</span>
+          <span class="nav-link-text ms-1">Daftar Produk</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link {{ Request::is('dashboard/categories*') ? 'active' : '' }}" href="{{ route('dashboard.categories.index') }}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fas fa-tags text-success text-sm opacity-10"></i>
+          </div>
+          <span class="nav-link-text ms-1">Kategori</span>
         </a>
       </li>
     </ul>

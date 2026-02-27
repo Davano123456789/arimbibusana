@@ -155,33 +155,32 @@
     <main class="max-w-6xl mx-auto px-6 py-12 -mt-10 relative z-10 bg-white rounded-t-[3rem]" data-aos="fade-up">
 
         <!-- Category & Price Filter -->
-        <div class="flex flex-col gap-6 mb-12 border-b border-gray-100 pb-8">
+        <form action="{{ url('/produk-unggulan') }}" method="GET" id="filterForm" class="flex flex-col gap-6 mb-12 border-b border-gray-100 pb-8">
             <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                 <div class="flex items-center gap-3 overflow-x-auto no-scrollbar w-full md:w-auto pb-4 md:pb-0">
-                    <button
-                        class="category-btn active px-6 py-2 rounded-full border border-gray-200 text-sm font-medium whitespace-nowrap transition-all">Semua
-                        Unggulan</button>
-                    <button
-                        class="category-btn px-6 py-2 rounded-full border border-gray-200 text-sm font-medium whitespace-nowrap transition-all">Best
-                        Seller</button>
-                    <button
-                        class="category-btn px-6 py-2 rounded-full border border-gray-200 text-sm font-medium whitespace-nowrap transition-all">New
-                        Arrival</button>
+                    <a href="{{ url('/produk-unggulan') }}"
+                        class="category-btn {{ request('category') == '' ? 'active' : '' }} px-6 py-2 rounded-full border border-gray-200 text-sm font-medium whitespace-nowrap transition-all">Semua
+                        Unggulan</a>
+                    @foreach($categories as $category)
+                    <a href="{{ url('/produk-unggulan?category=' . $category->slug . '&min_price=' . request('min_price') . '&max_price=' . request('max_price') . '&sort=' . request('sort')) }}"
+                        class="category-btn {{ request('category') == $category->slug ? 'active' : '' }} px-6 py-2 rounded-full border border-gray-200 text-sm font-medium whitespace-nowrap transition-all">{{ $category->name }}</a>
+                    @endforeach
                 </div>
 
                 <div class="flex items-center gap-4 text-sm text-gray-500">
-                    <select
+                    <select name="sort" onchange="document.getElementById('filterForm').submit()"
                         class="bg-white border border-gray-200 rounded-xl px-4 py-2 outline-none cursor-pointer focus:ring-1 focus:ring-accent/30 transition text-gray-700 font-medium">
-                        <option>Urutkan: Terpopuler</option>
-                        <option>Harga Terendah</option>
-                        <option>Harga Tertinggi</option>
-                        <option>Terbaru</option>
+                        <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Urutkan: Terbaru</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Harga Terendah</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Harga Tertinggi</option>
+                        <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Terlama</option>
                     </select>
                 </div>
             </div>
 
             <!-- Price Range Filter -->
             <div class="flex flex-wrap items-center gap-4 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                <input type="hidden" name="category" value="{{ request('category') }}">
                 <div class="flex items-center gap-2 text-gray-700 mr-2">
                     <i class="fa-solid fa-filter text-accent/50"></i>
                     <span class="text-sm font-bold uppercase tracking-wider">Filter Harga</span>
@@ -189,233 +188,61 @@
                 <div class="flex items-center gap-3">
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">Rp</span>
-                        <input type="number" placeholder="Minimum"
+                        <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Minimum"
                             class="bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm w-36 md:w-44 focus:ring-1 focus:ring-accent/30 outline-none transition-all shadow-sm" />
                     </div>
                     <span class="text-gray-300">—</span>
                     <div class="relative">
                         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">Rp</span>
-                        <input type="number" placeholder="Maximum"
+                        <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Maximum"
                             class="bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm w-36 md:w-44 focus:ring-1 focus:ring-accent/30 outline-none transition-all shadow-sm" />
                     </div>
                 </div>
-                <button
+                <button type="submit"
                     class="bg-accent text-white px-8 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#5B3A29]/10 hover:brightness-110 active:scale-95 transition-all ml-0 md:ml-auto">
                     Terapkan
                 </button>
+                @if(request()->anyFilled(['category', 'min_price', 'max_price', 'sort']))
+                    <a href="{{ url('/produk-unggulan') }}" class="text-xs text-red-500 font-bold uppercase hover:underline">Reset</a>
+                @endif
             </div>
 
             <div class="text-sm text-gray-400 font-medium">
-                Menampilkan 8 Produk Unggulan
+                Menampilkan {{ $products->count() }} Produk Unggulan
             </div>
-        </div>
+        </form>
 
         <!-- Product Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
 
-            <!-- Product 1 -->
-            <article class="product-card group" data-aos="fade-up">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <div
-                        class="absolute top-4 left-4 z-10 bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                        HOT ITEM</div>
-                    <img src="images/produk1.jpg" alt="Tunik Premium" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
+            @foreach($products as $product)
+            <article class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all" data-aos="fade-up">
+                <div class="img-container relative aspect-[3/4] overflow-hidden bg-gray-100">
+                    <div class="absolute top-4 left-4 z-10 bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
+                        HOT ITEM
+                    </div>
+                    @php
+                        $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                    @endphp
+                    <img src="{{ $imagePath }}" alt="{{ $product->name }}" class="w-full h-full object-cover" />
+                    
                     <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
+                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 shadow-sm hover:scale-110 transition-transform">
                         <i class="fa-regular fa-heart"></i>
                     </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
                 </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Busana</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Koleksi Tunik Premium Signature</h4>
-                    <p class="text-accent font-bold font-inter">Rp 245.000</p>
+                <div class="p-5">
+                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">{{ $product->category->name ?? 'Unggulan' }}</span>
+                    <h4 class="text-lg font-semibold text-gray-800 mb-1">{{ $product->name }}</h4>
+                    <p class="text-accent font-bold font-inter mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                    
+                    <a href="{{ url('/detail-produk/' . $product->id) }}"
+                        class="block w-full btn-cream-dark text-white text-center font-semibold py-3 rounded-xl shadow-md transition-all">
+                        <i class="fa-solid fa-eye mr-2"></i> Lihat Detail
+                    </a>
                 </div>
             </article>
-
-            <!-- Product 2 -->
-            <article class="product-card group">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <div
-                        class="absolute top-4 left-4 z-10 bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                        BEST SELLER</div>
-                    <img src="images/produk2.jpg" alt="Mukena Silk" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Mukena</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Mukenah Silk Arimbi</h4>
-                    <p class="text-accent font-bold font-inter">Rp 375.000</p>
-                </div>
-            </article>
-
-            <!-- Product 3 -->
-            <article class="product-card group">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <div
-                        class="absolute top-4 left-4 z-10 bg-accent text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                        FAVORITE</div>
-                    <img src="images/produk 4.jpg" alt="Scarf Silk" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Jilbab</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Scarf Silk Exclusive</h4>
-                    <p class="text-accent font-bold font-inter">Rp 185.000</p>
-                </div>
-            </article>
-
-            <!-- Product 4 -->
-            <article class="product-card group">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <div
-                        class="absolute top-4 left-4 z-10 bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                        EDITOR'S PICK</div>
-                    <img src="images/produk5.jpg" alt="Gamis Ceruty" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Busana</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Gamis Ceruty Baby Doll</h4>
-                    <p class="text-accent font-bold font-inter">Rp 310.000</p>
-                </div>
-            </article>
-
-            <!-- Product 5 -->
-            <article class="product-card group">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <img src="images/busana1.jpg" alt="Busana 1" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Busana</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Setelan Premium Sage</h4>
-                    <p class="text-accent font-bold font-inter">Rp 295.000</p>
-                </div>
-            </article>
-
-            <!-- Product 6 -->
-            <article class="product-card group">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <img src="images/busana2.jpg" alt="Busana 2" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Busana</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Gamis Silk Mauve</h4>
-                    <p class="text-accent font-bold font-inter">Rp 325.000</p>
-                </div>
-            </article>
-
-            <!-- Product 7 -->
-            <article class="product-card group">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <img src="images/busana3.jpg" alt="Busana 3" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Busana</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Abaya Modern Caramel</h4>
-                    <p class="text-accent font-bold font-inter">Rp 315.000</p>
-                </div>
-            </article>
-
-            <!-- Product 8 -->
-            <article class="product-card group">
-                <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                    <img src="images/produk3.jpg" alt="Busana 4" class="w-full h-full object-cover" />
-                    <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500"></div>
-                    <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                        <i class="fa-regular fa-heart"></i>
-                    </button>
-                    <div
-                        class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center">
-                        <a href="{{ url('/detail-produk') }}"
-                            class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                            <i class="fa-solid fa-eye"></i> Lihat Detail
-                        </a>
-                    </div>
-                </div>
-                <div>
-                    <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">Busana</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Casual Set Signature</h4>
-                    <p class="text-accent font-bold font-inter">Rp 275.000</p>
-                </div>
-            </article>
+            @endforeach
 
         </div>
 

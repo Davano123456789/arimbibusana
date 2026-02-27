@@ -49,7 +49,7 @@
         <!-- Breadcrumbs -->
         <nav class="flex text-sm text-gray-400 mb-8" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                <li><a href="{{ url('/beranda') }}" class="hover:text-accent">Beranda</a></li>
+                <li><a href="{{ url('/') }}" class="hover:text-accent">Beranda</a></li>
                 <li><i class="fa-solid fa-chevron-right text-[10px] mx-2"></i></li>
                 <li class="text-gray-900 font-medium">Keranjang Belanja</li>
             </ol>
