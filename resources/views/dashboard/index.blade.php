@@ -17,7 +17,7 @@
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
-              <i class="ni ni-cart text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fas fa-shopping-cart text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -37,7 +37,7 @@
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
-              <i class="ni ni-money-coins text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fas fa-money-bill-wave text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -57,7 +57,7 @@
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-info shadow-info text-center rounded-circle">
-              <i class="ni ni-single-02 text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fas fa-user-friends text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@
           </div>
           <div class="col-4 text-end">
             <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
-              <i class="ni ni-box-2 text-lg opacity-10" aria-hidden="true"></i>
+              <i class="fas fa-boxes text-lg opacity-10" aria-hidden="true"></i>
             </div>
           </div>
         </div>
