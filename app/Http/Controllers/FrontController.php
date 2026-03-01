@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Testimonial;
 use App\Models\Product;
+use App\Models\BlogPost;
 
 class FrontController extends Controller
 {
@@ -30,13 +31,18 @@ class FrontController extends Controller
             ->take(9)
             ->get();
 
-        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts'));
+        $latestPosts = \App\Models\BlogPost::where('status', 'published')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts', 'latestPosts'));
     }
 
     public function produk(Request $request)
     {
         $categories = \App\Models\Category::all();
-        
+
         $query = \App\Models\Product::with(['category', 'images'])
             ->where('status', 'active');
 
@@ -73,7 +79,7 @@ class FrontController extends Controller
         }
 
         $products = $query->get();
-            
+
         return view('public.produk', compact('categories', 'products'));
     }
 
@@ -127,7 +133,7 @@ class FrontController extends Controller
         $product = Product::with(['category', 'images', 'sizes', 'testimonials' => function($q) {
             $q->where('is_displayed', true)->latest();
         }])->findOrFail($id);
-        
+
         $relatedProducts = Product::with(['category', 'images'])
             ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
@@ -172,9 +178,51 @@ class FrontController extends Controller
     {
         return view('public.keranjang');
     }
+    public function testimoni()
+    {
+        $testimonials = Testimonial::with(['product'])
+            ->where('is_displayed', true)
+            ->latest()
+            ->get();
+
+        $products = Product::where('status', 'active')
+            ->latest()
+            ->get(['id', 'name']);
+
+        return view('public.testimoni', compact('testimonials', 'products'));
+    }
+
+    public function tentang()
+    {
+        return view('public.tentang');
+    }
 
     public function pembayaran()
     {
         return view('public.pembayaran');
+    }
+
+    public function blog()
+    {
+        $posts = BlogPost::where('status', 'published')
+            ->latest()
+            ->paginate(9);
+            
+        return view('public.blog', compact('posts'));
+    }
+
+    public function blogDetail($slug)
+    {
+        $post = BlogPost::where('slug', $slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+            
+        $recentPosts = BlogPost::where('id', '!=', $post->id)
+            ->where('status', 'published')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('public.blog-detail', compact('post', 'recentPosts'));
     }
 }

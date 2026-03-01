@@ -34,6 +34,12 @@ Route::get('/detail-produk/{id}', [FrontController::class, 'detailProduk']);
 Route::post('/detail-produk/{id}/ulasan', [FrontController::class, 'storeTestimonial']);
 Route::get('/keranjang', [FrontController::class, 'keranjang']);
 Route::get('/pembayaran', [FrontController::class, 'pembayaran']);
+Route::get('/testimoni', [FrontController::class, 'testimoni']);
+Route::get('/tentang', [FrontController::class, 'tentang']);
+Route::post('/testimoni', [FrontController::class, 'storeGeneralTestimonial']);
+
+Route::get('/blog', [FrontController::class, 'blog'])->name('public.blog');
+Route::get('/blog/{slug}', [FrontController::class, 'blogDetail'])->name('public.blog.detail');
 
 Route::prefix('dashboard')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
