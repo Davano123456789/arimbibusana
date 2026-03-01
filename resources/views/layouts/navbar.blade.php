@@ -1,7 +1,7 @@
 <header class="bg-white/60 backdrop-blur-md sticky top-0 z-40 border-b">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <a href="{{ url('/') }}" class="flex items-center gap-3">
-            <img src="images/logo-arimbi.jpg" alt="Arimbi Queen Logo" class="w-12 h-12 rounded-full object-cover shadow-sm">
+            <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Arimbi Queen Logo" class="w-12 h-12 rounded-full object-cover shadow-sm">
             <div>
                 <h1 class="text-lg font-semibold">Arimbi Queen</h1>
                 <p class="text-sm text-gray-500">Anggun • Sopan • Percaya Diri</p>
@@ -17,9 +17,9 @@
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                 </span>
             </a>
-            <a href="#testimoni" class="hover:text-accent transition font-medium">Testimoni</a>
-            <a href="#tentang" class="hover:text-accent transition">Tentang Kami</a>
-            <a href="#blog" class="hover:text-accent transition">Blog</a>
+            <a href="{{ url('/testimoni') }}" class="hover:text-accent transition font-medium">Testimoni</a>
+            <a href="{{ url('/tentang') }}" class="hover:text-accent transition">Tentang Kami</a>
+            <a href="{{ url('/blog') }}" class="hover:text-accent transition">Blog</a>
         </nav>
         <div class="hidden md:flex items-center gap-5 ml-4">
             <a href="{{ url('/login') }}" class="flex items-center gap-2 px-5 py-2 bg-accent text-white rounded-full text-sm font-medium hover:brightness-110 transition-all duration-300 shadow-sm shadow-accent/20">
@@ -41,7 +41,7 @@
     <div class="absolute right-0 top-0 h-full w-72 bg-white shadow-lg p-6 transform translate-x-full transition-transform duration-300 ease-in-out" id="mobileMenuContent">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3">
-                <img src="images/logo-arimbi.jpg" alt="Arimbi Queen Logo" class="w-10 h-10 rounded-full object-cover">
+                <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Arimbi Queen Logo" class="w-10 h-10 rounded-full object-cover">
                 <div>
                     <h3 class="text-lg font-medium">Arimbi Queen</h3>
                     <p class="text-xs text-gray-500">Anggun • Sopan</p>
@@ -64,8 +64,9 @@
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                 </span>
             </a>
-            <a href="#testimoni" class="py-2 border-b mobile-nav-link">Testimoni</a>
-            <a href="#tentang" class="py-2 border-b mobile-nav-link">Tentang Kami</a>
+            <a href="{{ url('/testimoni') }}" class="py-2 border-b mobile-nav-link">Testimoni</a>
+            <a href="{{ url('/tentang') }}" class="py-2 border-b mobile-nav-link">Tentang Kami</a>
+            <a href="{{ route('public.blog') }}" class="py-2 border-b mobile-nav-link">Blog</a>
             <a href="#informasi" class="py-2 border-b mobile-nav-link">Informasi Kami</a>
             <a href="{{ url('/keranjang') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
                 Keranjang Belanja

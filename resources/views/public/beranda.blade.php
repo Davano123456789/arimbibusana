@@ -323,7 +323,7 @@
                 @php
                     $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
                 @endphp
-                <img class="slide-img w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}"
+                <img class="slide-img w-full h-52 object-cover" src="{{ asset('images/produk1.jpg') }}" alt="{{ $product->name }}"
                   loading="lazy" />
                 <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
                     class="fa-regular fa-heart"></i></button>
@@ -362,7 +362,7 @@
             @php
                 $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
             @endphp
-            <img class="w-full h-72 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
+            <img class="w-full h-72 object-cover" src="{{ asset('images/produk1.jpg') }}" alt="{{ $product->name }}" loading="lazy" />
             <div class="img-overlay"></div>
             <button
               class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
@@ -442,62 +442,168 @@
     <section id="testimoni" class="mt-12 mb-24" data-aos="fade-up">
       <h3 class="text-2xl font-semibold mb-8 text-center" data-aos="fade-up">Testimoni Pelanggan</h3>
       <div class="grid md:grid-cols-3 gap-8">
-        <!-- Testi 1 -->
+
+        <!-- Testi 1 — kolom: image (null → inisial), name, product, rating(5), comment -->
         <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-8 border border-gray-50"
           data-aos="fade-up" data-aos-delay="100">
           <div class="flex items-center gap-4">
-            <img src="images/testi1.jpg" alt="Nadhira" class="w-14 h-14 rounded-full object-cover ring-2 ring-amber-50">
-            <div>
+            {{-- image: testi1.jpg --}}
+            <img src="images/testi1.jpg" alt="Nadhira"
+              class="w-14 h-14 rounded-full object-cover ring-2 ring-amber-50 flex-shrink-0">
+            <div class="min-w-0">
+              {{-- name --}}
               <p class="font-bold text-gray-900">Nadhira</p>
-              <p class="text-xs text-gray-500">Jakarta</p>
+              {{-- product --}}
+              <p class="text-xs text-[#B78A58] font-medium truncate">Mukena Premium Series</p>
             </div>
-            <div class="ml-auto text-amber-400 text-xs">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            {{-- rating: 5 --}}
+            <div class="ml-auto text-amber-400 text-xs flex-shrink-0">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
             </div>
           </div>
-          <p class="mt-6 text-gray-600 italic leading-relaxed text-sm">"Mukena sangat lembut and desainnya elegan.
+          {{-- comment --}}
+          <p class="mt-6 text-gray-600 italic leading-relaxed text-sm">"Mukena sangat lembut dan desainnya elegan.
             Packing rapi, pengiriman cepat!"</p>
+          {{-- rating badge --}}
+          <div class="mt-4 flex items-center justify-between">
+            <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 text-xs font-semibold px-3 py-1 rounded-full">
+              <i class="fa-solid fa-star text-amber-500 text-[10px]"></i> 5/5
+            </span>
+            <span class="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
+              <i class="fa-solid fa-circle-check text-green-500 text-sm"></i>
+            </span>
+          </div>
         </div>
 
-        <!-- Testi 2 -->
+        <!-- Testi 2 — kolom: image (null → inisial), name, product, rating(5), comment -->
         <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-8 border border-gray-50"
           data-aos="fade-up" data-aos-delay="200">
           <div class="flex items-center gap-4">
-            <img src="images/testi2.jpg" alt="Siti" class="w-14 h-14 rounded-full object-cover ring-2 ring-amber-50">
-            <div>
-              <p class="font-bold text-gray-900">Siti</p>
-              <p class="text-xs text-gray-500">Bandung</p>
+            {{-- image: null → avatar inisial "S" --}}
+            <div class="w-14 h-14 rounded-full bg-gradient-to-br from-[#B78A58] to-[#5B3A29] flex items-center justify-center text-white text-xl font-bold flex-shrink-0 ring-2 ring-amber-50">
+              S
             </div>
-            <div class="ml-auto text-amber-400 text-xs">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <div class="min-w-0">
+              {{-- name --}}
+              <p class="font-bold text-gray-900">Siti Rahayu</p>
+              {{-- product --}}
+              <p class="text-xs text-[#B78A58] font-medium truncate">Scarf Voal Premium</p>
+            </div>
+            {{-- rating: 5 --}}
+            <div class="ml-auto text-amber-400 text-xs flex-shrink-0">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
             </div>
           </div>
+          {{-- comment --}}
           <p class="mt-6 text-gray-600 italic leading-relaxed text-sm">"Scarf nyaman dipakai seharian, warnanya tidak
-            pudar setelah dicuci."</p>
+            pudar setelah dicuci. Sangat puas!"</p>
+          {{-- rating badge --}}
+          <div class="mt-4 flex items-center justify-between">
+            <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 text-xs font-semibold px-3 py-1 rounded-full">
+              <i class="fa-solid fa-star text-amber-500 text-[10px]"></i> 5/5
+            </span>
+            <span class="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
+              <i class="fa-solid fa-circle-check text-green-500 text-sm"></i>
+            </span>
+          </div>
         </div>
 
-        <!-- Testi 3 -->
+        <!-- Testi 3 — kolom: image (testi3.jpg), name, product, rating(4), comment -->
         <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow p-8 border border-gray-50"
           data-aos="fade-up" data-aos-delay="300">
           <div class="flex items-center gap-4">
-            <img src="images/testi3.jpg" alt="Amina" class="w-14 h-14 rounded-full object-cover ring-2 ring-amber-50">
-            <div>
-              <p class="font-bold text-gray-900">Amina</p>
-              <p class="text-xs text-gray-500">Surabaya</p>
+            {{-- image: testi3.jpg --}}
+            <img src="images/testi3.jpg" alt="Amina"
+              class="w-14 h-14 rounded-full object-cover ring-2 ring-amber-50 flex-shrink-0">
+            <div class="min-w-0">
+              {{-- name --}}
+              <p class="font-bold text-gray-900">Amina Putri</p>
+              {{-- product --}}
+              <p class="text-xs text-[#B78A58] font-medium truncate">Hijab Satin Elegan</p>
             </div>
-            <div class="ml-auto text-amber-400 text-xs">
-              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
-                class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            {{-- rating: 4 --}}
+            <div class="ml-auto text-amber-400 text-xs flex-shrink-0">
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i><i class="fa-solid fa-star opacity-30"></i>
             </div>
           </div>
+          {{-- comment --}}
           <p class="mt-6 text-gray-600 italic leading-relaxed text-sm">"Suka banget dengan service dan kualitas produk
-            Arimbi Queen."</p>
+            Arimbi Queen. Pengiriman cepat dan aman."</p>
+          {{-- rating badge --}}
+          <div class="mt-4 flex items-center justify-between">
+            <span class="inline-flex items-center gap-1 bg-amber-50 text-amber-600 text-xs font-semibold px-3 py-1 rounded-full">
+              <i class="fa-solid fa-star text-amber-500 text-[10px]"></i> 4/5
+            </span>
+            <span class="w-6 h-6 rounded-full bg-green-50 flex items-center justify-center">
+              <i class="fa-solid fa-circle-check text-green-500 text-sm"></i>
+            </span>
+          </div>
         </div>
+
       </div>
 
-    
+      {{-- CTA tulis ulasan --}}
+      <div class="mt-10 text-center" data-aos="fade-up">
+        <a href="{{ url('/testimoni#tulis-ulasan') }}"
+          class="inline-flex items-center gap-2 bg-white border border-[#B78A58] text-[#B78A58] hover:bg-[#B78A58] hover:text-white px-6 py-3 rounded-full text-sm font-semibold shadow-sm transition-all duration-300">
+          <i class="fa-solid fa-pen-to-square"></i> Tulis Ulasan Anda
+        </a>
+      </div>
+
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="mt-24 mb-24" data-aos="fade-up">
+      <div class="flex items-center justify-between mb-10">
+        <div>
+          <h3 class="text-3xl font-bold font-serif text-gray-900">Journal & Inspirasi</h3>
+          <p class="text-gray-500 mt-2">Tips fashion dan cerita dari koleksi kami</p>
+        </div>
+        <a href="{{ route('public.blog') }}" class="text-sm font-bold text-accent flex items-center gap-2 group">
+          Lihat Semua Artikel <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @forelse($latestPosts as $post)
+        <article class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full border border-gray-50">
+          <div class="relative h-56 overflow-hidden">
+            <img src="{{ $post->thumbnail ? asset('storage/' . $post->thumbnail) : 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?q=80&w=800&auto=format&fit=crop' }}" 
+                 alt="{{ $post->title }}" 
+                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+            <div class="absolute top-4 left-4">
+              <span class="bg-white/95 backdrop-blur-sm text-accent text-[10px] uppercase tracking-tighter font-bold px-3 py-1 rounded-full shadow-sm">
+                {{ $post->created_at->format('d M Y') }}
+              </span>
+            </div>
+          </div>
+          <div class="p-8 flex flex-col flex-grow">
+            <h4 class="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-accent transition-colors font-serif leading-tight">
+              <a href="{{ route('public.blog.detail', $post->slug) }}">{{ $post->title }}</a>
+            </h4>
+            <p class="text-gray-500 text-sm mb-6 line-clamp-3 leading-relaxed">
+              {{ $post->excerpt ?? Str::limit(strip_tags($post->content), 100) }}
+            </p>
+            <div class="mt-auto pt-6 border-t border-gray-50 flex items-center justify-between">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">By {{ $post->author }}</span>
+              <a href="{{ route('public.blog.detail', $post->slug) }}" class="w-10 h-10 rounded-full bg-cream/50 text-accent flex items-center justify-center transition-all group-hover:bg-accent group-hover:text-white">
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
+            </div>
+          </div>
+        </article>
+        @empty
+          @for($i = 0; $i < 3; $i++)
+          <div class="bg-gray-50 rounded-3xl h-96 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 p-8 text-center text-gray-400">
+            <i class="fa-solid fa-newspaper text-4xl mb-4 opacity-20"></i>
+            <p class="text-sm font-medium">Artikel Segera Hadir</p>
+          </div>
+          @endfor
+        @endforelse
+      </div>
     </section>
 
     <!-- Informasi Kami (Map & Social Media) -->

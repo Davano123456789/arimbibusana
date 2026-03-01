@@ -11,6 +11,19 @@
 
   <!-- Tailwind Play CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: '#5B3A29',
+            cream: '#F5ECE0',
+            'cream-dark': '#B78A58',
+          }
+        }
+      }
+    }
+  </script>
   <!-- Google Fonts (elegant headings) + Font Awesome -->
   <link
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap"
