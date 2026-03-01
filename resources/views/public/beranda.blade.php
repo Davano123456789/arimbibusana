@@ -180,6 +180,7 @@
 
 @section('content')
 
+  @if($popup)
   <!-- Promotional Popup Overlay -->
   <div id="promoPopup" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="promoBackdrop"></div>
@@ -191,26 +192,25 @@
         <i class="fa-solid fa-xmark fa-lg"></i>
       </button>
 
-      <div class="relative h-48 md:h-56 overflow-hidden">
-        <img src="images/infopopup.jpg" alt="Special Promo" class="w-full h-full object-cover" />
-        <div class="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent"></div>
+      <div class="relative h-64 md:h-72 overflow-hidden">
+        <img src="{{ asset('storage/' . $popup->image) }}" alt="{{ $popup->title }}" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
       </div>
 
       <div class="p-8 text-center">
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Koleksi Terbaru!</h3>
-        <p class="text-sm text-gray-600 mb-6 leading-relaxed px-4">Dapatkan penawaran eksklusif untuk koleksi premium
-          Arimbi Queen. Anggun, Sopan, dan Percaya Diri.</p>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $popup->title }}</h3>
+        <p class="text-sm text-gray-600 mb-6 leading-relaxed px-4">Jangan lewatkan penawaran spesial ini khusus untuk kamu hari ini!</p>
         <div class="flex flex-col gap-3">
-          <a href="#produk" id="promoAction"
+          <a href="{{ $popup->link_url ?? '#produk' }}" id="promoAction"
             class="bg-[#B78A58] text-white text-sm font-bold py-3.5 px-6 rounded-2xl shadow-xl hover:brightness-110 transition-all flex items-center justify-center gap-2 transform active:scale-95">
-            Lihat Koleksi Sekarang <i class="fa-solid fa-arrow-right"></i>
+            Lihat Sekarang <i class="fa-solid fa-arrow-right"></i>
           </a>
-          <button id="closePromoBtn" class="text-xs text-gray-400 hover:text-gray-600 transition-colors py-2">Nanti
-            Saja</button>
+          <button id="closePromoBtn" class="text-xs text-gray-400 hover:text-gray-600 transition-colors py-2">Nanti Saja</button>
         </div>
       </div>
     </div>
   </div>
+  @endif
 
   <!-- Hero / Promo Banner (Video) -->
   <section class="relative">
@@ -801,6 +801,7 @@
       window.addEventListener('beforeunload', () => { if (rafId) cancelAnimationFrame(rafId); });
     })();
 
+    @if($popup)
     /* Promo Popup Logic */
     window.addEventListener('load', () => {
       const popup = document.getElementById('promoPopup');
@@ -812,6 +813,12 @@
         document.getElementById('promoAction')
       ];
 
+      if (!popup || !content) return;
+
+      // Check Session Storage
+      const isShown = sessionStorage.getItem('promo_shown');
+      if (isShown) return;
+
       // Delay show slightly for better effect
       setTimeout(() => {
         popup.classList.remove('hidden');
@@ -820,7 +827,10 @@
         void content.offsetWidth;
         content.classList.remove('scale-95', 'opacity-0');
         content.classList.add('scale-100', 'opacity-100');
-      }, 500);
+        
+        // Mark as shown
+        sessionStorage.setItem('promo_shown', 'true');
+      }, 1500);
 
       const hidePopup = () => {
         content.classList.remove('scale-100', 'opacity-100');
@@ -835,5 +845,6 @@
         if (btn) btn.addEventListener('click', hidePopup);
       });
     });
+    @endif
   </script>
 @endsection

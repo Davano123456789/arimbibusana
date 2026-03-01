@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Testimonial;
 use App\Models\Product;
+use App\Models\ProductLike;
+use App\Models\Announcement;
 
 class FrontController extends Controller
 {
@@ -27,10 +29,14 @@ class FrontController extends Controller
         $latestProducts = \App\Models\Product::with(['category', 'images'])
             ->where('status', 'active')
             ->latest()
-            ->take(9)
+            ->take(8)
             ->get();
 
-        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts'));
+        $popup = Announcement::where('is_active', true)
+            ->where('show_as_popup', true)
+            ->first();
+
+        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts', 'popup'));
     }
 
     public function produk(Request $request)
@@ -126,7 +132,15 @@ class FrontController extends Controller
     {
         $product = Product::with(['category', 'images', 'sizes', 'testimonials' => function($q) {
             $q->where('is_displayed', true)->latest();
-        }])->findOrFail($id);
+        }])->withCount('likes')->findOrFail($id);
+
+        $isLiked = false;
+        if (auth()->check()) {
+            $isLiked = $product->likes()->where('user_id', auth()->id())->exists();
+        } else {
+            // Check for user 1 as fallback if requested/for dev
+            $isLiked = $product->likes()->where('user_id', 1)->exists();
+        }
         
         $relatedProducts = Product::with(['category', 'images'])
             ->where('category_id', $product->category_id)
@@ -136,7 +150,33 @@ class FrontController extends Controller
             ->take(4)
             ->get();
 
-        return view('public.detail-produk', compact('product', 'relatedProducts'));
+        return view('public.detail-produk', compact('product', 'relatedProducts', 'isLiked'));
+    }
+
+    public function toggleLike($id)
+    {
+        $userId = auth()->id() ?? 1; // Fallback to 1 as per user's preference for testing
+        $product = Product::findOrFail($id);
+
+        $like = ProductLike::where('user_id', $userId)
+            ->where('product_id', $product->id)
+            ->first();
+
+        if ($like) {
+            $like->delete();
+            $status = 'unliked';
+        } else {
+            ProductLike::create([
+                'user_id' => $userId,
+                'product_id' => $product->id
+            ]);
+            $status = 'liked';
+        }
+
+        return response()->json([
+            'status' => $status,
+            'likes_count' => $product->likes()->count()
+        ]);
     }
 
     public function storeTestimonial(Request $request, $id)

@@ -224,9 +224,10 @@
                         <i class="fa-solid fa-cart-shopping fa-xl"></i> Masukkan ke Keranjang
                     </button>
                     <button
-                        class="like-btn px-6 h-16 flex items-center justify-center gap-2 rounded-2xl border-2 border-gray-100 text-red-500 hover:bg-red-50 transition-all">
-                        <i class="fa-regular fa-heart fa-xl"></i>
-                        <span class="font-bold text-lg">145</span>
+                        class="like-btn px-6 h-16 flex items-center justify-center gap-2 rounded-2xl border-2 {{ $isLiked ? 'bg-red-50 border-red-100' : 'border-gray-100' }} text-red-500 hover:bg-red-50 transition-all"
+                        data-id="{{ $product->id }}">
+                        <i class="{{ $isLiked ? 'fa-solid' : 'fa-regular' }} fa-heart fa-xl"></i>
+                        <span id="likeCount" class="font-bold text-lg">{{ $product->likes_count }}</span>
                     </button>
                 </div>
 
@@ -530,24 +531,53 @@
                 });
             }
 
-            // 4. Like Counter Logic
-            document.addEventListener('click', (e) => {
-                const likeBtn = e.target.closest('.like-btn');
-                if (!likeBtn) return;
-                
-                const span = likeBtn.querySelector('span');
-                if (!span) return;
-                
-                const icon = likeBtn.querySelector('i');
-                let count = parseInt(span.textContent);
-                
-                // masterPublic toggles class first
-                if (icon.classList.contains('fa-solid')) {
-                    span.textContent = count + 1;
-                } else {
-                    span.textContent = Math.max(0, count - 1);
-                }
-            });
+            // 4. Like Counter Logic (Live with Database)
+            const likeBtn = document.querySelector('.like-btn');
+            if (likeBtn) {
+                likeBtn.addEventListener('click', function(e) {
+                    const productId = this.getAttribute('data-id');
+                    const icon = this.querySelector('i');
+                    const countSpan = document.getElementById('likeCount');
+                    const btn = this;
+
+                    // Prevent multiple clicks
+                    if (btn.classList.contains('pointer-events-none')) return;
+                    btn.classList.add('pointer-events-none');
+
+                    fetch(`/detail-produk/${productId}/like`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        btn.classList.remove('pointer-events-none');
+                        if (data.status === 'liked') {
+                            icon.classList.remove('fa-regular');
+                            icon.classList.add('fa-solid');
+                            btn.classList.add('bg-red-50', 'border-red-100');
+                            btn.classList.remove('border-gray-100');
+                        } else {
+                            icon.classList.remove('fa-solid');
+                            icon.classList.add('fa-regular');
+                            btn.classList.remove('bg-red-50', 'border-red-100');
+                            btn.classList.add('border-gray-100');
+                        }
+                        countSpan.textContent = data.likes_count;
+                    })
+                    .catch(error => {
+                        btn.classList.remove('pointer-events-none');
+                        console.error('Error:', error);
+                        iziToast.error({
+                            title: 'Error',
+                            message: 'Gagal memproses Like. Silakan coba lagi.',
+                            position: 'topRight'
+                        });
+                    });
+                });
+            }
 
             // 5. Review Star Rating Logic
             const ratingContainer = document.querySelector('.group-rating');

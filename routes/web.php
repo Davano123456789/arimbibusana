@@ -24,6 +24,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\TestimonialController;
+use App\Http\Controllers\Admin\AnnouncementController;
 
 Route::get('/', [FrontController::class, 'index']);
 
@@ -32,6 +34,7 @@ Route::get('/produk', [FrontController::class, 'produk']);
 Route::get('/produk-unggulan', [FrontController::class, 'produkUnggulan']);
 Route::get('/detail-produk/{id}', [FrontController::class, 'detailProduk']);
 Route::post('/detail-produk/{id}/ulasan', [FrontController::class, 'storeTestimonial']);
+Route::post('/detail-produk/{id}/like', [FrontController::class, 'toggleLike']);
 Route::get('/keranjang', [FrontController::class, 'keranjang']);
 Route::get('/pembayaran', [FrontController::class, 'pembayaran']);
 
@@ -51,4 +54,20 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/categories/{id}/edit', [CategoryController::class, 'edit'])->name('dashboard.categories.edit');
     Route::put('/categories/{id}', [CategoryController::class, 'update'])->name('dashboard.categories.update');
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy'])->name('dashboard.categories.destroy');
+
+    Route::get('/testimonials', [TestimonialController::class, 'index'])->name('dashboard.testimonials.index');
+    Route::get('/testimonials/{id}', [TestimonialController::class, 'show'])->name('dashboard.testimonials.show');
+    Route::delete('/testimonials/{id}', [TestimonialController::class, 'destroy'])->name('dashboard.testimonials.destroy');
+    Route::post('/testimonials/{id}/toggle', [TestimonialController::class, 'toggleDisplay'])->name('dashboard.testimonials.toggle');
+
+    Route::resource('/announcements', AnnouncementController::class)->names([
+        'index' => 'dashboard.announcements.index',
+        'create' => 'dashboard.announcements.create',
+        'store' => 'dashboard.announcements.store',
+        'edit' => 'dashboard.announcements.edit',
+        'update' => 'dashboard.announcements.update',
+        'destroy' => 'dashboard.announcements.destroy',
+    ])->except(['show']);
+    Route::post('/announcements/{id}/toggle-popup', [AnnouncementController::class, 'togglePopup'])->name('dashboard.announcements.toggle-popup');
+    Route::post('/announcements/{id}/toggle-status', [AnnouncementController::class, 'toggleStatus'])->name('dashboard.announcements.toggle-status');
 });
