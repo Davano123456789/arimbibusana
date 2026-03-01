@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Arimbi Queen')</title>
   <meta name="description"
     content="@yield('description', 'Arimbi Queen - Scarf premium, mukena, hijab, busana wanita. Toko wanita anggun, sopan, percaya diri.')" />

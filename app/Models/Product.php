@@ -40,4 +40,9 @@ class Product extends Model
     {
         return $this->hasMany(Testimonial::class);
     }
+
+    public function likes()
+    {
+        return $this->hasMany(ProductLike::class);
+    }
 }
