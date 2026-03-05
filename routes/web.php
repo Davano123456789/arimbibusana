@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\AnnouncementController;
+use App\Http\Controllers\Admin\BlogController;
 
 Route::get('/', [FrontController::class, 'index']);
 
@@ -76,4 +77,14 @@ Route::prefix('dashboard')->group(function () {
     ])->except(['show']);
     Route::post('/announcements/{id}/toggle-popup', [AnnouncementController::class, 'togglePopup'])->name('dashboard.announcements.toggle-popup');
     Route::post('/announcements/{id}/toggle-status', [AnnouncementController::class, 'toggleStatus'])->name('dashboard.announcements.toggle-status');
+
+    Route::resource('/blogs', BlogController::class)->names([
+        'index' => 'dashboard.blogs.index',
+        'create' => 'dashboard.blogs.create',
+        'store' => 'dashboard.blogs.store',
+        'edit' => 'dashboard.blogs.edit',
+        'update' => 'dashboard.blogs.update',
+        'destroy' => 'dashboard.blogs.destroy',
+    ])->except(['show']);
+    Route::post('/blogs/upload', [BlogController::class, 'uploadImage'])->name('dashboard.blogs.upload');
 });
