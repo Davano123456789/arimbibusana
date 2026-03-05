@@ -4,6 +4,8 @@
 @section('description', 'Keranjang belanja Anda di Arimbi Queen.')
 
 @section('head')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --cream: #F5ECE0;
@@ -57,6 +59,7 @@
 
         <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8 font-serif">Keranjang Belanja</h1>
 
+        @if($cartItems->count() > 0)
         <div class="flex flex-col lg:flex-row gap-12">
             <!-- Cart Items List -->
             <div class="flex-1">
@@ -68,74 +71,58 @@
                     <div class="col-span-2 text-right">Total</div>
                 </div>
 
-                <!-- Cart Item 1 -->
-                <div class="cart-item grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b border-gray-100 py-6">
-                    <!-- Product Info -->
-                    <div class="col-span-1 md:col-span-6 flex gap-4">
-                        <div class="w-24 h-32 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
-                            <img src="{{ asset('images/produk1.jpg') }}" alt="Koleksi Tunik Premium" class="w-full h-full object-cover">
+                @php $total = 0; @endphp
+                @foreach($cartItems as $item)
+                    @php 
+                        $itemTotal = $item->product->price * $item->quantity;
+                        $total += $itemTotal;
+                    @endphp
+                    <!-- Cart Item -->
+                    <div class="cart-item grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b border-gray-100 py-6" data-id="{{ $item->id }}">
+                        <!-- Product Info -->
+                        <div class="col-span-1 md:col-span-6 flex gap-4">
+                            <div class="w-24 h-32 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
+                                @if($item->product->images->count() > 0)
+                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                @else
+                                    <img src="{{ asset('images/no-image.jpg') }}" alt="No Image" class="w-full h-full object-cover">
+                                @endif
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <h4 class="font-bold text-gray-900 text-lg mb-1 font-serif">{{ $item->product->name }}</h4>
+                                <p class="text-sm text-gray-500 mb-2">Ukuran: <span class="font-medium text-gray-900">{{ $item->size->size }}</span></p>
+                                <form action="{{ route('cart.destroy', $item->id) }}" method="POST" class="delete-form">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="button" class="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors w-fit btn-delete">
+                                        <i class="fa-regular fa-trash-can"></i> Hapus
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                        <div class="flex flex-col justify-center">
-                            <h4 class="font-bold text-gray-900 text-lg mb-1 font-serif">Koleksi Tunik Premium</h4>
-                            <p class="text-sm text-gray-500 mb-2">Ukuran: <span class="font-medium text-gray-900">M</span></p>
-                            <button class="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors w-fit">
-                                <i class="fa-regular fa-trash-can"></i> Hapus
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- Price (Desktop) -->
-                    <div class="hidden md:block col-span-2 text-center text-gray-900 font-medium">
-                        Rp 245.000
-                    </div>
+                        <!-- Price (Desktop) -->
+                        <div class="hidden md:block col-span-2 text-center text-gray-900 font-medium">
+                            Rp {{ number_format($item->product->price, 0, ',', '.') }}
+                        </div>
 
-                    <!-- Quantity -->
-                    <div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-center">
-                        <span class="md:hidden text-sm font-medium text-gray-500">Jumlah:</span>
-                        <div class="flex items-center border border-gray-300 rounded-lg bg-white h-10 w-fit">
-                            <button class="w-8 h-full flex items-center justify-center text-gray-500 hover:text-accent transition-colors btn-minus"><i class="fa-solid fa-minus text-xs"></i></button>
-                            <input type="number" value="1" min="1" class="w-10 text-center border-none focus:ring-0 text-gray-900 font-bold p-0 text-sm appearance-none bg-transparent qty-input" readonly />
-                            <button class="w-8 h-full flex items-center justify-center text-gray-500 hover:text-accent transition-colors btn-plus"><i class="fa-solid fa-plus text-xs"></i></button>
+                        <!-- Quantity -->
+                        <div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-center">
+                            <span class="md:hidden text-sm font-medium text-gray-500">Jumlah:</span>
+                            <div class="flex items-center border border-gray-300 rounded-lg bg-white h-10 w-fit">
+                                <button class="w-8 h-full flex items-center justify-center text-gray-500 hover:text-accent transition-colors btn-minus"><i class="fa-solid fa-minus text-xs"></i></button>
+                                <input type="number" value="{{ $item->quantity }}" min="1" class="w-10 text-center border-none focus:ring-0 text-gray-900 font-bold p-0 text-sm appearance-none bg-transparent qty-input" readonly />
+                                <button class="w-8 h-full flex items-center justify-center text-gray-500 hover:text-accent transition-colors btn-plus"><i class="fa-solid fa-plus text-xs"></i></button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Subtotal -->
-                    <div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-end">
-                         <span class="md:hidden text-sm font-medium text-gray-500">Total:</span>
-                        <span class="font-bold text-accent">Rp 245.000</span>
-                    </div>
-                </div>
-
-                <!-- Cart Item 2 -->
-                <div class="cart-item grid grid-cols-1 md:grid-cols-12 gap-6 items-center border-b border-gray-100 py-6">
-                    <div class="col-span-1 md:col-span-6 flex gap-4">
-                        <div class="w-24 h-32 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
-                            <img src="{{ asset('images/busana5.jpg') }}" alt="Gamis Polos Exclusive" class="w-full h-full object-cover">
-                        </div>
-                        <div class="flex flex-col justify-center">
-                            <h4 class="font-bold text-gray-900 text-lg mb-1 font-serif">Gamis Polos Exclusive</h4>
-                            <p class="text-sm text-gray-500 mb-2">Ukuran: <span class="font-medium text-gray-900">L</span></p>
-                            <button class="text-xs text-red-500 hover:text-red-700 flex items-center gap-1 transition-colors w-fit">
-                                <i class="fa-regular fa-trash-can"></i> Hapus
-                            </button>
+                        <!-- Subtotal -->
+                        <div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-end">
+                            <span class="md:hidden text-sm font-medium text-gray-500">Total:</span>
+                            <span class="font-bold text-accent item-total">Rp {{ number_format($itemTotal, 0, ',', '.') }}</span>
                         </div>
                     </div>
-                    <div class="hidden md:block col-span-2 text-center text-gray-900 font-medium">
-                        Rp 285.000
-                    </div>
-                    <div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-center">
-                        <span class="md:hidden text-sm font-medium text-gray-500">Jumlah:</span>
-                        <div class="flex items-center border border-gray-300 rounded-lg bg-white h-10 w-fit">
-                            <button class="w-8 h-full flex items-center justify-center text-gray-500 hover:text-accent transition-colors btn-minus"><i class="fa-solid fa-minus text-xs"></i></button>
-                            <input type="number" value="1" min="1" class="w-10 text-center border-none focus:ring-0 text-gray-900 font-bold p-0 text-sm appearance-none bg-transparent qty-input" readonly />
-                            <button class="w-8 h-full flex items-center justify-center text-gray-500 hover:text-accent transition-colors btn-plus"><i class="fa-solid fa-plus text-xs"></i></button>
-                        </div>
-                    </div>
-                    <div class="col-span-1 md:col-span-2 flex items-center justify-between md:justify-end">
-                        <span class="md:hidden text-sm font-medium text-gray-500">Total:</span>
-                        <span class="font-bold text-accent">Rp 285.000</span>
-                    </div>
-                </div>
+                @endforeach
 
                 <div class="mt-8">
                     <a href="{{ url('/produk') }}" class="text-sm font-medium text-gray-500 hover:text-accent flex items-center gap-2 transition-colors">
@@ -152,7 +139,7 @@
                     <div class="space-y-4 mb-6 pb-6 border-b border-gray-200">
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>Subtotal</span>
-                            <span class="font-medium text-gray-900">Rp 530.000</span>
+                            <span class="font-medium text-gray-900 cart-subtotal">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>Diskon</span>
@@ -166,7 +153,7 @@
 
                     <div class="flex justify-between items-center mb-8">
                         <span class="font-bold text-gray-900">Total</span>
-                        <span class="font-bold text-2xl text-accent">Rp 530.000</span>
+                        <span class="font-bold text-2xl text-accent cart-total">Rp {{ number_format($total, 0, ',', '.') }}</span>
                     </div>
 
                     <a href="{{ url('/pembayaran') }}" 
@@ -180,29 +167,98 @@
                 </div>
             </div>
         </div>
+        @else
+        <div class="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                <i class="fa-solid fa-cart-shopping text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2 font-serif">Keranjang Anda Kosong</h3>
+            <p class="text-gray-500 mb-8 max-w-xs mx-auto">Sepertinya Anda belum menambahkan produk apapun ke dalam keranjang belanja.</p>
+            <a href="{{ url('/produk') }}" class="inline-flex items-center gap-2 px-8 py-3 bg-accent text-white rounded-xl font-bold hover:brightness-110 transition-all shadow-lg shadow-accent/20">
+                Mulai Belanja <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+        @endif
     </div>
 @endsection
 
 @section('scripts')
 <script>
-    // Quantity Logic (Mock)
+    // Quantity Logic
+    const formatIDR = (number) => {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number).replace('Rp', 'Rp ');
+    };
+
+    const updateQuantity = async (id, quantity) => {
+        try {
+            const response = await fetch(`{{ url('/keranjang') }}/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ quantity })
+            });
+            const data = await response.json();
+            if (data.success) {
+                // For now, simple reload or we could update UI dynamically
+                window.location.reload(); 
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
     document.querySelectorAll('.btn-minus').forEach(btn => {
         btn.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('.qty-input');
+            const item = this.closest('.cart-item');
+            const id = item.dataset.id;
+            const input = item.querySelector('.qty-input');
             let val = parseInt(input.value);
             if (val > 1) {
-                input.value = val - 1;
-                // Update logic would go here (AJAX or just UI update)
+                val -= 1;
+                input.value = val;
+                updateQuantity(id, val);
             }
         });
     });
 
     document.querySelectorAll('.btn-plus').forEach(btn => {
         btn.addEventListener('click', function() {
-            const input = this.parentElement.querySelector('.qty-input');
+            const item = this.closest('.cart-item');
+            const id = item.dataset.id;
+            const input = item.querySelector('.qty-input');
             let val = parseInt(input.value);
-            input.value = val + 1;
-            // Update logic would go here
+            val += 1;
+            input.value = val;
+            updateQuantity(id, val);
+        });
+    });
+
+    // Delete Confirmation with SweetAlert2
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const form = this.closest('.delete-form');
+            
+            Swal.fire({
+                title: 'Hapus Barang?',
+                text: "Apakah Anda yakin ingin menghapus produk ini dari keranjang?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#B78A58', // cream-dark
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal',
+                borderRadius: '1rem',
+                customClass: {
+                    confirmButton: 'rounded-xl px-6 py-3 font-bold',
+                    cancelButton: 'rounded-xl px-6 py-3 font-bold'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
         });
     });
 </script>

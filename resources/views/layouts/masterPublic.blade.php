@@ -119,15 +119,16 @@
       const icon = likeBtn.querySelector('i');
       if (icon.classList.contains('fa-regular')) {
         icon.classList.remove('fa-regular');
-        icon.classList.add('fa-solid');
-        icon.classList.add('text-red-500');
+        icon.classList.add('fa-solid', 'text-red-500');
       } else {
-        icon.classList.remove('fa-solid');
+        icon.classList.remove('fa-solid', 'text-red-500');
         icon.classList.add('fa-regular');
-        icon.classList.remove('text-red-500');
       }
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+  @include('layouts.notifications')
+  @yield('scripts')
   @yield('scripts')
 </body>
 

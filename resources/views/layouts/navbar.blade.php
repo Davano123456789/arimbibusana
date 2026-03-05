@@ -11,24 +11,44 @@
             <a href="{{ url('/') }}" class="hover:text-accent transition">Beranda</a>
             <a href="{{ url('/produk') }}" class="hover:text-accent transition font-medium">Produk</a>
             <a href="{{ url('/produk-unggulan') }}" class="hover:text-accent transition">Unggulan</a>
-            <a href="#" class="group flex items-center gap-1.5 hover:text-accent transition">
-                Live <span class="relative flex h-2 w-2">
+            <a href="{{ route('public.live') }}" class="group flex items-center gap-1.5 hover:text-accent transition">
+                Live 
+                @if(isset($settings['is_tiktok_live']) && $settings['is_tiktok_live'] == '1')
+                <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                 </span>
+                @endif
             </a>
             <a href="{{ url('/testimoni') }}" class="hover:text-accent transition font-medium">Testimoni</a>
             <a href="{{ url('/tentang') }}" class="hover:text-accent transition">Tentang Kami</a>
             <a href="{{ url('/blog') }}" class="hover:text-accent transition">Blog</a>
         </nav>
         <div class="hidden md:flex items-center gap-5 ml-4">
-            <a href="{{ url('/login') }}" class="flex items-center gap-2 px-5 py-2 bg-accent text-white rounded-full text-sm font-medium hover:brightness-110 transition-all duration-300 shadow-sm shadow-accent/20">
-                <i class="fa-solid fa-user text-xs"></i>
-                Login
-            </a>
+            @auth
+                @if(Auth::user()->role === 'admin')
+                    <a href="{{ url('/dashboard') }}" class="text-gray-500 hover:text-accent transition-colors">
+                        <i class="fa-solid fa-gauge-high text-xl"></i>
+                    </a>
+                @endif
+                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                    @csrf
+                    <button type="submit" class="flex items-center gap-2 px-5 py-2 border border-accent text-accent rounded-full text-sm font-medium hover:bg-accent hover:text-white transition-all duration-300 shadow-sm">
+                        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                        Logout
+                    </button>
+                </form>
+            @else
+                <a href="{{ url('/login') }}" class="flex items-center gap-2 px-5 py-2 bg-accent text-white rounded-full text-sm font-medium hover:brightness-110 transition-all duration-300 shadow-sm shadow-accent/20">
+                    <i class="fa-solid fa-user text-xs"></i>
+                    Login
+                </a>
+            @endauth
             <a href="{{ url('/keranjang') }}" class="relative group text-gray-500 hover:text-accent transition-colors">
                 <i class="fa-solid fa-cart-shopping text-xl"></i>
-                <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">2</span>
+                @if($cartCount > 0)
+                <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">{{ $cartCount }}</span>
+                @endif
             </a>
         </div>
         <div class="md:hidden">
@@ -49,20 +69,38 @@
             </div>
             <button id="mobileClose" class="p-2"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <a href="{{ url('/login') }}" class="flex items-center justify-center gap-2 w-full py-3 bg-accent text-white rounded-xl text-sm font-medium hover:brightness-110 transition-all mb-6 shadow-md shadow-accent/20">
-            <i class="fa-solid fa-user text-xs"></i>
-            Login
-        </a>
+        @auth
+            @if(Auth::user()->role === 'admin')
+                <a href="{{ url('/dashboard') }}" class="flex items-center justify-center gap-2 w-full py-3 bg-dark text-white rounded-xl text-sm font-medium hover:brightness-110 transition-all mb-3 shadow-md">
+                    <i class="fa-solid fa-gauge-high text-xs"></i>
+                    Dashboard Admin
+                </a>
+            @endif
+            <form action="{{ route('logout') }}" method="POST" class="mb-6">
+                @csrf
+                <button type="submit" class="flex items-center justify-center gap-2 w-full py-3 border border-red-500 text-red-500 rounded-xl text-sm font-medium hover:bg-red-500 hover:text-white transition-all">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    Logout
+                </button>
+            </form>
+        @else
+            <a href="{{ url('/login') }}" class="flex items-center justify-center gap-2 w-full py-3 bg-accent text-white rounded-xl text-sm font-medium hover:brightness-110 transition-all mb-6 shadow-md shadow-accent/20">
+                <i class="fa-solid fa-user text-xs"></i>
+                Login
+            </a>
+        @endauth
         <nav class="flex flex-col gap-4">
             <a href="{{ url('/') }}" class="py-2 border-b mobile-nav-link">Beranda</a>
             <a href="{{ url('/produk') }}" class="py-2 border-b mobile-nav-link">Produk</a>
             <a href="{{ url('/produk-unggulan') }}" class="py-2 border-b mobile-nav-link">Produk Unggulan</a>
-            <a href="#" class="py-2 border-b mobile-nav-link flex items-center justify-between">
+            <a href="{{ route('public.live') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
                 Live
+                @if(isset($settings['is_tiktok_live']) && $settings['is_tiktok_live'] == '1')
                 <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
                 </span>
+                @endif
             </a>
             <a href="{{ url('/testimoni') }}" class="py-2 border-b mobile-nav-link">Testimoni</a>
             <a href="{{ url('/tentang') }}" class="py-2 border-b mobile-nav-link">Tentang Kami</a>
@@ -70,7 +108,9 @@
             <a href="#informasi" class="py-2 border-b mobile-nav-link">Informasi Kami</a>
             <a href="{{ url('/keranjang') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
                 Keranjang Belanja
-                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">2 Item</span>
+                @if($cartCount > 0)
+                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $cartCount }} Item</span>
+                @endif
             </a>
         </nav>
     </div>

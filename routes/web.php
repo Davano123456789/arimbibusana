@@ -4,12 +4,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/keranjang', [CartController::class, 'store'])->name('cart.store');
+    Route::patch('/keranjang/{id}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/keranjang/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+    Route::get('/pembayaran', [FrontController::class, 'pembayaran'])->name('checkout.index');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -35,8 +44,6 @@ Route::get('/produk-unggulan', [FrontController::class, 'produkUnggulan']);
 Route::get('/detail-produk/{id}', [FrontController::class, 'detailProduk']);
 Route::post('/detail-produk/{id}/ulasan', [FrontController::class, 'storeTestimonial']);
 Route::post('/detail-produk/{id}/like', [FrontController::class, 'toggleLike']);
-Route::get('/keranjang', [FrontController::class, 'keranjang']);
-Route::get('/pembayaran', [FrontController::class, 'pembayaran']);
 Route::get('/testimoni', [FrontController::class, 'testimoni']);
 Route::get('/tentang', [FrontController::class, 'tentang']);
 Route::post('/testimoni', [FrontController::class, 'storeGeneralTestimonial']);
@@ -76,4 +83,9 @@ Route::prefix('dashboard')->group(function () {
     ])->except(['show']);
     Route::post('/announcements/{id}/toggle-popup', [AnnouncementController::class, 'togglePopup'])->name('dashboard.announcements.toggle-popup');
     Route::post('/announcements/{id}/toggle-status', [AnnouncementController::class, 'toggleStatus'])->name('dashboard.announcements.toggle-status');
+    
+    Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('dashboard.settings.index');
+    Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('dashboard.settings.update');
 });
+
+Route::get('/live', [FrontController::class, 'live'])->name('public.live');
