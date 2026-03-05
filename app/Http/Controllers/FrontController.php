@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Testimonial;
 use App\Models\Product;
 use App\Models\ProductLike;
@@ -147,6 +148,13 @@ class FrontController extends Controller
             ->take(4)
             ->get();
 
+        $isLiked = false;
+        if (Auth::check()) {
+            $isLiked = ProductLike::where('user_id', Auth::id())
+                ->where('product_id', $product->id)
+                ->exists();
+        }
+
         return view('public.detail-produk', compact('product', 'relatedProducts', 'isLiked'));
     }
 
@@ -205,10 +213,6 @@ class FrontController extends Controller
         return back()->with('success', 'Terima kasih atas ulasan Anda!');
     }
 
-    public function keranjang()
-    {
-        return view('public.keranjang');
-    }
     public function testimoni()
     {
         $testimonials = Testimonial::with(['product'])
@@ -230,7 +234,21 @@ class FrontController extends Controller
 
     public function pembayaran()
     {
-        return view('public.pembayaran');
+        $userId = Auth::id();
+        $cartItems = \App\Models\Cart::with(['product', 'product.images', 'size'])
+            ->where('user_id', $userId)
+            ->get();
+
+        if ($cartItems->count() == 0) {
+            return redirect()->route('cart.index')->with('warning', 'Keranjang belanja Anda kosong.');
+        }
+
+        $total = 0;
+        foreach ($cartItems as $item) {
+            $total += $item->product->price * $item->quantity;
+        }
+
+        return view('public.pembayaran', compact('cartItems', 'total'));
     }
 
     public function blog()
@@ -255,5 +273,10 @@ class FrontController extends Controller
             ->get();
 
         return view('public.blog-detail', compact('post', 'recentPosts'));
+    }
+
+    public function live()
+    {
+        return view('public.live');
     }
 }

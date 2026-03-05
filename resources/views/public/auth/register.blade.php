@@ -52,9 +52,12 @@
                             <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
                                 <i class="fa-solid fa-user"></i>
                             </span>
-                            <input type="text" name="name" required 
-                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm transition-all input-focus outline-none" 
+                            <input type="text" name="name" value="{{ old('name') }}" required 
+                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border @error('name') border-red-500 @else border-gray-100 @enderror rounded-2xl text-sm transition-all input-focus outline-none" 
                                 placeholder="Masukkan nama lengkap">
+                            @error('name')
+                                <p class="text-[10px] text-red-500 mt-1 font-bold italic">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -64,9 +67,12 @@
                             <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
                                 <i class="fa-solid fa-envelope"></i>
                             </span>
-                            <input type="email" name="email" required 
-                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm transition-all input-focus outline-none" 
+                            <input type="email" name="email" value="{{ old('email') }}" required 
+                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border @error('email') border-red-500 @else border-gray-100 @enderror rounded-2xl text-sm transition-all input-focus outline-none" 
                                 placeholder="nama@email.com">
+                            @error('email')
+                                <p class="text-[10px] text-red-500 mt-1 font-bold italic">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -77,8 +83,11 @@
                                 <i class="fa-solid fa-lock"></i>
                             </span>
                             <input type="password" name="password" required 
-                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm transition-all input-focus outline-none" 
+                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border @error('password') border-red-500 @else border-gray-100 @enderror rounded-2xl text-sm transition-all input-focus outline-none" 
                                 placeholder="••••••••">
+                            @error('password')
+                                <p class="text-[10px] text-red-500 mt-1 font-bold italic">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 

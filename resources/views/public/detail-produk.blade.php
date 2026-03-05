@@ -195,6 +195,7 @@
                             @foreach($product->sizes as $size)
                             <button 
                                 class="size-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all {{ $size->stock == 0 ? 'opacity-50 cursor-not-allowed' : '' }}" 
+                                data-id="{{ $size->id }}"
                                 data-stock="{{ $size->stock }}"
                                 {{ $size->stock == 0 ? 'disabled' : '' }}>
                                 {{ $size->size }}
@@ -218,18 +219,25 @@
                 </div>
 
                 <!-- Call to Action -->
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button id="addToCartBtn"
-                        class="flex-1 btn-cream-dark py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl hover:brightness-110 transition-all active:scale-95">
-                        <i class="fa-solid fa-cart-shopping fa-xl"></i> Masukkan ke Keranjang
-                    </button>
-                    <button
-                        class="like-btn px-6 h-16 flex items-center justify-center gap-2 rounded-2xl border-2 {{ $isLiked ? 'bg-red-50 border-red-100' : 'border-gray-100' }} text-red-500 hover:bg-red-50 transition-all"
-                        data-id="{{ $product->id }}">
-                        <i class="{{ $isLiked ? 'fa-solid' : 'fa-regular' }} fa-heart fa-xl"></i>
-                        <span id="likeCount" class="font-bold text-lg">{{ $product->likes_count }}</span>
-                    </button>
-                </div>
+                <form id="addToCartForm" action="{{ route('cart.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <input type="hidden" name="size_id" id="sizeInput">
+                    <input type="hidden" name="quantity" id="finalQtyInput" value="1">
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <button type="submit" id="addToCartBtn"
+                            class="flex-1 btn-cream-dark py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl hover:brightness-110 transition-all active:scale-95">
+                            <i class="fa-solid fa-cart-shopping fa-xl"></i> Masukkan ke Keranjang
+                        </button>
+                        <button type="button"
+                            class="like-btn px-6 h-16 flex items-center justify-center gap-2 rounded-2xl border-2 {{ $isLiked ? 'bg-red-50 border-red-100' : 'border-gray-100' }} text-red-500 hover:bg-red-50 transition-all"
+                            data-id="{{ $product->id }}">
+                            <i class="{{ $isLiked ? 'fa-solid' : 'fa-regular' }} fa-heart fa-xl"></i>
+                            <span id="likeCount" class="font-bold text-lg">{{ $product->likes_count }}</span>
+                        </button>
+                    </div>
+                </form>
 
                 <div class="mt-8 flex items-center gap-6 text-[10px] text-gray-400 uppercase font-bold tracking-widest">
                     <div class="flex items-center gap-2"><i class="fa-solid fa-truck-fast text-accent/50 text-sm"></i>
@@ -479,14 +487,17 @@
             const sizeBtns = document.querySelectorAll('.size-btn');
             const displayStock = document.getElementById('displayStock');
             const qtyInput = document.getElementById('qtyInput');
-            let selectedSize = null;
+            const sizeInput = document.getElementById('sizeInput');
+            const finalQtyInput = document.getElementById('finalQtyInput');
+            let selectedSizeId = null;
 
             const selectSize = (btn) => {
                 if (btn.disabled) return;
                 
                 sizeBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-                selectedSize = btn.textContent.trim();
+                selectedSizeId = btn.getAttribute('data-id');
+                if (sizeInput) sizeInput.value = selectedSizeId;
                 
                 const stock = parseInt(btn.getAttribute('data-stock') || '0');
                 if (displayStock) displayStock.textContent = stock;
@@ -495,9 +506,11 @@
                     if (parseInt(qtyInput.value) > stock) {
                         qtyInput.value = stock;
                     }
+                    if (finalQtyInput) finalQtyInput.value = qtyInput.value;
                 }
             };
-
+            
+            // Note: need to add data-id to size buttons in Blade first
             sizeBtns.forEach(btn => {
                 btn.addEventListener('click', () => selectSize(btn));
             });
@@ -517,6 +530,7 @@
                     let val = parseInt(qtyInput.value) || 1;
                     if (val > 1) {
                         qtyInput.value = val - 1;
+                        if (finalQtyInput) finalQtyInput.value = qtyInput.value;
                     }
                 });
 
@@ -525,6 +539,7 @@
                     let max = parseInt(qtyInput.getAttribute('max') || '999');
                     if (val < max) {
                         qtyInput.value = val + 1;
+                        if (finalQtyInput) finalQtyInput.value = qtyInput.value;
                     } else {
                         alert('Maaf, stok tidak mencukupi.');
                     }
@@ -532,6 +547,7 @@
             }
 
             // 4. Like Counter Logic (Live with Database)
+            // ... (rest of the file)
             const likeBtn = document.querySelector('.like-btn');
             if (likeBtn) {
                 likeBtn.addEventListener('click', function(e) {
@@ -636,16 +652,27 @@
                 if (backdropSize) backdropSize.addEventListener('click', closeModal);
             }
 
-            // 7. Add to Cart Logic (Mock)
-            const addToCartBtn = document.getElementById('addToCartBtn');
-            if (addToCartBtn) {
-                addToCartBtn.addEventListener('click', () => {
-                    if (!selectedSize) {
-                        alert('Silakan pilih ukuran terlebih dahulu!');
+            // 7. Add to Cart Logic
+            const addToCartForm = document.getElementById('addToCartForm');
+            if (addToCartForm) {
+                addToCartForm.addEventListener('submit', function(e) {
+                    @guest
+                        e.preventDefault();
+                        iziToast.warning({
+                            title: 'Login Diperlukan',
+                            message: 'Silakan login terlebih dahulu untuk menambah produk ke keranjang.',
+                            position: 'topRight'
+                        });
+                        setTimeout(() => {
+                            window.location.href = "{{ route('login') }}";
+                        }, 2000);
                         return;
+                    @endguest
+
+                    if (!selectedSizeId) {
+                        e.preventDefault();
+                        alert('Silakan pilih ukuran terlebih dahulu!');
                     }
-                    const qty = qtyInput ? qtyInput.value : 1;
-                    alert(`✨ Berhasil menambahkan ${qty} item (Ukuran: ${selectedSize}) ke keranjang!`);
                 });
             }
         });

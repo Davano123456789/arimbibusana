@@ -12,7 +12,7 @@
       <li class="nav-item">
         <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fas fa-desktop text-primary text-sm opacity-10"></i>
+            <i class="fa-solid fa-house text-primary text-sm"></i>
           </div>
           <span class="nav-link-text ms-1">Dashboard</span>
         </a>
@@ -20,7 +20,7 @@
       <li class="nav-item">
         <a class="nav-link {{ request()->is('dashboard/products*') ? 'active' : '' }}" href="{{ route('dashboard.products.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fas fa-shirt text-warning text-sm opacity-10"></i>
+            <i class="fa-solid fa-boxes-packing text-warning text-sm"></i>
           </div>
           <span class="nav-link-text ms-1">Daftar Produk</span>
         </a>
@@ -28,7 +28,7 @@
       <li class="nav-item">
         <a class="nav-link {{ Request::is('dashboard/categories*') ? 'active' : '' }}" href="{{ route('dashboard.categories.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fas fa-tags text-success text-sm opacity-10"></i>
+            <i class="fa-solid fa-layer-group text-success text-sm"></i>
           </div>
           <span class="nav-link-text ms-1">Kategori</span>
         </a>
@@ -36,7 +36,7 @@
       <li class="nav-item">
         <a class="nav-link {{ Request::is('dashboard/testimonials*') ? 'active' : '' }}" href="{{ route('dashboard.testimonials.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fas fa-comments text-info text-sm opacity-10"></i>
+            <i class="fa-solid fa-comment-dots text-info text-sm"></i>
           </div>
           <span class="nav-link-text ms-1">Testimonial</span>
         </a>
@@ -44,12 +44,17 @@
       <li class="nav-item">
         <a class="nav-link {{ Request::is('dashboard/announcements*') ? 'active' : '' }}" href="{{ route('dashboard.announcements.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fas fa-bullhorn text-danger text-sm opacity-10"></i>
+            <i class="fa-solid fa-circle-info text-danger text-sm"></i>
           </div>
           <span class="nav-link-text ms-1">Popup Info</span>
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ Request::is('dashboard/settings*') ? 'active' : '' }}" href="{{ route('dashboard.settings.index') }}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-sliders text-primary text-sm"></i>
+          </div>
+          <span class="nav-link-text ms-1">Pengaturan</span>
         <a class="nav-link {{ Request::is('dashboard/blogs*') ? 'active' : '' }}" href="{{ route('dashboard.blogs.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fas fa-newspaper text-dark text-sm opacity-10"></i>
@@ -60,6 +65,8 @@
     </ul>
   </div>
   <div class="sidenav-footer mx-3">
-    <a class="btn btn-primary btn-sm mb-0 w-100" href="#" type="button">Support</a>
+    <a class="btn btn-primary btn-sm mb-0 w-100" href="#" type="button">
+      <i class="fa-solid fa-circle-question me-2"></i> Support
+    </a>
   </div>
 </aside>

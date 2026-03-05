@@ -323,7 +323,7 @@
                 @php
                     $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
                 @endphp
-                <img class="slide-img w-full h-52 object-cover" src="{{ asset('images/produk1.jpg') }}" alt="{{ $product->name }}"
+                <img class="slide-img w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}"
                   loading="lazy" />
                 <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
                     class="fa-regular fa-heart"></i></button>
@@ -362,7 +362,7 @@
             @php
                 $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
             @endphp
-            <img class="w-full h-72 object-cover" src="{{ asset('images/produk1.jpg') }}" alt="{{ $product->name }}" loading="lazy" />
+            <img class="w-full h-72 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
             <div class="img-overlay"></div>
             <button
               class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">

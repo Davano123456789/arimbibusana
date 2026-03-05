@@ -46,6 +46,18 @@
             opacity: 1;
             transform: scale(1);
         }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--cream-dark);
+            border-radius: 10px;
+        }
     </style>
 @endsection
 
@@ -218,34 +230,30 @@
                     <h3 class="font-bold text-xl text-gray-900 mb-6 font-serif">Ringkasan Pesanan</h3>
                     
                     <!-- Items Preview -->
-                    <div class="space-y-4 mb-6 pb-6 border-b border-gray-200">
+                    <div class="space-y-4 mb-6 pb-6 border-b border-gray-200 h-64 overflow-y-auto pr-2 custom-scrollbar">
+                        @foreach($cartItems as $item)
                         <div class="flex gap-3">
-                            <div class="w-16 h-20 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                                <img src="{{ asset('images/produk1.jpg') }}" alt="Produk" class="w-full h-full object-cover">
+                            <div class="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                @if($item->product->images->count() > 0)
+                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                @else
+                                    <img src="{{ asset('images/no-image.jpg') }}" alt="No Image" class="w-full h-full object-cover">
+                                @endif
                             </div>
-                            <div>
-                                <h4 class="font-medium text-gray-900 text-sm">Koleksi Tunik Premium</h4>
-                                <p class="text-xs text-gray-500 mt-1">Size: M | Qty: 1</p>
-                                <p class="font-semibold text-gray-900 text-sm mt-1">Rp 245.000</p>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-medium text-gray-900 text-sm truncate">{{ $item->product->name }}</h4>
+                                <p class="text-[10px] text-gray-500 mt-0.5">Size: {{ $item->size->size }} | Qty: {{ $item->quantity }}</p>
+                                <p class="font-semibold text-accent text-sm mt-1">Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}</p>
                             </div>
                         </div>
-                        <div class="flex gap-3">
-                            <div class="w-16 h-20 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
-                                <img src="{{ asset('images/produk2.jpg') }}" alt="Produk" class="w-full h-full object-cover">
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-gray-900 text-sm">Gamis Floral Modern</h4>
-                                <p class="text-xs text-gray-500 mt-1">Size: L | Qty: 1</p>
-                                <p class="font-semibold text-gray-900 text-sm mt-1">Rp 285.000</p>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
 
                     <!-- Cost Breakdown -->
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-gray-600">
-                            <span>Subtotal (2 Barang)</span>
-                            <span>Rp 530.000</span>
+                            <span>Subtotal ({{ $cartItems->sum('quantity') }} Barang)</span>
+                            <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-gray-600">
                             <span>Biaya Pengiriman</span>
@@ -254,7 +262,7 @@
                         <div class="border-t border-dashed border-gray-300 my-2"></div>
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-gray-900 text-lg">Total</span>
-                            <span class="font-bold text-2xl text-accent">Rp 530.000</span>
+                            <span class="font-bold text-2xl text-accent">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
