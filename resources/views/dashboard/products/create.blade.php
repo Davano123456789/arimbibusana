@@ -37,6 +37,13 @@
                                 <input class="form-control" type="number" id="price" name="price" placeholder="Contoh: 350000" required>
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="colors" class="form-control-label">Pilihan Warna (Opsional)</label>
+                                <input class="form-control" type="text" id="colors" name="colors" placeholder="Contoh: Merah, Biru, Hijau (pisahkan dengan koma)">
+                                <p class="text-xs text-secondary mt-1">Pisahkan setiap warna dengan tanda koma.</p>
+                            </div>
+                        </div>
                         
                         <div class="col-md-12">
                             <hr class="horizontal dark mt-0">

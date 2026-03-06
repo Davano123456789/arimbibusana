@@ -51,6 +51,13 @@
             scrollbar-width: none;
         }
 
+        /* Color Button State */
+        .color-btn.active {
+            border-color: var(--accent);
+            background-color: var(--accent);
+            color: white;
+        }
+
         /* Size Button State */
         .size-btn.active {
             border-color: var(--accent);
@@ -204,6 +211,25 @@
                         </div>
                     </div>
 
+                    <!-- Colors -->
+                    @if($product->colors)
+                    <div class="mb-6">
+                        <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Pilih Warna</h4>
+                        <div class="flex gap-3 flex-wrap">
+                            @foreach(explode(',', $product->colors) as $color)
+                            @php $color = trim($color); @endphp
+                            @if($color)
+                            <button 
+                                class="color-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all" 
+                                data-color="{{ $color }}">
+                                {{ $color }}
+                            </button>
+                            @endif
+                            @endforeach
+                        </div>
+                    </div>
+                    @endif
+
                     <!-- Quantity -->
                     <div>
                         <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Jumlah</h4>
@@ -219,6 +245,7 @@
                 </div>
 
                 <!-- Call to Action -->
+                {{-- 
                 <form id="addToCartForm" action="{{ route('cart.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -238,6 +265,20 @@
                         </button>
                     </div>
                 </form>
+                --}}
+
+                <div class="flex flex-col sm:flex-row gap-4 mt-8">
+                    <button type="button" id="btnOrderOlshop"
+                        class="flex-1 bg-accent text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl hover:brightness-110 transition-all active:scale-95">
+                        <i class="fa-solid fa-shop fa-xl"></i> Pesan di Olshop Kami
+                    </button>
+                    <button type="button"
+                        class="like-btn px-6 h-16 flex items-center justify-center gap-2 rounded-2xl border-2 {{ $isLiked ? 'bg-red-50 border-red-100' : 'border-gray-100' }} text-red-500 hover:bg-red-50 transition-all"
+                        data-id="{{ $product->id }}">
+                        <i class="{{ $isLiked ? 'fa-solid' : 'fa-regular' }} fa-heart fa-xl"></i>
+                        <span id="likeCount" class="font-bold text-lg">{{ $product->likes_count }}</span>
+                    </button>
+                </div>
 
                 <div class="mt-8 flex items-center gap-6 text-[10px] text-gray-400 uppercase font-bold tracking-widest">
                     <div class="flex items-center gap-2"><i class="fa-solid fa-truck-fast text-accent/50 text-sm"></i>
@@ -448,8 +489,65 @@
         </div>
     </div>
 
+    <!-- Olshop Selection Modal -->
+    <div id="olshopModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" id="olshopModalBackdrop"></div>
+        <div class="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all scale-95 opacity-0 duration-300"
+            id="olshopModalContent">
+            <button id="closeOlshopModal"
+                class="absolute right-4 top-4 z-20 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-800 transition-colors">
+                <i class="fa-solid fa-xmark fa-lg"></i>
+            </button>
+            <div class="p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2 text-center font-serif">Pesan Sekarang</h3>
+                <p class="text-gray-500 text-sm text-center mb-8">Pilih platform favorit Anda</p>
+                
+                <div class="grid gap-4">
+                    <!-- TikTok -->
+                    <a href="https://www.tiktok.com/@arimbiqueenscarves" target="_blank" 
+                        class="flex items-center gap-4 p-4 rounded-2xl bg-[#000000] text-white hover:scale-[1.02] transition-transform shadow-md group">
+                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                            <i class="fa-brands fa-tiktok text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="block font-bold text-base">TikTok Shop</span>
+                            <span class="text-xs text-white/60">@arimbiqueenscarves</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+
+                    <!-- Shopee -->
+                    <a href="https://shopee.co.id/ArimbiQueen.Scarves" target="_blank" 
+                        class="flex items-center gap-4 p-4 rounded-2xl bg-[#EE4D2D] text-white hover:scale-[1.02] transition-transform shadow-md group">
+                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                           <i class="fa-solid fa-bag-shopping text-2xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="block font-bold text-base">Shopee</span>
+                            <span class="text-xs text-white/60">ArimbiQueen.Scarves</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+
+                    <!-- WhatsApp -->
+                    <a href="https://wa.me/62895396831320?text=Halo%20Arimbi%20Queen,%20saya%20tertarik%20dengan%20produk%20{{ urlencode($product->name) }}" target="_blank" 
+                        class="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366] text-white hover:scale-[1.02] transition-transform shadow-md group">
+                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
+                            <i class="fa-brands fa-whatsapp text-3xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <span class="block font-bold text-base">WhatsApp</span>
+                            <span class="text-xs text-white/60">0895396831320</span>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Floating WhatsApp -->
-    <a href="https://wa.me/6281234567890"
+    <a href="https://wa.me/62895396831320"
         class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl hover:bg-[#128C7E] transition-all hover:scale-110 active:scale-95 duration-300"
         aria-label="Chat via WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
@@ -490,6 +588,24 @@
             const sizeInput = document.getElementById('sizeInput');
             const finalQtyInput = document.getElementById('finalQtyInput');
             let selectedSizeId = null;
+            let selectedColor = null;
+
+            // 2b. Color Selection Logic
+            const colorBtns = document.querySelectorAll('.color-btn');
+            const selectColor = (btn) => {
+                colorBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedColor = btn.getAttribute('data-color');
+            };
+
+            colorBtns.forEach(btn => {
+                btn.addEventListener('click', () => selectColor(btn));
+            });
+
+            // Auto-select first color if available
+            if (colorBtns.length > 0) {
+                selectColor(colorBtns[0]);
+            }
 
             const selectSize = (btn) => {
                 if (btn.disabled) return;
@@ -674,6 +790,58 @@
                         alert('Silakan pilih ukuran terlebih dahulu!');
                     }
                 });
+            }
+
+            // 8. Olshop Modal Logic
+            const olshopModal = document.getElementById('olshopModal');
+            const olshopModalContent = document.getElementById('olshopModalContent');
+            const showOlshopBtn = document.getElementById('btnOrderOlshop');
+            const closeOlshopBtn = document.getElementById('closeOlshopModal');
+            const olshopBackdrop = document.getElementById('olshopModalBackdrop');
+
+            if (showOlshopBtn && olshopModal && olshopModalContent) {
+                showOlshopBtn.addEventListener('click', () => {
+                    // Validation before opening modal
+                    if (!selectedSizeId) {
+                        alert('Silakan pilih ukuran terlebih dahulu!');
+                        return;
+                    }
+                    if (colorBtns.length > 0 && !selectedColor) {
+                        alert('Silakan pilih warna terlebih dahulu!');
+                        return;
+                    }
+
+                    // Update WA Link with selected variants
+                    const waLink = olshopModal.querySelector('a[href^="https://wa.me/"]');
+                    if (waLink) {
+                        const productName = "{{ $product->name }}";
+                        const activeSizeBtn = document.querySelector('.size-btn.active');
+                        const sizeName = activeSizeBtn ? activeSizeBtn.textContent.trim() : '-';
+                        const colorName = selectedColor ? ` warna ${selectedColor}` : '';
+                        const quantity = qtyInput.value;
+                        const message = `Halo Arimbi Queen, saya tertarik dengan produk ${productName} ukuran ${sizeName}${colorName} sebanyak ${quantity} pcs.`;
+                        waLink.href = `https://wa.me/62895396831320?text=${encodeURIComponent(message)}`;
+                    }
+
+                    olshopModal.classList.remove('hidden');
+                    olshopModal.classList.add('flex');
+                    setTimeout(() => {
+                        olshopModalContent.classList.remove('scale-95', 'opacity-0');
+                        olshopModalContent.classList.add('scale-100', 'opacity-100');
+                    }, 10);
+                });
+
+                const closeOlshop = () => {
+                    olshopModalContent.classList.remove('scale-100', 'opacity-100');
+                    olshopModalContent.classList.add('scale-95', 'opacity-0');
+                    setTimeout(() => {
+                        olshopModal.classList.add('hidden');
+                        olshopModal.classList.remove('flex');
+                    }, 300);
+                };
+
+                if (closeOlshopBtn) closeOlshopBtn.addEventListener('click', closeOlshop);
+                if (olshopBackdrop) olshopBackdrop.addEventListener('click', closeOlshop);
             }
         });
 
