@@ -146,7 +146,8 @@
                     @foreach($product->images as $key => $image)
                     <button
                         class="thumbnail-btn {{ $key == 0 ? 'thumb-active' : '' }} relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 border-transparent transition-all"
-                        data-img="{{ asset('storage/' . $image->image) }}">
+                        data-img="{{ asset('storage/' . $image->image) }}"
+                        data-color="{{ $image->color }}">
                         <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover" />
                     </button>
                     @endforeach
@@ -212,19 +213,19 @@
                     </div>
 
                     <!-- Colors -->
-                    @if($product->colors)
+                    @php
+                        $colors = $product->images->pluck('color')->unique()->filter();
+                    @endphp
+                    @if($colors->count() > 0)
                     <div class="mb-6">
                         <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Pilih Warna</h4>
                         <div class="flex gap-3 flex-wrap">
-                            @foreach(explode(',', $product->colors) as $color)
-                            @php $color = trim($color); @endphp
-                            @if($color)
+                            @foreach($colors as $color)
                             <button 
                                 class="color-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all" 
                                 data-color="{{ $color }}">
                                 {{ $color }}
                             </button>
-                            @endif
                             @endforeach
                         </div>
                     </div>
@@ -562,6 +563,8 @@
             // 1. Image Gallery Logic
             const mainImage = document.getElementById('mainImage');
             const thumbnails = document.querySelectorAll('.thumbnail-btn');
+            const colorBtns = document.querySelectorAll('.color-btn');
+            let selectedColor = null;
 
             if (mainImage && thumbnails.length > 0) {
                 thumbnails.forEach(btn => {
@@ -577,6 +580,19 @@
 
                         thumbnails.forEach(t => t.classList.remove('thumb-active'));
                         btn.classList.add('thumb-active');
+
+                        // Sync with colors: Highlight color button if thumb has color
+                        const color = btn.getAttribute('data-color');
+                        if (color && typeof colorBtns !== 'undefined') {
+                            colorBtns.forEach(b => {
+                                if (b.getAttribute('data-color') === color) {
+                                    b.classList.add('active');
+                                    selectedColor = color;
+                                } else {
+                                    b.classList.remove('active');
+                                }
+                            });
+                        }
                     });
                 });
             }
@@ -588,14 +604,16 @@
             const sizeInput = document.getElementById('sizeInput');
             const finalQtyInput = document.getElementById('finalQtyInput');
             let selectedSizeId = null;
-            let selectedColor = null;
-
-            // 2b. Color Selection Logic
-            const colorBtns = document.querySelectorAll('.color-btn');
             const selectColor = (btn) => {
                 colorBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 selectedColor = btn.getAttribute('data-color');
+
+                // Sync with gallery: Find first thumbnail with this color
+                const matchedThumb = Array.from(thumbnails).find(t => t.getAttribute('data-color') === selectedColor);
+                if (matchedThumb) {
+                    matchedThumb.click();
+                }
             };
 
             colorBtns.forEach(btn => {

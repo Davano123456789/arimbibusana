@@ -37,13 +37,7 @@
                                 <input class="form-control" type="number" id="price" name="price" value="{{ old('price', $product->price) }}" placeholder="Contoh: 350000" required>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="colors" class="form-control-label">Pilihan Warna (Opsional)</label>
-                                <input class="form-control" type="text" id="colors" name="colors" value="{{ old('colors', $product->colors) }}" placeholder="Contoh: Merah, Biru, Hijau (pisahkan dengan koma)">
-                                <p class="text-xs text-secondary mt-1">Pisahkan setiap warna dengan tanda koma.</p>
-                            </div>
-                        </div>
+
                         
                         <div class="col-md-12">
                             <hr class="horizontal dark mt-0">
@@ -81,16 +75,30 @@
                             </div>
                         </div>
 
-                        <div class="col-md-12">
-                            <hr class="horizontal dark mt-0">
-                            <h6 class="text-sm">Foto Produk Saat Ini</h6>
-                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                @foreach($product->images as $image)
-                                    <div class="position-relative">
-                                        <img src="{{ asset('storage/' . $image->image) }}" class="rounded shadow-sm" style="width: 100px; height: 100px; object-fit: cover;">
-                                    </div>
-                                @endforeach
-                            </div>
+                             <h6 class="text-sm">Foto Produk Saat Ini</h6>
+                             <div id="existing-image-container" class="mb-4">
+                                 @foreach($product->images as $image)
+                                 <div class="row image-row mb-3 align-items-center">
+                                     <div class="col-md-2">
+                                         <div class="preview-container border-radius-lg border" style="width: 80px; height: 80px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                             <img src="{{ asset('storage/' . $image->image) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                         </div>
+                                     </div>
+                                     <div class="col-md-5">
+                                         <input class="form-control" type="text" value="{{ basename($image->image) }}" readonly>
+                                     </div>
+                                     <div class="col-md-3">
+                                         <input class="form-control" type="text" name="existing_image_colors[{{ $image->id }}]" value="{{ old('existing_image_colors.' . $image->id, $image->color) }}" placeholder="Keterangan Warna">
+                                     </div>
+                                     <div class="col-md-2 text-center">
+                                         <div class="form-check">
+                                             <input class="form-check-input ms-auto" type="checkbox" name="delete_images[]" value="{{ $image->id }}" id="delete_{{ $image->id }}">
+                                             <label class="form-check-label text-xs text-danger mb-0" for="delete_{{ $image->id }}">Hapus</label>
+                                         </div>
+                                     </div>
+                                 </div>
+                                 @endforeach
+                             </div>
 
                             <h6 class="text-sm">Tambah Foto Produk Baru</h6>
                             <p class="text-xs text-secondary">Tambahkan foto produk baru jika diperlukan.</p>
@@ -103,8 +111,11 @@
                                             <i class="fas fa-image text-secondary opacity-5 preview-placeholder"></i>
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-5">
                                         <input class="form-control image-input" type="file" name="images[]" accept="image/*">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" type="text" name="image_colors[]" placeholder="Keterangan Warna">
                                     </div>
                                     <div class="col-md-2">
                                         <button type="button" class="btn btn-outline-danger btn-icon-only remove-image w-100" disabled>
@@ -203,8 +214,8 @@
             const firstRow = imageContainer.querySelector('.image-row');
             const newRow = firstRow.cloneNode(true);
             
-            // Clear input and preview in the new row
-            newRow.querySelector('input').value = '';
+            // Clear inputs and preview in the new row
+            newRow.querySelectorAll('input').forEach(input => input.value = '');
             const previewImg = newRow.querySelector('.img-preview');
             const placeholder = newRow.querySelector('.preview-placeholder');
             previewImg.src = '';
