@@ -1,4 +1,4 @@
-<aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4" id="sidenav-main">
+<aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl fixed-start ms-4" id="sidenav-main" style="height: calc(100vh - 2rem); margin-top: 1rem;">
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="navbar-brand m-0" href="{{ url('/dashboard') }}">
@@ -50,23 +50,21 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ Request::is('dashboard/blogs*') ? 'active' : '' }}" href="{{ route('dashboard.blogs.index') }}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-newspaper text-dark text-sm"></i>
+          </div>
+          <span class="nav-link-text ms-1">Kelola Blog</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ Request::is('dashboard/settings*') ? 'active' : '' }}" href="{{ route('dashboard.settings.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fa-solid fa-sliders text-primary text-sm"></i>
           </div>
           <span class="nav-link-text ms-1">Pengaturan</span>
-        <a class="nav-link {{ Request::is('dashboard/blogs*') ? 'active' : '' }}" href="{{ route('dashboard.blogs.index') }}">
-          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fas fa-newspaper text-dark text-sm opacity-10"></i>
-          </div>
-          <span class="nav-link-text ms-1">Kelola Blog</span>
         </a>
       </li>
     </ul>
-  </div>
-  <div class="sidenav-footer mx-3">
-    <a class="btn btn-primary btn-sm mb-0 w-100" href="#" type="button">
-      <i class="fa-solid fa-circle-question me-2"></i> Support
-    </a>
   </div>
 </aside>
