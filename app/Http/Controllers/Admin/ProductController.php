@@ -37,10 +37,11 @@ class ProductController extends Controller
             'sizes.*' => 'required|string',
             'size_stocks' => 'required|array',
             'size_stocks.*' => 'required|integer|min:0',
-            'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
             'image_colors' => 'nullable|array',
             'image_colors.*' => 'nullable|string|max:255',
+            'size_guide' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'discount_price' => 'nullable|numeric|lt:price',
         ]);
 
         try {
@@ -58,6 +59,8 @@ class ProductController extends Controller
                 'is_best_seller' => $request->has('is_best_seller'),
                 'is_recommended' => $request->has('is_recommended'),
                 'status' => $request->status ?? 'inactive',
+                'size_guide' => $request->hasFile('size_guide') ? $request->file('size_guide')->store('products/size_guides', 'public') : null,
+                'discount_price' => $request->discount_price,
             ]);
 
             // Save Sizes
@@ -118,6 +121,8 @@ class ProductController extends Controller
             'existing_image_colors' => 'nullable|array',
             'delete_images' => 'nullable|array',
             'delete_images.*' => 'exists:product_images,id',
+            'size_guide' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'discount_price' => 'nullable|numeric|lt:price',
         ]);
 
         try {
@@ -136,7 +141,17 @@ class ProductController extends Controller
                 'is_best_seller' => $request->has('is_best_seller'),
                 'is_recommended' => $request->has('is_recommended'),
                 'status' => $request->status ?? 'inactive',
+                'discount_price' => $request->discount_price,
             ]);
+
+            if ($request->hasFile('size_guide')) {
+                if ($product->size_guide) {
+                    Storage::disk('public')->delete($product->size_guide);
+                }
+                $product->update([
+                    'size_guide' => $request->file('size_guide')->store('products/size_guides', 'public')
+                ]);
+            }
 
             // Sync Sizes (Delete and Recreate)
             $product->sizes()->delete();
@@ -193,6 +208,10 @@ class ProductController extends Controller
             // Delete images from storage
             foreach ($product->images as $image) {
                 Storage::disk('public')->delete($image->image);
+            }
+
+            if ($product->size_guide) {
+                Storage::disk('public')->delete($product->size_guide);
             }
 
             $product->delete();

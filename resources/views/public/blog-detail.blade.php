@@ -148,7 +148,7 @@
                     <div class="bg-cream p-8 rounded-3xl" data-aos="fade-left" data-aos-delay="200">
                         <h3 class="text-xl font-bold font-serif mb-4">Ingin Promo Menarik?</h3>
                         <p class="text-sm text-gray-600 mb-6 leading-relaxed">Dapatkan update koleksi terbaru dan promo eksklusif langsung di WhatsApp Anda.</p>
-                        <a href="https://wa.me/6281234567890" class="flex items-center justify-center gap-2 w-full bg-green-500 text-white font-bold py-3 rounded-2xl shadow-lg hover:bg-green-600 transition-all">
+                        <a href="https://wa.me/6282337115553" class="flex items-center justify-center gap-2 w-full bg-green-500 text-white font-bold py-3 rounded-2xl shadow-lg hover:bg-green-600 transition-all">
                             <i class="fa-brands fa-whatsapp"></i> Chat Admin
                         </a>
                     </div>

@@ -9,6 +9,7 @@
     :root {
       --cream: #F5ECE0;
       --dark-cream: #E8D9C5;
+      --light-cream: #FBF8F3;
       --cream-dark: #B78A58;
       /* krem tua, solid */
       --accent: #5B3A29;
@@ -254,11 +255,13 @@
     </div>
   </section>
 
-  <main class="max-w-6xl mx-auto px-6 -mt-10">
+  <div class="relative z-10 -mt-10">
 
     <!-- Brand Story / Information Section -->
-    <section id="tentang" class="mt-24 mb-16 overflow-hidden rounded-2xl bg-cream/30" data-aos="fade-up">
-      <div class="grid md:grid-cols-2 gap-0 overflow-hidden">
+    <section id="tentang" class="py-20 bg-[#FBF8F3]" data-aos="fade-up">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="overflow-hidden rounded-3xl bg-white shadow-xl border border-amber-100/20">
+          <div class="grid md:grid-cols-2 gap-0">
         <div class="p-8 md:p-12 flex flex-col justify-center order-2 md:order-1" data-aos="fade-right">
           <span class="text-accent/60 uppercase tracking-widest text-xs font-semibold mb-2">Tentang Kami</span>
           <h2 class="text-2xl md:text-3xl font-bold text-gray-900 leading-tight mb-4">Filosofi Keanggunan Arimbi Queen
@@ -288,12 +291,75 @@
             class="w-full h-full object-cover transition-transform duration-1000 scale-105 hover:scale-100" />
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+
+
+    @if($discountedProducts->count() > 0)
+    <!-- Promo Spesial (Limited Offer) -->
+    <section id="promo-spesial" class="py-20 bg-white" data-aos="fade-up">
+      <div class="max-w-6xl mx-auto px-6">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-2xl font-semibold flex items-center gap-2" data-aos="fade-right">
+          <i class="fa-solid fa-tags text-red-500"></i> Promo Spesial
+        </h3>
+        <span class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold animate-pulse">DISKON TERBATAS</span>
+      </div>
+
+      <div class="relative">
+        <button id="prevDiscount"
+          class="slider-btn absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/90 rounded-full shadow-md ml-2 border border-gray-100"
+          aria-label="Sebelumnya"><i class="fa-solid fa-chevron-left text-accent"></i></button>
+        <button id="nextDiscount"
+          class="slider-btn absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 bg-white/90 rounded-full shadow-md mr-2 border border-gray-100"
+          aria-label="Berikutnya"><i class="fa-solid fa-chevron-right text-accent"></i></button>
+
+        <div id="discountTrack" class="overflow-hidden">
+          <div id="discountTrackInner" class="flex gap-6 no-scrollbar pb-4">
+            @foreach($discountedProducts as $product)
+            <article class="slide bg-white rounded-2xl overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm border border-gray-50 flex flex-col group">
+              <div class="img-container relative h-64 overflow-hidden">
+                @php
+                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                @endphp
+                <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
+                <div class="absolute top-3 left-3 z-10">
+                  <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
+                    Hemat {{ $product->discount_percentage }}%
+                  </span>
+                </div>
+                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i class="fa-regular fa-heart"></i></button>
+              </div>
+              <div class="p-5 flex-1 flex flex-col">
+                <h4 class="font-bold text-gray-900 mb-1 line-clamp-1">{{ $product->name }}</h4>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-3">{{ $product->category->name ?? 'Koleksi' }}</p>
+                
+                <div class="mt-auto">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-accent font-bold">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
+                        <span class="text-gray-400 line-through text-xs">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ url('/detail-produk/' . $product->id) }}"
+                        class="flex-1 text-center text-[10px] font-bold uppercase tracking-wider btn-cream-dark text-white px-4 py-2.5 rounded-xl transition-all hover:shadow-lg">Detail</a>
+                        <a href="{{ url('/detail-produk/' . $product->id) }}" class="inline-flex items-center justify-center btn-cream-dark w-10 h-10 rounded-xl shadow-md text-white transition-all text-sm hover:scale-110"><i class="fa-solid fa-cart-shopping"></i></a>
+                    </div>
+                </div>
+              </div>
+            </article>
+            @endforeach
+          </div>
+        </div>
+      </div>
+      </div>
     </section>
-
-
+    @endif
 
     <!-- Produk & View All -->
-    <section id="produk-unggulan" class="mt-20" data-aos="fade-up">
+    <section id="produk-unggulan" class="py-20 bg-[#FBF8F3]" data-aos="fade-up">
+      <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-2xl font-semibold flex items-center gap-2" data-aos="fade-right"><i
             class="fa-solid fa-star text-amber-500"></i>
@@ -318,26 +384,43 @@
 
             @foreach($bestSellers as $product)
             <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="relative">
+              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm group">
+              <div class="relative h-64 overflow-hidden">
                 @php
                     $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
                 @endphp
-                <img class="slide-img w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}"
+                <img class="slide-img w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}"
                   loading="lazy" />
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn"><i
+                
+                @if($product->discount_price)
+                <div class="absolute top-3 left-3 z-10">
+                  <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded-lg">
+                    -{{ $product->discount_percentage }}%
+                  </span>
+                </div>
+                @endif
+
+                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
                     class="fa-regular fa-heart"></i></button>
               </div>
-              <div class="p-4">
-                <h4 class="font-medium">{{ $product->name }}</h4>
-                <p class="text-sm text-gray-500 mt-1 line-clamp-1">{{ $product->description ?? 'Bahan premium, desain elegan.' }}</p>
-                <p class="text-sm font-bold text-accent mt-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                <div class="mt-4 flex items-center gap-3">
-                  <a href="{{ url('/detail-produk/' . $product->id) }}"
-                    class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-eye"></i> Lihat Detail
-                  </a>
-                  <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
+              <div class="p-4 flex-1 flex flex-col">
+                <h4 class="font-bold text-gray-900 mb-1 line-clamp-1 truncate">{{ $product->name }}</h4>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-2">{{ $product->category->name ?? 'Koleksi' }}</p>
+                
+                <div class="mt-auto">
+                    <div class="flex items-center gap-2 mb-3">
+                        @if($product->discount_price)
+                            <span class="text-accent font-bold text-sm">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
+                            <span class="text-gray-400 line-through text-[10px]">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        @else
+                            <span class="text-accent font-bold text-sm">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        @endif
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ url('/detail-produk/' . $product->id) }}"
+                            class="flex-1 text-center text-[10px] font-bold uppercase tracking-wider btn-cream-dark text-white px-3 py-2 rounded-xl transition-all hover:shadow-lg">Detail</a>
+                        <a href="{{ url('/detail-produk/' . $product->id) }}" class="inline-flex items-center justify-center btn-cream-dark w-9 h-9 rounded-xl shadow-md text-white transition-all text-xs hover:scale-110"><i class="fa-solid fa-cart-shopping"></i></a>
+                    </div>
                 </div>
               </div>
             </article>
@@ -349,7 +432,8 @@
     </section>
 
     <!-- Produk (Grid 3x3) -->
-    <section id="produk" class="mt-20" data-aos="fade-up">
+    <section id="produk" class="py-20 bg-white" data-aos="fade-up">
+      <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between mb-8">
         <h3 class="text-2xl font-semibold">Produk</h3>
         <a href="#" class="text-sm text-accent">Lihat Semua <i class="fa-solid fa-chevron-right ml-1"></i></a>
@@ -357,37 +441,59 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($latestProducts as $product)
-        <article class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-all">
-          <div class="img-container relative">
+        <article class="product-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-50 group flex flex-col">
+          <div class="img-container relative h-72 overflow-hidden">
             @php
                 $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
             @endphp
-            <img class="w-full h-72 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
+            <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
+            
+            @if($product->discount_price)
+            <div class="absolute top-4 left-4 z-10">
+              <span class="bg-red-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg">
+                -{{ $product->discount_percentage }}%
+              </span>
+            </div>
+            @endif
+
             <div class="img-overlay"></div>
             <button
-              class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow-lg like-btn z-10 transition-transform hover:scale-110">
-              <i class="fa-regular fa-heart"></i>
+              class="absolute right-4 top-4 bg-white/90 text-red-500 w-10 h-10 rounded-full shadow-lg like-btn z-10 transition-all hover:scale-110 hover:bg-white flex items-center justify-center">
+              <i class="fa-regular fa-heart text-lg"></i>
             </button>
           </div>
-          <div class="p-6">
-            <h4 class="font-medium text-lg text-gray-900 font-serif">{{ $product->name }}</h4>
-            <p class="text-sm text-gray-500 mt-2 line-clamp-2">{{ $product->description ?? 'Bahan premium yang lembut dan desain yang sangat elegan.' }}</p>
-            <p class="text-accent font-semibold mt-2">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-            <div class="mt-6 flex items-center gap-3">
+          <div class="p-6 flex flex-col flex-1">
+            <p class="text-[10px] text-accent font-bold uppercase tracking-widest mb-1">{{ $product->category->name ?? 'Koleksi' }}</p>
+            <h4 class="text-lg font-bold text-gray-900 mb-2 line-clamp-1 group-hover:text-accent transition-colors">{{ $product->name }}</h4>
+            
+            <div class="flex items-center gap-2 mb-6">
+                @if($product->discount_price)
+                    <span class="text-xl font-bold text-gray-900">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
+                    <span class="text-sm text-gray-400 line-through">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                @else
+                    <span class="text-xl font-bold text-gray-900">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                @endif
+            </div>
+
+            <div class="mt-auto flex items-center gap-3">
               <a href="{{ url('/detail-produk/' . $product->id) }}"
-                class="flex-1 text-center btn-cream-dark text-white px-3 py-2 rounded flex items-center justify-center gap-2">
-                <i class="fa-solid fa-eye"></i> Lihat Detail
+                class="flex-grow text-center bg-accent text-white py-3 rounded-xl text-xs font-bold uppercase tracking-wider shadow-lg shadow-accent/20 hover:brightness-110 transition-all">
+                Lihat Detail
               </a>
-              <a href="#" class="inline-flex items-center gap-2 btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors"><i class="fa-solid fa-cart-shopping"></i></a>
+              <a href="{{ url('/detail-produk/' . $product->id) }}" class="w-12 h-12 bg-cream text-accent rounded-xl flex items-center justify-center hover:bg-accent hover:text-white transition-all shadow-sm">
+                <i class="fa-solid fa-cart-shopping"></i>
+              </a>
             </div>
           </div>
         </article>
         @endforeach
       </div>
+      </div>
     </section>
 
 
 
+    {{-- 
     <!-- Yang Kamu Suka (recommend slider) -->
     <section id="recommendation" class="mt-20">
       <div class="flex items-center justify-between mb-6">
@@ -436,10 +542,12 @@
         </div>
       </div>
     </section>
+    --}}
 
 
     <!-- Testimoni -->
-    <section id="testimoni" class="mt-12 mb-24" data-aos="fade-up">
+    <section id="testimoni" class="py-20 bg-[#FBF8F3]" data-aos="fade-up">
+      <div class="max-w-6xl mx-auto px-6">
       <h3 class="text-2xl font-semibold mb-8 text-center" data-aos="fade-up">Testimoni Pelanggan</h3>
       <div class="grid md:grid-cols-3 gap-8">
 
@@ -553,10 +661,12 @@
         </a>
       </div>
 
+      </div>
     </section>
 
     <!-- Blog Section -->
-    <section id="blog" class="mt-24 mb-24" data-aos="fade-up">
+    <section id="blog" class="py-20 bg-white" data-aos="fade-up">
+      <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between mb-10">
         <div>
           <h3 class="text-3xl font-bold font-serif text-gray-900">Journal & Inspirasi</h3>
@@ -604,16 +714,18 @@
           @endfor
         @endforelse
       </div>
+      </div>
     </section>
 
     <!-- Informasi Kami (Map & Social Media) -->
-    <section id="informasi" class="mb-24">
+    <section id="informasi" class="py-20 bg-[#FBF8F3]">
+      <div class="max-w-6xl mx-auto px-6">
       <h3 class="text-2xl font-semibold mb-8">Informasi Kami</h3>
       <div class="grid md:grid-cols-2 gap-10 items-center bg-cream/20 p-8 rounded-3xl">
         <!-- Left: Google Map -->
         <div class="overflow-hidden rounded-2xl shadow-lg h-80">
           <iframe class="w-full h-full"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d317714.2718115563!2d106.6894311!3d-6.2293863!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f3b1b8b0a1a9%3A0x7c9a3f2e6a1a4f!2sJakarta!5e0!3m2!1sid!2sid!4v1670000000000!5m2!1sid!2sid"
+            src="https://maps.google.com/maps?q=Jl.%20Raya%20Tenggilis%20No.71&t=&z=15&ie=UTF8&iwloc=&output=embed"
             loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
 
@@ -626,7 +738,7 @@
           </div>
 
           <div class="grid grid-cols-2 gap-4">
-            <a href="https://instagram.com"
+            <a href="https://instagram.com/arimbiqueen.scarves"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
                 class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
@@ -634,7 +746,7 @@
               </div>
               <span class="text-sm font-medium text-gray-700">Instagram</span>
             </a>
-            <a href="https://tiktok.com"
+            <a href="https://www.tiktok.com/@arimbiqueenscarves" target="_blank"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
                 class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
@@ -642,15 +754,15 @@
               </div>
               <span class="text-sm font-medium text-gray-700">TikTok</span>
             </a>
-            <a href="https://facebook.com"
+            <a href="https://shopee.co.id/ArimbiQueen.Scarves" target="_blank"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
-                class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
-                <i class="fa-brands fa-facebook-f"></i>
+                class="w-10 h-10 rounded-full bg-[#EE4D2D] flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
+                <i class="fa-solid fa-bag-shopping"></i>
               </div>
-              <span class="text-sm font-medium text-gray-700">Facebook</span>
+              <span class="text-sm font-medium text-gray-700">Shopee</span>
             </a>
-            <a href="https://wa.me/6281234567890"
+            <a href="https://wa.me/6282337115553" target="_blank"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
                 class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
@@ -661,13 +773,14 @@
           </div>
         </div>
       </div>
+      </div>
     </section>
 
-  </main>
+  </div>
 
 
   <!-- Floating WhatsApp -->
-  <a href="https://wa.me/6281234567890"
+  <a href="https://wa.me/6282337115553"
     class="fixed bottom-6 right-6 z-50 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl floating-wa transition-all hover:bg-green-600"
     aria-label="Chat via WhatsApp" title="Hubungi Kami via WhatsApp">
     <i class="fa-brands fa-whatsapp"></i>
@@ -833,6 +946,78 @@
       // cleanup on unload
       window.addEventListener('beforeunload', () => { if (rafId) cancelAnimationFrame(rafId); });
 
+    })();
+
+    /* Slider: Promo Spesial */
+    (function () {
+      const container = document.getElementById('discountTrack');
+      const track = document.getElementById('discountTrackInner');
+      const prev = document.getElementById('prevDiscount');
+      const next = document.getElementById('nextDiscount');
+      if (!container || !track || !prev || !next) return;
+
+      const pxPerSecond = 50;
+      let running = true;
+      let rafId = null;
+      let lastTS = null;
+      let pausedByInteraction = false;
+
+      function step(ts) {
+        if (!lastTS) lastTS = ts;
+        const dt = ts - lastTS;
+        lastTS = ts;
+        if (running) {
+          const delta = (pxPerSecond * dt) / 1000;
+          const maxScroll = container.scrollWidth - container.clientWidth;
+          container.scrollLeft += delta;
+          if (container.scrollLeft >= maxScroll - 1) {
+            container.scrollLeft = 0;
+          }
+        }
+        rafId = requestAnimationFrame(step);
+      }
+
+      function startAuto() { running = true; pausedByInteraction = false; lastTS = null; if (!rafId) rafId = requestAnimationFrame(step); }
+      function stopAuto() { running = false; }
+
+      startAuto();
+
+      [container, prev, next].forEach(el => {
+        el.addEventListener('mouseenter', () => { stopAuto(); pausedByInteraction = true; });
+        el.addEventListener('mouseleave', () => { if (pausedByInteraction) startAuto(); });
+      });
+
+      track.querySelectorAll('.slide').forEach(s => {
+        s.addEventListener('mouseenter', () => { stopAuto(); pausedByInteraction = true; });
+        s.addEventListener('mouseleave', () => { if (pausedByInteraction) startAuto(); });
+      });
+
+      function getSlideWidth() {
+        const slide = track.querySelector('.slide');
+        if (!slide) return track.clientWidth;
+        const style = window.getComputedStyle(slide);
+        const marginRight = parseFloat(style.marginRight) || 0;
+        return slide.offsetWidth + marginRight;
+      }
+
+      prev.addEventListener('click', () => {
+        stopAuto(); pausedByInteraction = true;
+        const w = getSlideWidth();
+        if (container.scrollLeft === 0) {
+          container.scrollTo({ left: container.scrollWidth - container.clientWidth, behavior: 'smooth' });
+        } else {
+          container.scrollBy({ left: -w, behavior: 'smooth' });
+        }
+      });
+
+      next.addEventListener('click', () => {
+        stopAuto(); pausedByInteraction = true;
+        const w = getSlideWidth();
+        container.scrollBy({ left: w, behavior: 'smooth' });
+      });
+
+      document.addEventListener('visibilitychange', () => { if (document.hidden) stopAuto(); else if (!pausedByInteraction) startAuto(); });
+      window.addEventListener('beforeunload', () => { if (rafId) cancelAnimationFrame(rafId); });
     })();
 
     /* Slider: Yang Kamu Suka */

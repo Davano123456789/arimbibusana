@@ -7,7 +7,7 @@
         <div>
             <h4 class="font-semibold">Lokasi</h4>
             <p class="text-sm text-gray-400 mt-2">Toko Online - Pengiriman ke seluruh Indonesia</p>
-            <p class="text-sm text-gray-400 mt-1 italic">Jakarta, Indonesia</p>
+            <p class="text-sm text-gray-400 mt-1 italic">Jl. Raya Tenggilis No.71</p>
         </div>
         <div>
             <h4 class="font-semibold">Info</h4>

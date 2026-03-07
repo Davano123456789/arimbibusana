@@ -198,6 +198,12 @@
                             class="bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm w-36 md:w-44 focus:ring-1 focus:ring-accent/30 outline-none transition-all shadow-sm" />
                     </div>
                 </div>
+
+                <!-- On Sale Filter -->
+                <div class="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-gray-200 shadow-sm cursor-pointer hover:border-accent/30 transition-all group">
+                    <input type="checkbox" name="on_sale" id="on_sale" value="1" {{ request('on_sale') ? 'checked' : '' }} class="w-4 h-4 text-accent border-gray-300 rounded focus:ring-accent cursor-pointer">
+                    <label for="on_sale" class="text-sm font-bold text-gray-700 cursor-pointer select-none">Hanya Produk Diskon</label>
+                </div>
                 <button type="submit"
                     class="bg-accent text-white px-8 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-[#5B3A29]/10 hover:brightness-110 active:scale-95 transition-all ml-0 md:ml-auto">
                     Terapkan
@@ -216,10 +222,14 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-12">
 
             @foreach($products as $product)
-            <article class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all" data-aos="fade-up">
+            <article class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col" data-aos="fade-up">
                 <div class="img-container relative aspect-[3/4] overflow-hidden bg-gray-100">
-                    <div class="absolute top-4 left-4 z-10 bg-amber-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
-                        HOT ITEM
+                    <div class="absolute top-4 left-4 z-10 flex flex-col gap-2">
+                        @if($product->discount_price)
+                            <span class="bg-red-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg">
+                                -{{ $product->discount_percentage }}%
+                            </span>
+                        @endif
                     </div>
                     @php
                         $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
@@ -231,13 +241,20 @@
                         <i class="fa-regular fa-heart"></i>
                     </button>
                 </div>
-                <div class="p-5">
+                <div class="p-5 flex flex-col flex-1">
                     <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">{{ $product->category->name ?? 'Unggulan' }}</span>
-                    <h4 class="text-lg font-semibold text-gray-800 mb-1">{{ $product->name }}</h4>
-                    <p class="text-accent font-bold font-inter mb-4">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                    <h4 class="text-lg font-semibold text-gray-800 mb-1 line-clamp-1 truncate">{{ $product->name }}</h4>
+                    <div class="flex items-center gap-2 mb-4">
+                        @if($product->discount_price)
+                            <span class="text-accent font-bold font-inter">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
+                            <span class="text-gray-400 line-through text-[10px]">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        @else
+                            <span class="text-accent font-bold font-inter">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        @endif
+                    </div>
                     
                     <a href="{{ url('/detail-produk/' . $product->id) }}"
-                        class="block w-full btn-cream-dark text-white text-center font-semibold py-3 rounded-xl shadow-md transition-all">
+                        class="block w-full btn-cream-dark text-white text-center font-semibold py-3 rounded-xl shadow-md transition-all mt-auto">
                         <i class="fa-solid fa-eye mr-2"></i> Lihat Detail
                     </a>
                 </div>
@@ -287,7 +304,7 @@
     </footer>
 
     <!-- Floating WhatsApp -->
-    <a href="https://wa.me/6281234567890"
+    <a href="https://wa.me/6282337115553"
         class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl hover:bg-[#128C7E] transition-all hover:scale-110 active:scale-95 duration-300"
         aria-label="Chat via WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
