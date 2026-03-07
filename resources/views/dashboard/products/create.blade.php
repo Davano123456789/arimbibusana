@@ -37,6 +37,7 @@
                                 <input class="form-control" type="number" id="price" name="price" placeholder="Contoh: 350000" required>
                             </div>
                         </div>
+
                         
                         <div class="col-md-12">
                             <hr class="horizontal dark mt-0">
@@ -84,8 +85,11 @@
                                             <i class="fas fa-image text-secondary opacity-5 preview-placeholder"></i>
                                         </div>
                                     </div>
-                                    <div class="col-md-8">
+                                    <div class="col-md-5">
                                         <input class="form-control image-input" type="file" name="images[]" accept="image/*" required>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input class="form-control" type="text" name="image_colors[]" placeholder="Keterangan Warna (e.g. Black)">
                                     </div>
                                     <div class="col-md-2">
                                         <button type="button" class="btn btn-outline-danger btn-icon-only remove-image w-100" disabled>
@@ -184,8 +188,8 @@
             const firstRow = imageContainer.querySelector('.image-row');
             const newRow = firstRow.cloneNode(true);
             
-            // Clear input and preview in the new row
-            newRow.querySelector('input').value = '';
+            // Clear inputs and preview in the new row
+            newRow.querySelectorAll('input').forEach(input => input.value = '');
             const previewImg = newRow.querySelector('.img-preview');
             const placeholder = newRow.querySelector('.preview-placeholder');
             previewImg.src = '';

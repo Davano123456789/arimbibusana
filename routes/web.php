@@ -97,6 +97,10 @@ Route::prefix('dashboard')->group(function () {
         'destroy' => 'dashboard.blogs.destroy',
     ])->except(['show']);
     Route::post('/blogs/upload', [BlogController::class, 'uploadImage'])->name('dashboard.blogs.upload');
+    
+    // User Management
+    Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('dashboard.users.index');
+    Route::delete('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('dashboard.users.destroy');
 });
 
 Route::get('/live', [FrontController::class, 'live'])->name('public.live');
