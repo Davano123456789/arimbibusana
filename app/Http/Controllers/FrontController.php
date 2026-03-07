@@ -31,6 +31,13 @@ class FrontController extends Controller
         $latestProducts = \App\Models\Product::with(['category', 'images'])
             ->where('status', 'active')
             ->latest()
+            ->take(9)
+            ->get();
+
+        $discountedProducts = \App\Models\Product::with(['category', 'images'])
+            ->where('status', 'active')
+            ->whereNotNull('discount_price')
+            ->latest()
             ->take(8)
             ->get();
 
@@ -42,7 +49,7 @@ class FrontController extends Controller
             ->take(3)
             ->get();
 
-        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts', 'latestPosts', 'popup'));
+        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts', 'discountedProducts', 'latestPosts', 'popup'));
     }
 
     public function produk(Request $request)
@@ -59,22 +66,27 @@ class FrontController extends Controller
             });
         }
 
-        // Filter by Price Range
+        // Filter by Price Range (Taking discount_price into account)
         if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
+            $query->whereRaw('COALESCE(discount_price, price) >= ?', [$request->min_price]);
         }
         if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
+            $query->whereRaw('COALESCE(discount_price, price) <= ?', [$request->max_price]);
+        }
+
+        // Filter by On Sale
+        if ($request->boolean('on_sale')) {
+            $query->whereNotNull('discount_price');
         }
 
         // Sorting
         $sort = $request->get('sort', 'latest');
         switch ($sort) {
             case 'price_low':
-                $query->orderBy('price', 'asc');
+                $query->orderByRaw('COALESCE(discount_price, price) asc');
                 break;
             case 'price_high':
-                $query->orderBy('price', 'desc');
+                $query->orderByRaw('COALESCE(discount_price, price) desc');
                 break;
             case 'oldest':
                 $query->oldest();
@@ -104,22 +116,27 @@ class FrontController extends Controller
             });
         }
 
-        // Filter by Price Range
+        // Filter by Price Range (Taking discount_price into account)
         if ($request->filled('min_price')) {
-            $query->where('price', '>=', $request->min_price);
+            $query->whereRaw('COALESCE(discount_price, price) >= ?', [$request->min_price]);
         }
         if ($request->filled('max_price')) {
-            $query->where('price', '<=', $request->max_price);
+            $query->whereRaw('COALESCE(discount_price, price) <= ?', [$request->max_price]);
+        }
+
+        // Filter by On Sale
+        if ($request->boolean('on_sale')) {
+            $query->whereNotNull('discount_price');
         }
 
         // Sorting
         $sort = $request->get('sort', 'latest');
         switch ($sort) {
             case 'price_low':
-                $query->orderBy('price', 'asc');
+                $query->orderByRaw('COALESCE(discount_price, price) asc');
                 break;
             case 'price_high':
-                $query->orderBy('price', 'desc');
+                $query->orderByRaw('COALESCE(discount_price, price) desc');
                 break;
             case 'oldest':
                 $query->oldest();

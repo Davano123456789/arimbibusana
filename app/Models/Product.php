@@ -18,8 +18,18 @@ class Product extends Model
         'stock',
         'is_best_seller',
         'is_recommended',
-        'status'
+        'status',
+        'size_guide',
+        'discount_price'
     ];
+
+    public function getDiscountPercentageAttribute()
+    {
+        if ($this->discount_price && $this->discount_price < $this->price) {
+            return round((($this->price - $this->discount_price) / $this->price) * 100);
+        }
+        return 0;
+    }
 
     public function category()
     {

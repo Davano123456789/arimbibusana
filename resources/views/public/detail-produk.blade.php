@@ -179,7 +179,15 @@
                     <span>(Rating Toko)</span>
                 </div>
 
-                <p class="text-3xl font-bold text-accent mb-8 font-inter">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                <div class="flex items-center gap-3 mb-8">
+                    @if($product->discount_price)
+                        <span class="text-4xl font-bold text-gray-900 font-inter">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
+                        <span class="text-lg text-gray-400 line-through font-inter">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        <span class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold">-{{ $product->discount_percentage }}% OFF</span>
+                    @else
+                        <span class="text-4xl font-bold text-gray-900 font-inter">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                    @endif
+                </div>
 
                 <div class="mb-8">
                     <h4 class="text-sm font-bold text-gray-900 mb-3 uppercase tracking-wider">Deskripsi Produk</h4>
@@ -480,9 +488,13 @@
                 <i class="fa-solid fa-xmark fa-lg"></i>
             </button>
             <div class="p-8 text-center">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6">Size Guide Arimbi Queen</h3>
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">Size Guide {{ $product->name }}</h3>
                 <div class="rounded-2xl overflow-hidden shadow-inner bg-gray-50 p-2">
-                    <img src="{{ asset('images/sizeguide.jpg') }}" alt="Size Guide" class="w-full h-auto" />
+                    @if($product->size_guide)
+                        <img src="{{ asset('storage/' . $product->size_guide) }}" alt="Size Guide {{ $product->name }}" class="w-full h-auto" />
+                    @else
+                        <img src="{{ asset('images/sizeguide.jpg') }}" alt="Size Guide Default" class="w-full h-auto" />
+                    @endif
                 </div>
                 <p class="mt-6 text-sm text-gray-500 italic">*) Ukuran dapat berbeda 1-2 cm karena proses produksi
                     massal.</p>
@@ -531,14 +543,14 @@
                     </a>
 
                     <!-- WhatsApp -->
-                    <a href="https://wa.me/62895396831320?text=Halo%20Arimbi%20Queen,%20saya%20tertarik%20dengan%20produk%20{{ urlencode($product->name) }}" target="_blank" 
+                    <a href="https://wa.me/6282337115553?text=Halo%20Arimbi%20Queen,%20saya%20tertarik%20dengan%20produk%20{{ urlencode($product->name) }}" target="_blank" 
                         class="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366] text-white hover:scale-[1.02] transition-transform shadow-md group">
                         <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
                             <i class="fa-brands fa-whatsapp text-3xl"></i>
                         </div>
                         <div class="flex-1">
                             <span class="block font-bold text-base">WhatsApp</span>
-                            <span class="text-xs text-white/60">0895396831320</span>
+                            <span class="text-xs text-white/60">0823-3711-5553</span>
                         </div>
                         <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
                     </a>
@@ -548,7 +560,7 @@
     </div>
 
     <!-- Floating WhatsApp -->
-    <a href="https://wa.me/62895396831320"
+    <a href="https://wa.me/6282337115553"
         class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl hover:bg-[#128C7E] transition-all hover:scale-110 active:scale-95 duration-300"
         aria-label="Chat via WhatsApp">
         <i class="fa-brands fa-whatsapp"></i>
@@ -838,7 +850,7 @@
                         const colorName = selectedColor ? ` warna ${selectedColor}` : '';
                         const quantity = qtyInput.value;
                         const message = `Halo Arimbi Queen, saya tertarik dengan produk ${productName} ukuran ${sizeName}${colorName} sebanyak ${quantity} pcs.`;
-                        waLink.href = `https://wa.me/62895396831320?text=${encodeURIComponent(message)}`;
+                        waLink.href = `https://wa.me/6282337115553?text=${encodeURIComponent(message)}`;
                     }
 
                     olshopModal.classList.remove('hidden');

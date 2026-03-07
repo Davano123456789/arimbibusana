@@ -1,4 +1,4 @@
-<aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4" id="sidenav-main">
+<aside class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl fixed-start ms-4" id="sidenav-main" style="height: auto; min-height: calc(100vh - 2rem); margin-top: 1rem;">
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="navbar-brand m-0" href="{{ url('/dashboard') }}">
@@ -7,8 +7,22 @@
     </a>
   </div>
   <hr class="horizontal dark mt-0">
-  <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
+  <div class="collapse navbar-collapse w-auto h-auto pb-4" id="sidenav-collapse-main" style="overflow: visible !important;">
     <ul class="navbar-nav">
+      <!-- Navigasi Publik -->
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url('/') }}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-globe text-info text-sm"></i>
+          </div>
+          <span class="nav-link-text ms-1">Lihat Beranda</span>
+        </a>
+      </li>
+      
+      <li class="nav-item mt-3">
+        <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Menu Admin</h6>
+      </li>
+
       <li class="nav-item">
         <a class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}" href="{{ url('/dashboard') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
@@ -50,6 +64,14 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ Request::is('dashboard/blogs*') ? 'active' : '' }}" href="{{ route('dashboard.blogs.index') }}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-newspaper text-dark text-sm"></i>
+          </div>
+          <span class="nav-link-text ms-1">Kelola Blog</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ Request::is('dashboard/settings*') ? 'active' : '' }}" href="{{ route('dashboard.settings.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fa-solid fa-sliders text-primary text-sm"></i>
@@ -57,27 +79,6 @@
           <span class="nav-link-text ms-1">Pengaturan</span>
         </a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link {{ Request::is('dashboard/users*') ? 'active' : '' }}" href="{{ route('dashboard.users.index') }}">
-          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fa-solid fa-users text-info text-sm"></i>
-          </div>
-          <span class="nav-link-text ms-1">Daftar Pembeli</span>
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link {{ Request::is('dashboard/blogs*') ? 'active' : '' }}" href="{{ route('dashboard.blogs.index') }}">
-          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-            <i class="fas fa-newspaper text-dark text-sm opacity-10"></i>
-          </div>
-          <span class="nav-link-text ms-1">Kelola Blog</span>
-        </a>
-      </li>
     </ul>
-  </div>
-  <div class="sidenav-footer mx-3">
-    <a class="btn btn-primary btn-sm mb-0 w-100" href="#" type="button">
-      <i class="fa-solid fa-circle-question me-2"></i> Support
-    </a>
   </div>
 </aside>

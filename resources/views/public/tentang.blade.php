@@ -178,7 +178,7 @@
             <a href="{{ url('/produk') }}" class="px-10 py-4 bg-accent text-white font-bold rounded-full shadow-xl shadow-accent/20 hover:brightness-110 hover:-translate-y-1 transition-all">
                 Lihat Koleksi
             </a>
-            <a href="https://wa.me/6281234567890" class="px-10 py-4 border-2 border-accent text-accent font-bold rounded-full hover:bg-accent hover:text-white transition-all">
+            <a href="https://wa.me/6282337115553" class="px-10 py-4 border-2 border-accent text-accent font-bold rounded-full hover:bg-accent hover:text-white transition-all">
                 Hubungi Kami
             </a>
         </div>

@@ -31,10 +31,16 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="price" class="form-control-label">Harga (Rp)</label>
                                 <input class="form-control" type="number" id="price" name="price" value="{{ old('price', $product->price) }}" placeholder="Contoh: 350000" required>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="discount_price" class="form-control-label">Harga Diskon (Rp) <small class="text-secondary italic font-normal">— Opsional</small></label>
+                                <input class="form-control" type="number" id="discount_price" name="discount_price" value="{{ old('discount_price', $product->discount_price) }}" placeholder="Harga setelah diskon">
                             </div>
                         </div>
 
@@ -128,6 +134,31 @@
                             <button type="button" id="add-image" class="btn btn-outline-info btn-sm">
                                 <i class="fas fa-plus me-2"></i>Tambah Slot Gambar
                             </button>
+
+                            <div class="mt-4">
+                                <h6 class="text-sm">Panduan Ukuran (Size Guide)</h6>
+                                <p class="text-xs text-secondary">Upload gambar panduan ukuran baru jika ingin mengganti yang lama.</p>
+                                
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <div id="size-guide-preview-container" class="border-radius-lg border" style="width: 80px; height: 80px; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                            @if($product->size_guide)
+                                                <img id="size-guide-preview" src="{{ asset('storage/' . $product->size_guide) }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                                <i class="fas fa-ruler-combined text-secondary opacity-5 size-guide-placeholder" style="display: none;"></i>
+                                            @else
+                                                <img id="size-guide-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                                <i class="fas fa-ruler-combined text-secondary opacity-5 size-guide-placeholder"></i>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="file" name="size_guide" id="size_guide_input" accept="image/*">
+                                        @if($product->size_guide)
+                                            <p class="text-xs text-info mt-1 mb-0"><i class="fas fa-info-circle me-1"></i>Sudah ada panduan ukuran. Upload baru untuk mengganti.</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                             <hr class="horizontal dark">
                         </div>
                         
@@ -263,15 +294,25 @@
             }
         });
 
-        function updateImageRemoveButtons() {
-            const rows = imageContainer.querySelectorAll('.image-row');
-            rows.forEach((row, index) => {
-               const btn = row.querySelector('.remove-image');
-               if(index === 0 && rows.length === 1) {
-                   btn.disabled = true;
-               } else {
-                   btn.disabled = false;
-               }
+            });
+        }
+
+        // Size Guide Preview
+        const sizeGuideInput = document.getElementById('size_guide_input');
+        const sizeGuidePreview = document.getElementById('size_guide_preview');
+        const sizeGuidePlaceholder = document.querySelector('.size-guide-placeholder');
+
+        if (sizeGuideInput) {
+            sizeGuideInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        sizeGuidePreview.src = e.target.result;
+                        sizeGuidePreview.style.display = 'block';
+                        if (sizeGuidePlaceholder) sizeGuidePlaceholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
             });
         }
     });

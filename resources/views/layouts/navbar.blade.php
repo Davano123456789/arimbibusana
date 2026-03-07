@@ -71,7 +71,7 @@
         </div>
         @auth
             @if(Auth::user()->role === 'admin')
-                <a href="{{ url('/dashboard') }}" class="flex items-center justify-center gap-2 w-full py-3 bg-dark text-white rounded-xl text-sm font-medium hover:brightness-110 transition-all mb-3 shadow-md">
+                <a href="{{ url('/dashboard') }}" class="flex items-center justify-center gap-2 w-full py-3 bg-gray-900 text-white rounded-xl text-sm font-medium hover:brightness-110 transition-all mb-3 shadow-md">
                     <i class="fa-solid fa-gauge-high text-xs"></i>
                     Dashboard Admin
                 </a>
