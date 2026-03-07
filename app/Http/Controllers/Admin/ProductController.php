@@ -25,7 +25,6 @@ class ProductController extends Controller
         $categories = Category::all();
         return view('dashboard.products.create', compact('categories'));
     }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -40,6 +39,8 @@ class ProductController extends Controller
             'size_stocks.*' => 'required|integer|min:0',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'image_colors' => 'nullable|array',
+            'image_colors.*' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -69,10 +70,11 @@ class ProductController extends Controller
 
             // Save Images
             if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
+                foreach ($request->file('images') as $key => $image) {
                     $path = $image->store('products', 'public');
                     $product->images()->create([
-                        'image' => $path
+                        'image' => $path,
+                        'color' => $request->image_colors[$key] ?? null
                     ]);
                 }
             }
@@ -97,7 +99,6 @@ class ProductController extends Controller
         $categories = Category::all();
         return view('dashboard.products.edit', compact('product', 'categories'));
     }
-
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -112,6 +113,11 @@ class ProductController extends Controller
             'size_stocks.*' => 'required|integer|min:0',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'image_colors' => 'nullable|array',
+            'image_colors.*' => 'nullable|string|max:255',
+            'existing_image_colors' => 'nullable|array',
+            'delete_images' => 'nullable|array',
+            'delete_images.*' => 'exists:product_images,id',
         ]);
 
         try {
@@ -141,12 +147,31 @@ class ProductController extends Controller
                 ]);
             }
 
+            // Update Existing Images Colors
+            if ($request->has('existing_image_colors')) {
+                foreach ($request->existing_image_colors as $imageId => $color) {
+                    ProductImage::where('id', $imageId)->update(['color' => $color]);
+                }
+            }
+
+            // Delete Selected Images
+            if ($request->has('delete_images')) {
+                foreach ($request->delete_images as $imageId) {
+                    $img = ProductImage::find($imageId);
+                    if ($img) {
+                        Storage::disk('public')->delete($img->image);
+                        $img->delete();
+                    }
+                }
+            }
+
             // Add New Images
             if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
+                foreach ($request->file('images') as $key => $image) {
                     $path = $image->store('products', 'public');
                     $product->images()->create([
-                        'image' => $path
+                        'image' => $path,
+                        'color' => $request->image_colors[$key] ?? null
                     ]);
                 }
             }

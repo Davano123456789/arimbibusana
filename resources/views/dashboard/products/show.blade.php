@@ -69,9 +69,12 @@
                     </div>
                     <div class="col-md-12 mb-4">
                         <label class="form-control-label d-block">Preview Foto Produk</label>
-                        <div class="d-flex flex-wrap gap-2">
+                        <div class="d-flex flex-wrap gap-3">
                             @forelse($product->images as $image)
-                                <img src="{{ asset('storage/' . $image->image) }}" class="rounded shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
+                                <div class="text-center">
+                                    <img src="{{ asset('storage/' . $image->image) }}" class="rounded shadow-sm" style="width: 150px; height: 150px; object-fit: cover;">
+                                    <p class="text-xs font-weight-bold mt-2 mb-0 text-dark">{{ $image->color ?? 'Tanpa Warna' }}</p>
+                                </div>
                             @empty
                                 <div class="text-xs text-secondary italic">Tidak ada foto produk.</div>
                             @endforelse
