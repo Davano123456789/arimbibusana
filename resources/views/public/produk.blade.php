@@ -181,17 +181,17 @@
                     <i class="fa-solid fa-filter text-accent/50"></i>
                     <span class="text-sm font-bold uppercase tracking-wider">Filter Harga</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">Rp</span>
-                        <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Minimum"
-                            class="bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm w-36 md:w-44 focus:ring-1 focus:ring-accent/30 outline-none transition-all shadow-sm" />
+                <div class="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+                    <div class="relative flex-1 sm:flex-none">
+                        <span class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] md:text-xs font-bold">Rp</span>
+                        <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="Min"
+                            class="bg-white border border-gray-200 rounded-xl py-2 md:py-2.5 pl-8 md:pl-10 pr-2 md:pr-4 text-xs md:text-sm w-full sm:w-36 md:w-44 focus:ring-1 focus:ring-accent/30 outline-none transition-all shadow-sm" />
                     </div>
-                    <span class="text-gray-300">—</span>
-                    <div class="relative">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs font-bold">Rp</span>
-                        <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Maximum"
-                            class="bg-white border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-sm w-36 md:w-44 focus:ring-1 focus:ring-accent/30 outline-none transition-all shadow-sm" />
+                    <span class="text-gray-300 mx-1">—</span>
+                    <div class="relative flex-1 sm:flex-none">
+                        <span class="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 text-gray-400 text-[10px] md:text-xs font-bold">Rp</span>
+                        <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="Max"
+                            class="bg-white border border-gray-200 rounded-xl py-2 md:py-2.5 pl-8 md:pl-10 pr-2 md:pr-4 text-xs md:text-sm w-full sm:w-36 md:w-44 focus:ring-1 focus:ring-accent/30 outline-none transition-all shadow-sm" />
                     </div>
                 </div>
 
