@@ -221,7 +221,7 @@
             <article class="product-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all" data-aos="fade-up">
                 <div class="img-container relative aspect-[3/4] overflow-hidden bg-gray-100">
                     @php
-                        $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                        $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                     @endphp
                     <img src="{{ $imagePath }}" alt="{{ $product->name }}" class="w-full h-full object-cover text-xs text-secondary" />
                     @if($product->discount_price)
@@ -240,6 +240,7 @@
                 <div class="p-5 flex flex-col flex-1">
                     <span class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">{{ $product->category->name ?? 'Produk' }}</span>
                     <h4 class="text-lg font-semibold text-gray-800 mb-1 line-clamp-1">{{ $product->name }}</h4>
+                    
                     <div class="flex items-center gap-2 mb-4">
                         @if($product->discount_price)
                             <span class="text-accent font-bold font-inter">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>

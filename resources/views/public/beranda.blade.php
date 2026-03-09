@@ -322,7 +322,7 @@
             <article class="slide bg-white rounded-2xl overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm border border-gray-50 flex flex-col group">
               <div class="img-container relative h-64 overflow-hidden">
                 @php
-                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                    $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                 @endphp
                 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
                 <div class="absolute top-3 left-3 z-10">
@@ -387,7 +387,7 @@
               class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm group">
               <div class="relative h-64 overflow-hidden">
                 @php
-                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                    $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                 @endphp
                 <img class="slide-img w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}"
                   loading="lazy" />
@@ -444,7 +444,7 @@
         <article class="product-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-50 group flex flex-col">
           <div class="img-container relative h-72 overflow-hidden">
             @php
-                $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
             @endphp
             <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
             
@@ -519,7 +519,7 @@
               class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
               <div class="img-container relative">
                 @php
-                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                    $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                 @endphp
                 <img class="w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
                 <div class="img-overlay"></div>

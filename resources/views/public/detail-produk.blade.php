@@ -137,17 +137,28 @@
                 <div
                     class="relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-100 shadow-sm border border-gray-50">
                     @php
-                        $firstImage = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                        $firstImage = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                     @endphp
                     <img id="mainImage" src="{{ $firstImage }}" alt="{{ $product->name }}"
                         class="w-full h-full object-cover transition-opacity duration-300" />
                 </div>
-                <div class="flex gap-4 overflow-x-auto no-scrollbar py-2">
+                <div class="flex gap-4 overflow-x-auto no-scrollbar py-2" id="thumbnail-container">
+                    @if($product->cover_image)
+                    <button
+                        id="cover-thumb-btn"
+                        class="thumbnail-btn thumb-active border-accent relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all hover:border-accent/50"
+                        data-img="{{ asset('storage/' . $product->cover_image) }}"
+                        data-is-cover="1">
+                        <img src="{{ asset('storage/' . $product->cover_image) }}" class="w-full h-full object-cover" />
+                        <span class="absolute bottom-0 left-0 right-0 text-[9px] text-center bg-black/50 text-white py-0.5">Cover</span>
+                    </button>
+                    @endif
                     @foreach($product->images as $key => $image)
                     <button
-                        class="thumbnail-btn {{ $key == 0 ? 'thumb-active' : '' }} relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 border-transparent transition-all"
+                        class="thumbnail-btn {{ !$product->cover_image && $image->is_cover ? 'thumb-active border-accent' : 'border-transparent' }} relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all hover:border-accent/50"
                         data-img="{{ asset('storage/' . $image->image) }}"
-                        data-color="{{ $image->color }}">
+                        data-color="{{ $image->color }}"
+                        data-image-id="{{ $image->id }}">
                         <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover" />
                     </button>
                     @endforeach
@@ -198,38 +209,38 @@
 
                 <!-- Size & Quantity Selection -->
                 <div class="mb-8 p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                    <!-- Size -->
-                    <div class="mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Pilih Ukuran</h4>
-                            <button id="showSizeGuide"
-                                class="text-xs text-accent font-semibold underline decoration-accent/30 underline-offset-4 flex items-center gap-1 hover:text-accent/80 transition-all">
-                                <i class="fa-solid fa-ruler-combined"></i> Lihat Size Guide
-                            </button>
-                        </div>
-                        <div class="flex gap-3 flex-wrap">
-                            @foreach($product->sizes as $size)
-                            <button 
-                                class="size-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all {{ $size->stock == 0 ? 'opacity-50 cursor-not-allowed' : '' }}" 
-                                data-id="{{ $size->id }}"
-                                data-stock="{{ $size->stock }}"
-                                {{ $size->stock == 0 ? 'disabled' : '' }}>
-                                {{ $size->size }}
-                            </button>
+                    <!-- Hidden Data for Sizes -->
+                    <script>
+                        const productVariations = {
+                            @foreach($product->images as $image)
+                                "{{ $image->id }}": [
+                                    @foreach($image->sizes as $size)
+                                        { id: "{{ $size->id }}", size: "{{ $size->size }}", stock: {{ $size->stock }} },
+                                    @endforeach
+                                ],
                             @endforeach
-                        </div>
-                    </div>
+                        };
+                    </script>
 
-                    <!-- Colors -->
+                    <!-- Colors (derived from images) -->
                     @php
                         $colors = $product->images->pluck('color')->unique()->filter();
                     @endphp
                     @if($colors->count() > 0)
                     <div class="mb-6">
-                        <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Pilih Warna</h4>
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Pilih Warna</h4>
+                            <span class="text-xs font-bold text-accent" id="selectedColorDisplay">
+                                @php
+                                    $coverImage = $product->images->first();
+                                    echo $coverImage ? ($coverImage->color ?? 'Standar') : 'Standar';
+                                @endphp
+                            </span>
+                        </div>
                         <div class="flex gap-3 flex-wrap">
                             @foreach($colors as $color)
                             <button 
+                                type="button"
                                 class="color-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all" 
                                 data-color="{{ $color }}">
                                 {{ $color }}
@@ -238,6 +249,19 @@
                         </div>
                     </div>
                     @endif
+
+                    <!-- Size -->
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Pilih Ukuran</h4>
+                            <button id="showSizeGuide" class="text-xs text-accent font-semibold underline decoration-accent/30 underline-offset-4 flex items-center gap-1 hover:text-accent/80 transition-all">
+                                <i class="fa-solid fa-ruler-combined"></i> Lihat Size Guide
+                            </button>
+                        </div>
+                        <div class="flex gap-3 flex-wrap" id="sizeButtonsContainer">
+                            <!-- Sizes inject via JS based on selected image -->
+                        </div>
+                    </div>
 
                     <!-- Quantity -->
                     <div>
@@ -445,7 +469,7 @@
                 <article class="product-card group">
                     <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
                         @php
-                            $relatedImage = $item->images->first() ? asset('storage/' . $item->images->first()->image) : asset('images/placeholder.jpg');
+                            $relatedImage = $item->cover_image ? asset('storage/' . $item->cover_image) : ($item->images->first() ? asset('storage/' . $item->images->first()->image) : asset('images/placeholder.jpg'));
                         @endphp
                         <img src="{{ $relatedImage }}" alt="{{ $item->name }}" class="w-full h-full object-cover" />
                         <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500">
@@ -572,99 +596,169 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Product Detail Scripts Initialized');
 
-            // 1. Image Gallery Logic
+            // 1. Core Selection Elements
             const mainImage = document.getElementById('mainImage');
             const thumbnails = document.querySelectorAll('.thumbnail-btn');
-            const colorBtns = document.querySelectorAll('.color-btn');
-            let selectedColor = null;
+            const selectedColorDisplay = document.getElementById('selectedColorDisplay');
+            const sizeButtonsContainer = document.getElementById('sizeButtonsContainer');
+            const displayStock = document.getElementById('displayStock');
+            const qtyInput = document.getElementById('qtyInput');
+            const finalQtyInput = document.getElementById('finalQtyInput');
+            const sizeInput = document.getElementById('sizeInput');
 
+            let currentImageId = null;
+            let currentSizeId = null;
+
+            // Function to render sizes based on selected image ID
+            function renderSizes(imageId) {
+                sizeButtonsContainer.innerHTML = ''; // Clear existing
+                const sizes = productVariations[imageId] || [];
+                
+                if (sizes.length === 0) {
+                    sizeButtonsContainer.innerHTML = '<span class="text-sm text-gray-500 italic">Tidak ada ukuran tersedia untuk warna ini.</span>';
+                    currentSizeId = null;
+                    if (sizeInput) sizeInput.value = '';
+                    updateStockDisplay(0);
+                    return;
+                }
+
+                let firstAvailableHtml = null;
+
+                sizes.forEach((sizeObj, index) => {
+                    const isDisabled = sizeObj.stock === 0;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `size-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`;
+                    btn.dataset.id = sizeObj.id;
+                    btn.dataset.stock = sizeObj.stock;
+                    btn.disabled = isDisabled;
+                    btn.textContent = sizeObj.size;
+
+                    // Add click event for the size button
+                    btn.addEventListener('click', function() {
+                        if (this.disabled) return;
+                        
+                        document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active', 'border-accent', 'bg-accent/5'));
+                        this.classList.add('active', 'border-accent', 'bg-accent/5');
+                        
+                        currentSizeId = this.dataset.id;
+                        if (sizeInput) sizeInput.value = currentSizeId;
+                        
+                        updateStockDisplay(parseInt(this.dataset.stock));
+                    });
+
+                    sizeButtonsContainer.appendChild(btn);
+
+                    // Track first available for auto-selection
+                    if (!isDisabled && !firstAvailableHtml) {
+                        firstAvailableHtml = btn;
+                    }
+                });
+
+                // Auto-select first available size
+                if (firstAvailableHtml) {
+                    firstAvailableHtml.click();
+                } else {
+                    currentSizeId = null;
+                    if (sizeInput) sizeInput.value = '';
+                    updateStockDisplay(0);
+                }
+            }
+
+            function updateStockDisplay(stockValue) {
+                if (displayStock) displayStock.textContent = stockValue;
+                if (qtyInput) {
+                    qtyInput.setAttribute('max', Math.max(1, stockValue));
+                    // Reset qty if it exceeds new stock or if stock is 0
+                    if (parseInt(qtyInput.value) > stockValue) {
+                        qtyInput.value = stockValue === 0 ? 1 : stockValue; 
+                    }
+                    if (finalQtyInput) finalQtyInput.value = qtyInput.value;
+                }
+            }
+
+            // 2. Thumbnail Click Logic
             if (mainImage && thumbnails.length > 0) {
                 thumbnails.forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const newImg = btn.getAttribute('data-img');
+                    btn.addEventListener('click', function() {
+                        const isCover = this.getAttribute('data-is-cover') === '1';
+                        const newImg = this.getAttribute('data-img');
+                        const imgColor = this.getAttribute('data-color');
+                        const imgId = this.getAttribute('data-image-id');
+                        
                         if (!newImg) return;
 
+                        // Swap Main Image
                         mainImage.style.opacity = '0';
                         setTimeout(() => {
                             mainImage.src = newImg;
                             mainImage.style.opacity = '1';
                         }, 150);
 
-                        thumbnails.forEach(t => t.classList.remove('thumb-active'));
-                        btn.classList.add('thumb-active');
+                        // Highlight Active Thumbnail
+                        thumbnails.forEach(t => t.classList.remove('thumb-active', 'border-accent'));
+                        this.classList.add('thumb-active', 'border-accent');
 
-                        // Sync with colors: Highlight color button if thumb has color
-                        const color = btn.getAttribute('data-color');
-                        if (color && typeof colorBtns !== 'undefined') {
-                            colorBtns.forEach(b => {
-                                if (b.getAttribute('data-color') === color) {
-                                    b.classList.add('active');
-                                    selectedColor = color;
+                        // Sync with Color Buttons & Sizes
+                        if (isCover) {
+                            if (selectedColorDisplay) {
+                                selectedColorDisplay.textContent = '';
+                            }
+                            
+                            // Deactivate all color buttons
+                            document.querySelectorAll('.color-btn').forEach(b => {
+                                b.classList.remove('active', 'border-accent', 'bg-accent/5');
+                            });
+
+                            // Show prompt instead of sizes
+                            if (sizeButtonsContainer) {
+                                sizeButtonsContainer.innerHTML = '<span class="text-sm text-gray-400 italic">Pilih warna terlebih dahulu untuk melihat ukuran yang tersedia.</span>';
+                            }
+                            currentSizeId = null;
+                            if (sizeInput) sizeInput.value = '';
+                            updateStockDisplay(0);
+                        } else {
+                            // Update Text Display
+                            if (selectedColorDisplay) {
+                                selectedColorDisplay.textContent = imgColor || 'Standar';
+                            }
+                            
+                            // Highlight correct color button
+                            document.querySelectorAll('.color-btn').forEach(b => {
+                                if (b.getAttribute('data-color') === imgColor) {
+                                    b.classList.add('active', 'border-accent', 'bg-accent/5');
                                 } else {
-                                    b.classList.remove('active');
+                                    b.classList.remove('active', 'border-accent', 'bg-accent/5');
                                 }
                             });
+                            
+                            // Render Sizes for this Image
+                            currentImageId = imgId;
+                            renderSizes(currentImageId);
                         }
                     });
                 });
-            }
-
-            // 2. Size & Stock Selection Logic
-            const sizeBtns = document.querySelectorAll('.size-btn');
-            const displayStock = document.getElementById('displayStock');
-            const qtyInput = document.getElementById('qtyInput');
-            const sizeInput = document.getElementById('sizeInput');
-            const finalQtyInput = document.getElementById('finalQtyInput');
-            let selectedSizeId = null;
-            const selectColor = (btn) => {
-                colorBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedColor = btn.getAttribute('data-color');
-
-                // Sync with gallery: Find first thumbnail with this color
-                const matchedThumb = Array.from(thumbnails).find(t => t.getAttribute('data-color') === selectedColor);
-                if (matchedThumb) {
-                    matchedThumb.click();
-                }
-            };
-
-            colorBtns.forEach(btn => {
-                btn.addEventListener('click', () => selectColor(btn));
-            });
-
-            // Auto-select first color if available
-            if (colorBtns.length > 0) {
-                selectColor(colorBtns[0]);
-            }
-
-            const selectSize = (btn) => {
-                if (btn.disabled) return;
                 
-                sizeBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedSizeId = btn.getAttribute('data-id');
-                if (sizeInput) sizeInput.value = selectedSizeId;
+                // Color Buttons Click Logic
+                const colorBtns = document.querySelectorAll('.color-btn');
+                colorBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const targetColor = this.getAttribute('data-color');
+                        const matchedThumb = Array.from(thumbnails).find(t => t.getAttribute('data-color') === targetColor);
+                        if (matchedThumb) {
+                            matchedThumb.click();
+                        }
+                    });
+                });
                 
-                const stock = parseInt(btn.getAttribute('data-stock') || '0');
-                if (displayStock) displayStock.textContent = stock;
-                if (qtyInput) {
-                    qtyInput.setAttribute('max', stock);
-                    if (parseInt(qtyInput.value) > stock) {
-                        qtyInput.value = stock;
-                    }
-                    if (finalQtyInput) finalQtyInput.value = qtyInput.value;
+                // On initial load: show cover image, no color selected yet,
+                // sizes show a prompt until user picks a color.
+                if (selectedColorDisplay) {
+                    selectedColorDisplay.textContent = '';
                 }
-            };
-            
-            // Note: need to add data-id to size buttons in Blade first
-            sizeBtns.forEach(btn => {
-                btn.addEventListener('click', () => selectSize(btn));
-            });
-
-            // Auto-select first available size
-            const firstAvailableSize = Array.from(sizeBtns).find(btn => !btn.disabled);
-            if (firstAvailableSize) {
-                selectSize(firstAvailableSize);
+                if (sizeButtonsContainer) {
+                    sizeButtonsContainer.innerHTML = '<span class="text-sm text-gray-400 italic">Pilih warna terlebih dahulu untuk melihat ukuran yang tersedia.</span>';
+                }
             }
 
             // 3. Quantity Controls

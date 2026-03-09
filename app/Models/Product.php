@@ -20,7 +20,8 @@ class Product extends Model
         'is_recommended',
         'status',
         'size_guide',
-        'discount_price'
+        'discount_price',
+        'cover_image'
     ];
 
     public function getDiscountPercentageAttribute()

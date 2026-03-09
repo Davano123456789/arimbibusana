@@ -47,66 +47,79 @@
                         
                         <div class="col-md-12">
                             <hr class="horizontal dark mt-0">
-                            <h6 class="text-sm">Varian Ukuran & Stok</h6>
-                            <p class="text-xs text-secondary">Tentukan ukuran yang tersedia (S, M, L, XL, dll) beserta stoknya masing-masing.</p>
                             
-                            <div id="size-container">
-                                <div class="row size-row mb-3">
-                                    <div class="col-md-5">
-                                        <input type="text" name="sizes[]" class="form-control" placeholder="Ukuran (S, M, L, XL, atau All Size)" required>
-                                    </div>
-                                    <div class="col-md-5">
-                                        <input type="number" name="size_stocks[]" class="form-control" placeholder="Jumlah Stok" required min="0">
-                                    </div>
+                            <!-- Dedicated Cover Image Section -->
+                            <div class="mb-4 p-3 border rounded" style="background: #fffef5; border-color: #f0c040 !important;">
+                                <h6 class="text-sm mb-1"><i class="fas fa-image me-2 text-warning"></i>Gambar Cover Produk</h6>
+                                <p class="text-xs text-secondary mb-2">Upload gambar yang akan tampil sebagai gambar utama di katalog dan beranda. <strong class="text-warning">Opsional</strong> — jika tidak diisi, foto variasi pertama yang digunakan.</p>
+                                <div class="row align-items-center">
                                     <div class="col-md-2">
-                                        <button type="button" class="btn btn-outline-danger btn-icon-only remove-size w-100" disabled>
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <button type="button" id="add-size" class="btn btn-outline-info btn-sm">
-                                <i class="fas fa-plus me-2"></i>Tambah Ukuran
-                            </button>
-                            <hr class="horizontal dark">
-                        </div>
-
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="description" class="form-control-label">Deskripsi Produk</label>
-                                <textarea class="form-control" id="description" name="description" rows="4" placeholder="Jelaskan detail produk, bahan, ukuran, dll."></textarea>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <hr class="horizontal dark mt-0">
-                            <h6 class="text-sm">Foto Produk</h6>
-                            <p class="text-xs text-secondary">Tambahkan foto produk satu per satu. Foto pertama akan menjadi foto utama.</p>
-                            
-                            <div id="image-container">
-                                <div class="row image-row mb-3 align-items-center">
-                                    <div class="col-md-2">
-                                        <div class="preview-container border-radius-lg border" style="width: 80px; height: 80px; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
-                                            <img class="img-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
-                                            <i class="fas fa-image text-secondary opacity-5 preview-placeholder"></i>
+                                        <div id="cover-preview-container" class="border rounded" style="width: 80px; height: 80px; overflow: hidden; background: #f8f9fa; display: flex; align-items: center; justify-content: center;">
+                                            <img id="cover-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                            <i class="fas fa-image text-secondary opacity-5" id="cover-placeholder"></i>
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <input class="form-control image-input" type="file" name="images[]" accept="image/*" required>
+                                    <div class="col-md-6">
+                                        <input class="form-control form-control-sm" type="file" name="cover_image" id="cover_image_input" accept="image/*">
                                     </div>
-                                    <div class="col-md-3">
-                                        <input class="form-control" type="text" name="image_colors[]" placeholder="Keterangan Warna (e.g. Black)">
+                                </div>
+                            </div>
+
+                            <h6 class="text-sm">Variasi Produk (Warna &amp; Ukuran)</h6>
+                            <p class="text-xs text-secondary">Tambahkan foto produk untuk setiap warna. Di dalam setiap warna, tentukan ukuran dan stok yang tersedia.</p>
+                            
+                            <div id="variation-container">
+                                <!-- First Variation Group -->
+                                <div class="variation-group border p-3 mb-4 rounded bg-gray-50">
+                                    <div class="row align-items-center mb-3 pb-2 border-bottom">
+                                        <div class="col-md-2">
+                                            <div class="preview-container border-radius-lg border bg-white" style="width: 80px; height: 80px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                                <img class="img-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                                <i class="fas fa-image text-secondary opacity-5 preview-placeholder"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="text-xs">Foto Baju Warna Ini</label>
+                                            <input class="form-control image-input form-control-sm" type="file" name="images[]" accept="image/*" required>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="text-xs">Nama Warna</label>
+                                            <input class="form-control form-control-sm" type="text" name="image_colors[]" placeholder="e.g. Merah Maroon" required>
+                                        </div>
+                                        <div class="col-md-1 text-end mt-4">
+                                            <button type="button" class="btn btn-outline-danger btn-sm btn-icon-only remove-variation w-100" disabled>
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-2">
-                                        <button type="button" class="btn btn-outline-danger btn-icon-only remove-image w-100" disabled>
-                                            <i class="fas fa-trash"></i>
+
+                                    <!-- Sizes for this variation -->
+                                    <div class="sizes-container ps-3 border-start border-3 border-info">
+                                        <label class="text-xs font-weight-bold text-info">Ukuran & Stok untuk Warna Ini:</label>
+                                        <div class="size-rows-wrapper">
+                                            <div class="row size-row mb-2">
+                                                <div class="col-md-5">
+                                                    <input type="text" name="sizes[0][]" class="form-control form-control-sm" placeholder="Ukuran (S, M, L, XL)" required>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input type="number" name="size_stocks[0][]" class="form-control form-control-sm" placeholder="Stok" required min="0">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm btn-icon-only remove-size w-100" disabled>
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button type="button" class="btn btn-link text-info btn-sm px-0 mb-0 add-size-to-variation" data-variation-index="0">
+                                            <i class="fas fa-plus me-1"></i> Tambah Ukuran di Warna Ini
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             
-                            <button type="button" id="add-image" class="btn btn-outline-info btn-sm">
-                                <i class="fas fa-plus me-2"></i>Tambah Gambar
+                            <button type="button" id="add-variation" class="btn btn-info btn-sm w-100">
+                                <i class="fas fa-plus me-2"></i>Tambah Warna Baru
                             </button>
 
                             <div class="mt-4">
@@ -167,72 +180,159 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const container = document.getElementById('size-container');
-        const addButton = document.getElementById('add-size');
+        const variationContainer = document.getElementById('variation-container');
+        const addVariationBtn = document.getElementById('add-variation');
+        let variationIndex = 0; // Starts at 0 because 1 is already in HTML
 
-        addButton.addEventListener('click', function() {
-            const firstRow = container.querySelector('.size-row');
-            const newRow = firstRow.cloneNode(true);
+        // --- 1. DYNAMIC VARIATION GROUPS (IMAGE + COLOR) ---
+        addVariationBtn.addEventListener('click', function() {
+            variationIndex++;
             
-            // Clear inputs in the new row
-            newRow.querySelectorAll('input').forEach(input => input.value = '');
+            const html = `
+                <div class="variation-group border p-3 mb-4 rounded bg-gray-50">
+                    <div class="row align-items-center mb-3 pb-2 border-bottom">
+                        <div class="col-md-2">
+                            <div class="preview-container border-radius-lg border bg-white" style="width: 80px; height: 80px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+                                <img class="img-preview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                <i class="fas fa-image text-secondary opacity-5 preview-placeholder"></i>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="text-xs">Foto Baju Warna Ini</label>
+                            <input class="form-control image-input form-control-sm" type="file" name="images[]" accept="image/*" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="text-xs">Nama Warna</label>
+                            <input class="form-control form-control-sm" type="text" name="image_colors[]" placeholder="e.g. Biru Navy" required>
+                        </div>
+                        <div class="col-md-1 text-end mt-4">
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-icon-only remove-variation w-100">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sizes for this variation -->
+                    <div class="sizes-container ps-3 border-start border-3 border-info">
+                        <label class="text-xs font-weight-bold text-info">Ukuran & Stok untuk Warna Ini:</label>
+                        <div class="size-rows-wrapper">
+                            <div class="row size-row mb-2">
+                                <div class="col-md-5">
+                                    <input type="text" name="sizes[${variationIndex}][]" class="form-control form-control-sm" placeholder="Ukuran (S, M, L, XL)" required>
+                                </div>
+                                <div class="col-md-5">
+                                    <input type="number" name="size_stocks[${variationIndex}][]" class="form-control form-control-sm" placeholder="Stok" required min="0">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-outline-danger btn-sm btn-icon-only remove-size w-100" disabled>
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-link text-info btn-sm px-0 mb-0 add-size-to-variation" data-variation-index="${variationIndex}">
+                            <i class="fas fa-plus me-1"></i> Tambah Ukuran di Warna Ini
+                        </button>
+                    </div>
+                </div>
+            `;
             
-            // Enable remove button in the new row
-            const removeBtn = newRow.querySelector('.remove-size');
-            removeBtn.disabled = false;
-            
-            container.appendChild(newRow);
-            updateRemoveButtons();
+            variationContainer.insertAdjacentHTML('beforeend', html);
+            updateVariationRemoveButtons();
         });
 
-        container.addEventListener('click', function(e) {
+        // --- 2. DYNAMIC SIZES INSIDE A VARIATION ---
+        variationContainer.addEventListener('click', function(e) {
+            // Add Size
+            if (e.target.closest('.add-size-to-variation')) {
+                const btn = e.target.closest('.add-size-to-variation');
+                const vIndex = btn.getAttribute('data-variation-index');
+                const sizesWrapper = btn.previousElementSibling; // .size-rows-wrapper
+                
+                const sizeHtml = `
+                    <div class="row size-row mb-2">
+                        <div class="col-md-5">
+                            <input type="text" name="sizes[${vIndex}][]" class="form-control form-control-sm" placeholder="Ukuran (S, M, L, XL)" required>
+                        </div>
+                        <div class="col-md-5">
+                            <input type="number" name="size_stocks[${vIndex}][]" class="form-control form-control-sm" placeholder="Stok" required min="0">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm btn-icon-only remove-size w-100">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                sizesWrapper.insertAdjacentHTML('beforeend', sizeHtml);
+                updateSizeRemoveButtons(sizesWrapper);
+            }
+            
+            // Remove Size
             if (e.target.closest('.remove-size')) {
                 const row = e.target.closest('.size-row');
-                if (container.querySelectorAll('.size-row').length > 1) {
+                const wrapper = row.closest('.size-rows-wrapper');
+                if (wrapper.querySelectorAll('.size-row').length > 1) {
                     row.remove();
-                    updateRemoveButtons();
+                    updateSizeRemoveButtons(wrapper);
                 }
+            }
+
+            // Remove Variation
+            if (e.target.closest('.remove-variation')) {
+                const group = e.target.closest('.variation-group');
+                group.remove();
+                
+                updateVariationRemoveButtons();
+                updateVariationIndices();
             }
         });
 
-        function updateRemoveButtons() {
-            const rows = container.querySelectorAll('.size-row');
+        function updateSizeRemoveButtons(wrapper) {
+            const rows = wrapper.querySelectorAll('.size-row');
             if (rows.length > 0) {
                 const firstRemoveBtn = rows[0].querySelector('.remove-size');
                 firstRemoveBtn.disabled = (rows.length === 1);
             }
         }
 
-        // --- DYNAMIC IMAGE ROWS ---
-        const imageContainer = document.getElementById('image-container');
-        const addImageButton = document.getElementById('add-image');
+        function updateVariationRemoveButtons() {
+            const groups = variationContainer.querySelectorAll('.variation-group');
+            if (groups.length > 0) {
+                const firstRemoveBtn = groups[0].querySelector('.remove-variation');
+                firstRemoveBtn.disabled = (groups.length === 1);
+            }
+        }
 
-        addImageButton.addEventListener('click', function() {
-            const firstRow = imageContainer.querySelector('.image-row');
-            const newRow = firstRow.cloneNode(true);
-            
-            // Clear inputs and preview in the new row
-            newRow.querySelectorAll('input').forEach(input => input.value = '');
-            const previewImg = newRow.querySelector('.img-preview');
-            const placeholder = newRow.querySelector('.preview-placeholder');
-            previewImg.src = '';
-            previewImg.style.display = 'none';
-            placeholder.style.display = 'block';
-            
-            // Enable remove button in the new row
-            const removeBtn = newRow.querySelector('.remove-image');
-            removeBtn.disabled = false;
-            
-            imageContainer.appendChild(newRow);
-            updateImageRemoveButtons();
-        });
+        function updateVariationIndices() {
+            const groups = variationContainer.querySelectorAll('.variation-group');
+            groups.forEach((group, index) => {
+                // Update cover radio value
+                const radio = group.querySelector('.cover-radio');
+                if (radio) radio.value = index;
 
-        imageContainer.addEventListener('change', function(e) {
+                // Update size input names
+                const sizeInputs = group.querySelectorAll('input[name^="sizes"]');
+                sizeInputs.forEach(input => input.name = `sizes[${index}][]`);
+                
+                // Update stock input names
+                const stockInputs = group.querySelectorAll('input[name^="size_stocks"]');
+                stockInputs.forEach(input => input.name = `size_stocks[${index}][]`);
+                
+                // Update add button data-variation-index
+                const addBtn = group.querySelector('.add-size-to-variation');
+                if (addBtn) addBtn.setAttribute('data-variation-index', index);
+            });
+            variationIndex = groups.length - 1; // Sync global index counter
+        }
+
+        // --- 3. IMAGE PREVIEW (Event Delegation) ---
+        variationContainer.addEventListener('change', function(e) {
             if (e.target.classList.contains('image-input')) {
                 const input = e.target;
-                const row = input.closest('.image-row');
-                const previewImg = row.querySelector('.img-preview');
-                const placeholder = row.querySelector('.preview-placeholder');
+                const group = input.closest('.variation-group');
+                const previewImg = group.querySelector('.img-preview');
+                const placeholder = group.querySelector('.preview-placeholder');
 
                 if (input.files && input.files[0]) {
                     const reader = new FileReader();
@@ -250,24 +350,6 @@
             }
         });
 
-        imageContainer.addEventListener('click', function(e) {
-            if (e.target.closest('.remove-image')) {
-                const row = e.target.closest('.image-row');
-                if (imageContainer.querySelectorAll('.image-row').length > 1) {
-                    row.remove();
-                    updateImageRemoveButtons();
-                }
-            }
-        });
-
-        function updateImageRemoveButtons() {
-            const rows = imageContainer.querySelectorAll('.image-row');
-            if (rows.length > 0) {
-                const firstRemoveBtn = rows[0].querySelector('.remove-image');
-                firstRemoveBtn.disabled = (rows.length === 1);
-            }
-        }
-
         // Size Guide Preview
         const sizeGuideInput = document.getElementById('size_guide_input');
         const sizeGuidePreview = document.getElementById('size_guide_preview');
@@ -281,6 +363,24 @@
                         sizeGuidePreview.src = e.target.result;
                         sizeGuidePreview.style.display = 'block';
                         if (sizeGuidePlaceholder) sizeGuidePlaceholder.style.display = 'none';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+        }
+        
+        // Cover Image Preview
+        const coverInput = document.getElementById('cover_image_input');
+        const coverPreview = document.getElementById('cover-preview');
+        const coverPlaceholder = document.getElementById('cover-placeholder');
+        if (coverInput) {
+            coverInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        coverPreview.src = e.target.result;
+                        coverPreview.style.display = 'block';
+                        if (coverPlaceholder) coverPlaceholder.style.display = 'none';
                     };
                     reader.readAsDataURL(this.files[0]);
                 }

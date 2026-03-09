@@ -232,7 +232,7 @@
                         @endif
                     </div>
                     @php
-                        $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                        $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                     @endphp
                     <img src="{{ $imagePath }}" alt="{{ $product->name }}" class="w-full h-full object-cover" />
                     
