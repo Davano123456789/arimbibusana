@@ -302,10 +302,10 @@
     <section id="promo-spesial" class="py-20 bg-white" data-aos="fade-up">
       <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between mb-6">
-        <h3 class="text-2xl font-semibold flex items-center gap-2" data-aos="fade-right">
+        <h3 class="text-xl md:text-2xl font-semibold flex items-center gap-2" data-aos="fade-right">
           <i class="fa-solid fa-tags text-red-500"></i> Promo Spesial
         </h3>
-        <span class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold animate-pulse">DISKON TERBATAS</span>
+        <span class="text-[10px] md:text-xs bg-red-100 text-red-600 px-2.5 py-1 md:px-3 md:py-1 rounded-full font-bold animate-pulse">DISKON TERBATAS</span>
       </div>
 
       <div class="relative">
@@ -322,7 +322,7 @@
             <article class="slide bg-white rounded-2xl overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm border border-gray-50 flex flex-col group">
               <div class="img-container relative h-64 overflow-hidden">
                 @php
-                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                    $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                 @endphp
                 <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
                 <div class="absolute top-3 left-3 z-10">
@@ -361,7 +361,7 @@
     <section id="produk-unggulan" class="py-20 bg-[#FBF8F3]" data-aos="fade-up">
       <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-2xl font-semibold flex items-center gap-2" data-aos="fade-right"><i
+        <h3 class="text-xl md:text-2xl font-semibold flex items-center gap-2" data-aos="fade-right"><i
             class="fa-solid fa-star text-amber-500"></i>
           Produk Unggulan</h3>
         <a href="#" class="text-sm text-accent" data-aos="fade-left">Lihat Semua <i
@@ -387,7 +387,7 @@
               class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm group">
               <div class="relative h-64 overflow-hidden">
                 @php
-                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                    $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                 @endphp
                 <img class="slide-img w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}"
                   loading="lazy" />
@@ -435,7 +435,7 @@
     <section id="produk" class="py-20 bg-white" data-aos="fade-up">
       <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between mb-8">
-        <h3 class="text-2xl font-semibold">Produk</h3>
+        <h3 class="text-xl md:text-2xl font-semibold">Produk</h3>
         <a href="#" class="text-sm text-accent">Lihat Semua <i class="fa-solid fa-chevron-right ml-1"></i></a>
       </div>
 
@@ -444,7 +444,7 @@
         <article class="product-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gray-50 group flex flex-col">
           <div class="img-container relative h-72 overflow-hidden">
             @php
-                $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
             @endphp
             <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
             
@@ -519,7 +519,7 @@
               class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
               <div class="img-container relative">
                 @php
-                    $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop';
+                    $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                 @endphp
                 <img class="w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
                 <div class="img-overlay"></div>
@@ -668,12 +668,12 @@
     <section id="blog" class="py-20 bg-white" data-aos="fade-up">
       <div class="max-w-6xl mx-auto px-6">
       <div class="flex items-center justify-between mb-10">
-        <div>
-          <h3 class="text-3xl font-bold font-serif text-gray-900">Journal & Inspirasi</h3>
-          <p class="text-gray-500 mt-2">Tips fashion dan cerita dari koleksi kami</p>
+        <div class="flex-1">
+          <h3 class="text-base md:text-3xl font-bold font-serif text-gray-900 leading-tight">Journal & Inspirasi</h3>
+          <p class="text-xs md:text-base text-gray-500 mt-1 md:mt-2 line-clamp-2 md:line-clamp-none">Tips fashion dan cerita dari koleksi kami</p>
         </div>
-        <a href="{{ route('public.blog') }}" class="text-sm font-bold text-accent flex items-center gap-2 group">
-          Lihat Semua Artikel <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+        <a href="{{ route('public.blog') }}" class="text-[10px] md:text-sm font-bold text-accent flex items-center gap-1 md:gap-2 group whitespace-nowrap">
+          Lihat Semua <span class="hidden md:inline">Artikel</span> <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
         </a>
       </div>
 
@@ -741,7 +741,7 @@
             <a href="https://instagram.com/arimbiqueen.scarves"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
-                class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
+                class="shrink-0 w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-brands fa-instagram fa-lg"></i>
               </div>
               <span class="text-sm font-medium text-gray-700">Instagram</span>
@@ -749,7 +749,7 @@
             <a href="https://www.tiktok.com/@arimbiqueenscarves" target="_blank"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
-                class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
+                class="shrink-0 w-10 h-10 rounded-full bg-black flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-brands fa-tiktok fa-lg"></i>
               </div>
               <span class="text-sm font-medium text-gray-700">TikTok</span>
@@ -757,7 +757,7 @@
             <a href="https://shopee.co.id/ArimbiQueen.Scarves" target="_blank"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
-                class="w-10 h-10 rounded-full bg-[#EE4D2D] flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
+                class="shrink-0 w-10 h-10 rounded-full bg-[#EE4D2D] flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-solid fa-bag-shopping"></i>
               </div>
               <span class="text-sm font-medium text-gray-700">Shopee</span>
@@ -765,7 +765,7 @@
             <a href="https://wa.me/6282337115553" target="_blank"
               class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
-                class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
+                class="shrink-0 w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-brands fa-whatsapp fa-lg"></i>
               </div>
               <span class="text-sm font-medium text-gray-700">WhatsApp</span>

@@ -83,7 +83,7 @@
                         <div class="col-span-1 md:col-span-6 flex gap-4">
                             <div class="w-24 h-32 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
                                 @if($item->product->images->count() > 0)
-                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                    <img src="{{ asset('storage/' . $item->product->images->sortByDesc('is_cover')->first()->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                                 @else
                                     <img src="{{ asset('images/no-image.jpg') }}" alt="No Image" class="w-full h-full object-cover">
                                 @endif

@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Arimbi Queen')</title>
   <meta name="description"
@@ -40,7 +40,7 @@
 
 </head>
 
-<body class="antialiased text-gray-800 bg-white">
+<body class="antialiased text-gray-800 bg-white overflow-x-hidden">
 
   @include('layouts.navbar')
 
@@ -70,6 +70,7 @@
       btnMobile.addEventListener('click', () => {
         // Show container
         mobileMenu.classList.remove('invisible');
+        document.body.classList.add('overflow-hidden');
         
         // Trigger animations
         setTimeout(() => {
@@ -88,7 +89,9 @@
     const closeMobileMenu = () => {
       if (!mobileMenu) return;
 
-      // Reverse animations
+      // Reverse animations and enable body scroll
+      document.body.classList.remove('overflow-hidden');
+
       if (mobileBackdrop) {
         mobileBackdrop.classList.remove('opacity-100');
         mobileBackdrop.classList.add('opacity-0');
@@ -101,6 +104,7 @@
       // Hide container after transition
       setTimeout(() => {
         mobileMenu.classList.add('invisible');
+        document.body.classList.remove('overflow-hidden');
       }, 300); // Matches duration-300
     };
 

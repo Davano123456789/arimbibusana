@@ -235,7 +235,7 @@
                         <div class="flex gap-3">
                             <div class="w-16 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
                                 @if($item->product->images->count() > 0)
-                                    <img src="{{ asset('storage/' . $item->product->images->first()->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                    <img src="{{ asset('storage/' . $item->product->images->sortByDesc('is_cover')->first()->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                                 @else
                                     <img src="{{ asset('images/no-image.jpg') }}" alt="No Image" class="w-full h-full object-cover">
                                 @endif

@@ -14,27 +14,27 @@ class FrontController extends Controller
 {
     public function index()
     {
-        $bestSellers = \App\Models\Product::with(['category', 'images'])
+        $bestSellers = \App\Models\Product::with(['category', 'images', 'images.sizes'])
             ->where('status', 'active')
             ->where('is_best_seller', 1)
             ->latest()
             ->take(8)
             ->get();
 
-        $recommended = \App\Models\Product::with(['category', 'images'])
+        $recommended = \App\Models\Product::with(['category', 'images', 'images.sizes'])
             ->where('status', 'active')
             ->where('is_recommended', 1)
             ->latest()
             ->take(8)
             ->get();
 
-        $latestProducts = \App\Models\Product::with(['category', 'images'])
+        $latestProducts = \App\Models\Product::with(['category', 'images', 'images.sizes'])
             ->where('status', 'active')
             ->latest()
             ->take(9)
             ->get();
 
-        $discountedProducts = \App\Models\Product::with(['category', 'images'])
+        $discountedProducts = \App\Models\Product::with(['category', 'images', 'images.sizes'])
             ->where('status', 'active')
             ->whereNotNull('discount_price')
             ->latest()
@@ -56,7 +56,7 @@ class FrontController extends Controller
     {
         $categories = \App\Models\Category::all();
 
-        $query = \App\Models\Product::with(['category', 'images'])
+        $query = \App\Models\Product::with(['category', 'images', 'images.sizes'])
             ->where('status', 'active');
 
         // Filter by Category
@@ -105,7 +105,7 @@ class FrontController extends Controller
     {
         $categories = \App\Models\Category::all();
 
-        $query = \App\Models\Product::with(['category', 'images'])
+        $query = \App\Models\Product::with(['category', 'images', 'images.sizes'])
             ->where('status', 'active')
             ->where('is_best_seller', 1);
 

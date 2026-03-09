@@ -34,7 +34,7 @@
                                     <div class="d-flex px-2 py-1">
                                         <div>
                                             @php
-                                                $imagePath = $product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://via.placeholder.com/50';
+                                                $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://via.placeholder.com/50');
                                             @endphp
                                             <img src="{{ $imagePath }}" class="avatar avatar-sm me-3" alt="product-image">
                                         </div>
