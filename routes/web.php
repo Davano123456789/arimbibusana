@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
@@ -12,12 +13,23 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Email Verification Routes
+Route::get('/email/verify', [AuthController::class, 'verificationNotice'])->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/')->with('success', 'Email berhasil diverifikasi! Selamat berbelanja.');
+})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::post('/email/verification-notification', [AuthController::class, 'resendVerification'])
+    ->middleware(['auth', 'throttle:6,1'])
+    ->name('verification.send');
+
 Route::middleware('auth')->group(function () {
     Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
     Route::post('/keranjang', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/keranjang/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/keranjang/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::get('/pembayaran', [FrontController::class, 'pembayaran'])->name('checkout.index');
+    Route::post('/detail-produk/{id}/ulasan', [FrontController::class, 'storeTestimonial']);
 });
 
 /*
@@ -43,11 +55,16 @@ Route::get('/produk', [FrontController::class, 'produk']);
 Route::get('/produk', [FrontController::class, 'produk']);
 Route::get('/produk-unggulan', [FrontController::class, 'produkUnggulan']);
 Route::get('/detail-produk/{id}', [FrontController::class, 'detailProduk']);
-Route::post('/detail-produk/{id}/ulasan', [FrontController::class, 'storeTestimonial']);
 Route::post('/detail-produk/{id}/like', [FrontController::class, 'toggleLike']);
 Route::get('/testimoni', [FrontController::class, 'testimoni']);
 Route::get('/tentang', [FrontController::class, 'tentang']);
 Route::post('/testimoni', [FrontController::class, 'storeGeneralTestimonial']);
+
+// Shipping (RajaOngkir)
+Route::get('/shipping/provinces', [\App\Http\Controllers\ShippingController::class, 'getProvinces']);
+Route::get('/shipping/cities/{provinceId}', [\App\Http\Controllers\ShippingController::class, 'getCities']);
+Route::post('/shipping/cost', [\App\Http\Controllers\ShippingController::class, 'getCost']);
+Route::post('/pembayaran', [\App\Http\Controllers\FrontController::class, 'storeOrder'])->name('checkout.store');
 
 Route::get('/blog', [FrontController::class, 'blog'])->name('public.blog');
 Route::get('/blog/{slug}', [FrontController::class, 'blogDetail'])->name('public.blog.detail');

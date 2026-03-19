@@ -233,8 +233,8 @@
                     @endif
                     
                     <button
-                        class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 shadow-sm hover:scale-110 transition-transform">
-                        <i class="fa-regular fa-heart"></i>
+                        class="like-btn absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 shadow-sm hover:scale-110 transition-transform" data-id="{{ $product->id }}">
+                        <i class="{{ in_array($product->id, $likedProductIds) ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
                     </button>
                 </div>
                 <div class="p-5 flex flex-col flex-1">

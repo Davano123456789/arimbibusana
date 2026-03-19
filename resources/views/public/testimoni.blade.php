@@ -170,26 +170,7 @@
 <main class="max-w-6xl mx-auto px-6 -mt-10 relative z-10">
 
     {{-- ═══════════════════ SUCCESS / ERROR ALERT ═══════════════════ --}}
-    @if(session('success'))
-    <div class="mt-8 mb-0 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 px-6 py-4 rounded-2xl shadow-sm" data-aos="fade-down" role="alert">
-        <i class="fa-solid fa-circle-check text-green-500 text-xl flex-shrink-0"></i>
-        <p class="text-sm font-medium">{{ session('success') }}</p>
-        <button onclick="this.parentElement.remove()" class="ml-auto text-green-500 hover:text-green-700 transition-colors"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    @endif
 
-    @if($errors->any())
-    <div class="mt-8 mb-0 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-2xl shadow-sm" data-aos="fade-down" role="alert">
-        <div class="flex items-center gap-2 font-semibold text-sm mb-1">
-            <i class="fa-solid fa-circle-exclamation text-red-500"></i> Terdapat kesalahan:
-        </div>
-        <ul class="list-disc list-inside text-sm space-y-1 mt-1">
-            @foreach($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
 
     {{-- ═══════════════════ STATS ROW ═══════════════════ --}}
     @php

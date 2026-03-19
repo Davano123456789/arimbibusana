@@ -128,31 +128,38 @@
                             </div>
                         </div>
 
-                        <!-- Kota / Kecamatan -->
+                        <!-- Provinsi -->
                         <div>
-                            <label for="city" class="block text-sm font-bold text-gray-700 mb-2">Kota / Kecamatan</label>
+                            <label for="province" class="block text-sm font-bold text-gray-700 mb-2">Provinsi</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-map text-gray-400 group-focus-within:text-accent transition-colors"></i>
+                                </div>
+                                <select id="province" name="province_id" 
+                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none" required>
+                                    <option value="">Pilih Provinsi</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Kota / Kabupaten -->
+                        <div>
+                            <label for="city" class="block text-sm font-bold text-gray-700 mb-2">Kota / Kabupaten</label>
                             <div class="relative group">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <i class="fa-solid fa-city text-gray-400 group-focus-within:text-accent transition-colors"></i>
                                 </div>
-                                <input type="text" id="city" name="city" 
-                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200" 
-                                    placeholder="Contoh: Jakarta Selatan" required>
+                                <select id="city" name="city_id" 
+                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none" disabled required>
+                                    <option value="">Pilih Kota</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- Kode Pos -->
-                        <div>
-                            <label for="postal_code" class="block text-sm font-bold text-gray-700 mb-2">Kode Pos</label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i class="fa-solid fa-envelopes-bulk text-gray-400 group-focus-within:text-accent transition-colors"></i>
-                                </div>
-                                <input type="text" id="postal_code" name="postal_code" 
-                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200" 
-                                    placeholder="Contoh: 12345">
-                            </div>
-                        </div>
+                        <!-- Hidden Shipping Metadata -->
+                        <input type="hidden" id="province_name" name="province_name">
+                        <input type="hidden" id="city_name" name="city_name">
+                        <input type="hidden" id="shipping_cost_input" name="shipping_cost" value="0">
                     </div>
                 </section>
 
@@ -253,16 +260,16 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-gray-600">
                             <span>Subtotal ({{ $cartItems->sum('quantity') }} Barang)</span>
-                            <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
+                            <span id="subtotal" data-value="{{ $total }}">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-gray-600">
-                            <span>Biaya Pengiriman</span>
-                            <span class="text-green-600 font-medium">Gratis</span>
+                            <span>Biaya Pengiriman (J&T)</span>
+                            <span id="shipping_cost" class="text-gray-400 font-medium italic">Pilih alamat...</span>
                         </div>
                         <div class="border-t border-dashed border-gray-300 my-2"></div>
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-gray-900 text-lg">Total</span>
-                            <span class="font-bold text-2xl text-accent">Rp {{ number_format($total, 0, ',', '.') }}</span>
+                            <span id="total_payment" class="font-bold text-2xl text-accent" data-value="{{ $total }}">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                     </div>
 
@@ -281,23 +288,162 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function confirmOrder() {
-            // Simple validation check
+        document.addEventListener('DOMContentLoaded', function() {
+            const provinceSelect = document.getElementById('province');
+            const citySelect = document.getElementById('city');
+            const shippingCostDisplay = document.getElementById('shipping_cost');
+            const totalPaymentDisplay = document.getElementById('total_payment');
+            const subtotal = parseInt(document.getElementById('subtotal').dataset.value);
+            
+            // Total weight calculation (default 200g per item for shipping accuracy)
+            const totalWeight = {{ $cartItems->sum('quantity') }} * 200;
+
+            // 1. Fetch Provinces
+            async function fetchProvinces() {
+                try {
+                    const response = await fetch('/shipping/provinces');
+                    const provinces = await response.json();
+                    
+                    if (Array.isArray(provinces)) {
+                        provinces.forEach(province => {
+                            const option = document.createElement('option');
+                            // Handle both RajaOngkir and Komerce formats
+                            option.value = province.province_id || province.id || province.province_id;
+                            option.textContent = province.province || province.name || province.label || 'Unknown';
+                            provinceSelect.appendChild(option);
+                        });
+                    } else {
+                        console.error('Provinces data is not an array:', provinces);
+                        provinceSelect.innerHTML = '<option value="">Gagal mengambil data</option>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching provinces:', error);
+                }
+            }
+
+            // 2. Fetch Cities
+            provinceSelect.addEventListener('change', async function() {
+                const provinceId = this.value;
+                citySelect.innerHTML = '<option value="">Pilih Kota</option>';
+                citySelect.disabled = true;
+                resetShipping();
+
+                if (!provinceId) return;
+
+                try {
+                    const response = await fetch(`/shipping/cities/${provinceId}`);
+                    const cities = await response.json();
+                    
+                    if (Array.isArray(cities)) {
+                        cities.forEach(city => {
+                            const option = document.createElement('option');
+                            // Handle both formats: city_id/city_name (RajaOngkir) vs id/name/label (Komerce)
+                            option.value = city.city_id || city.id;
+                            const cityName = city.city_name || city.name || city.label || 'Unknown';
+                            const cityType = city.type ? city.type + ' ' : '';
+                            option.textContent = `${cityType}${cityName}`;
+                            citySelect.appendChild(option);
+                        });
+                        citySelect.disabled = false;
+                    } else {
+                        console.error('Cities data is not an array:', cities);
+                        citySelect.innerHTML = '<option value="">Gagal mengambil data</option>';
+                    }
+                } catch (error) {
+                    console.error('Error fetching cities:', error);
+                }
+            });
+
+            // 3. Calculate Cost
+            citySelect.addEventListener('change', async function() {
+                const cityId = this.value;
+                const cityName = this.options[this.selectedIndex].text;
+                document.getElementById('city_name').value = cityName;
+                document.getElementById('province_name').value = provinceSelect.options[provinceSelect.selectedIndex].text;
+
+                if (!cityId) {
+                    resetShipping();
+                    return;
+                }
+
+                shippingCostDisplay.textContent = 'Menghitung...';
+                shippingCostDisplay.classList.add('animate-pulse');
+
+                try {
+                    const response = await fetch('/shipping/cost', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            destination: cityId,
+                            weight: totalWeight,
+                            courier: 'jnt'
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    if (data.length > 0) {
+                        // Handle RajaOngkir format (nested) or Komerce format (flat)
+                        let cost = 0;
+                        if (data[0].costs && data[0].costs.length > 0) {
+                            cost = data[0].costs[0].cost[0].value;
+                        } else if (data[0].cost !== undefined) {
+                            cost = data[0].cost;
+                        }
+
+                        document.getElementById('shipping_cost_input').value = cost;
+                        
+                        const formattedCost = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(cost);
+                        
+                        shippingCostDisplay.textContent = formattedCost;
+                        shippingCostDisplay.classList.remove('animate-pulse', 'italic', 'text-gray-400');
+                        shippingCostDisplay.classList.add('text-gray-900', 'font-bold');
+
+                        const totalPayment = subtotal + cost;
+                        const formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalPayment);
+                        totalPaymentDisplay.textContent = formattedTotal;
+                    } else {
+                        shippingCostDisplay.textContent = 'Tidak tersedia';
+                    }
+                } catch (error) {
+                    console.error('Error calculating cost:', error);
+                    shippingCostDisplay.textContent = 'Gagal';
+                }
+            });
+
+            function resetShipping() {
+                shippingCostDisplay.textContent = 'Pilih alamat...';
+                shippingCostDisplay.className = 'text-gray-400 font-medium italic';
+                totalPaymentDisplay.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
+                document.getElementById('shipping_cost_input').value = 0;
+            }
+
+            fetchProvinces();
+        });
+
+        async function confirmOrder() {
             const name = document.getElementById('name').value;
             const phone = document.getElementById('phone').value;
             const address = document.getElementById('address').value;
+            const provinceId = document.getElementById('province').value;
+            const provinceName = document.getElementById('province_name').value;
+            const cityId = document.getElementById('city').value;
+            const cityName = document.getElementById('city_name').value;
+            const shippingCost = document.getElementById('shipping_cost_input').value;
 
-            if (!name || !phone || !address) {
+            if (!name || !phone || !address || !cityId) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Data Belum Lengkap',
-                    text: 'Mohon lengkapi informasi pengiriman Anda terlebih dahulu.',
+                    text: 'Mohon lengkapi informasi pengiriman (termasuk Provinsi & Kota) Anda terlebih dahulu.',
                     confirmButtonColor: '#5B3A29'
                 });
                 return;
             }
 
-            Swal.fire({
+            const result = await Swal.fire({
                 title: 'Konfirmasi Pesanan?',
                 text: "Pastikan data pesanan Anda sudah benar.",
                 icon: 'question',
@@ -306,18 +452,59 @@
                 cancelButtonColor: '#d33',
                 confirmButtonText: 'Ya, Pesan Sekarang!',
                 cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
+            });
+
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Memproses Pesanan...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                try {
+                    const response = await fetch('/pembayaran', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            name,
+                            phone,
+                            address,
+                            province_id: provinceId,
+                            province_name: provinceName,
+                            city_id: cityId,
+                            city_name: cityName,
+                            shipping_cost: shippingCost,
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Pesanan Berhasil!',
+                            text: 'Terima kasih telah berbelanja di Arimbi Queen. Pesanan Anda telah tercatat.',
+                            icon: 'success',
+                            confirmButtonColor: '#5B3A29'
+                        }).then(() => {
+                            window.location.href = "{{ url('/') }}";
+                        });
+                    } else {
+                        throw new Error(data.message || 'Gagal menyimpan pesanan');
+                    }
+                } catch (error) {
                     Swal.fire({
-                        title: 'Pesanan Berhasil!',
-                        text: 'Terima kasih telah berbelanja di Arimbi Queen. Kami akan menghubungi Anda via WhatsApp untuk konfirmasi selanjutnya.',
-                        icon: 'success',
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error.message,
                         confirmButtonColor: '#5B3A29'
-                    }).then(() => {
-                        window.location.href = "{{ url('/') }}";
                     });
                 }
-            });
+            }
         }
     </script>
 @endsection

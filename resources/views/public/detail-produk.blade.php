@@ -278,7 +278,6 @@
                 </div>
 
                 <!-- Call to Action -->
-                {{-- 
                 <form id="addToCartForm" action="{{ route('cart.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
@@ -298,20 +297,6 @@
                         </button>
                     </div>
                 </form>
-                --}}
-
-                <div class="flex flex-col sm:flex-row gap-4 mt-8">
-                    <button type="button" id="btnOrderOlshop"
-                        class="flex-1 bg-accent text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl hover:brightness-110 transition-all active:scale-95">
-                        <i class="fa-solid fa-shop fa-xl"></i> Pesan di Olshop Kami
-                    </button>
-                    <button type="button"
-                        class="like-btn px-6 h-16 flex items-center justify-center gap-2 rounded-2xl border-2 {{ $isLiked ? 'bg-red-50 border-red-100' : 'border-gray-100' }} text-red-500 hover:bg-red-50 transition-all"
-                        data-id="{{ $product->id }}">
-                        <i class="{{ $isLiked ? 'fa-solid' : 'fa-regular' }} fa-heart fa-xl"></i>
-                        <span id="likeCount" class="font-bold text-lg">{{ $product->likes_count }}</span>
-                    </button>
-                </div>
 
                 <div class="mt-8 flex items-center gap-6 text-[10px] text-gray-400 uppercase font-bold tracking-widest">
                     <div class="flex items-center gap-2"><i class="fa-solid fa-truck-fast text-accent/50 text-sm"></i>
@@ -324,24 +309,6 @@
 
         <!-- Reviews & Testimonials -->
         <div class="mt-20 mb-20 border-t border-gray-100 pt-16">
-            @if(session('success'))
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    iziToast.success({
-                        title: 'Berhasil',
-                        message: '{{ session("success") }}',
-                        position: 'topRight',
-                        transitionIn: 'fadeInDown',
-                        timeout: 5000,
-                        backgroundColor: '#FDF7F2',
-                        titleColor: '#8C6A53',
-                        messageColor: '#8C6A53',
-                        icon: 'fa-solid fa-circle-check',
-                        iconColor: '#8C6A53',
-                    });
-                });
-            </script>
-            @endif
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
                 <!-- Left: Review Form (4 cols) -->
@@ -349,6 +316,7 @@
                     <div class="sticky top-24">
                         <h3 class="text-2xl font-bold font-serif mb-6">Tulis Ulasan</h3>
                         <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                            @auth
                             <form action="{{ url('/detail-produk/' . $product->id . '/ulasan') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="mb-4">
@@ -363,10 +331,8 @@
                                     <input type="hidden" name="rating" id="ratingInput" value="5">
                                 </div>
                                 <div class="mb-4">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Nama Lengkap</label>
-                                    <input type="text" name="name" required
-                                        class="w-full px-4 py-3 rounded-xl border-gray-200 bg-white focus:border-accent focus:ring-2 focus:ring-accent/10 focus:outline-none transition-all"
-                                        placeholder="Nama kamu...">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Mengirim sebagai:</label>
+                                    <p class="font-bold text-accent">{{ auth()->user()->name }}</p>
                                 </div>
                                 <div class="mb-6">
                                     <label class="block text-sm font-bold text-gray-700 mb-2">Ulasan</label>
@@ -396,6 +362,18 @@
                                     class="w-full btn-cream-dark py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all active:scale-95">Kirim
                                     Ulasan</button>
                             </form>
+                            @else
+                            <div class="text-center py-6">
+                                <div class="w-16 h-16 bg-cream/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fa-solid fa-user-lock text-accent text-2xl"></i>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-6">Silakan masuk ke akun Anda untuk memberikan ulasan produk ini.</p>
+                                <a href="{{ route('login') }}" 
+                                    class="inline-block bg-accent text-white px-8 py-3 rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all shadow-md shadow-accent/10">
+                                    Masuk Sekarang
+                                </a>
+                            </div>
+                            @endauth
                         </div>
                     </div>
                 </div>
@@ -526,30 +504,6 @@
         </div>
     </div>
 
-    <!-- Olshop Selection Modal -->
-    <div id="olshopModal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" id="olshopModalBackdrop"></div>
-        <div class="relative bg-white rounded-3xl shadow-2xl max-w-sm w-full overflow-hidden transform transition-all scale-95 opacity-0 duration-300"
-            id="olshopModalContent">
-            <button id="closeOlshopModal"
-                class="absolute right-4 top-4 z-20 bg-gray-100 hover:bg-gray-200 p-2 rounded-full text-gray-800 transition-colors">
-                <i class="fa-solid fa-xmark fa-lg"></i>
-            </button>
-            <div class="p-8">
-                <h3 class="text-2xl font-bold text-gray-900 mb-2 text-center font-serif">Pesan Sekarang</h3>
-                <p class="text-gray-500 text-sm text-center mb-8">Pilih platform favorit Anda</p>
-                
-                <div class="grid gap-4">
-                    <!-- TikTok -->
-                    <a href="https://www.tiktok.com/@arimbiqueenscarves" target="_blank" 
-                        class="flex items-center gap-4 p-4 rounded-2xl bg-[#000000] text-white hover:scale-[1.02] transition-transform shadow-md group">
-                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                            <i class="fa-brands fa-tiktok text-2xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="block font-bold text-base">TikTok Shop</span>
-                            <span class="text-xs text-white/60">@arimbiqueenscarves</span>
-                        </div>
                         <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
                     </a>
 
@@ -787,53 +741,7 @@
             }
 
             // 4. Like Counter Logic (Live with Database)
-            // ... (rest of the file)
-            const likeBtn = document.querySelector('.like-btn');
-            if (likeBtn) {
-                likeBtn.addEventListener('click', function(e) {
-                    const productId = this.getAttribute('data-id');
-                    const icon = this.querySelector('i');
-                    const countSpan = document.getElementById('likeCount');
-                    const btn = this;
-
-                    // Prevent multiple clicks
-                    if (btn.classList.contains('pointer-events-none')) return;
-                    btn.classList.add('pointer-events-none');
-
-                    fetch(`/detail-produk/${productId}/like`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        btn.classList.remove('pointer-events-none');
-                        if (data.status === 'liked') {
-                            icon.classList.remove('fa-regular');
-                            icon.classList.add('fa-solid');
-                            btn.classList.add('bg-red-50', 'border-red-100');
-                            btn.classList.remove('border-gray-100');
-                        } else {
-                            icon.classList.remove('fa-solid');
-                            icon.classList.add('fa-regular');
-                            btn.classList.remove('bg-red-50', 'border-red-100');
-                            btn.classList.add('border-gray-100');
-                        }
-                        countSpan.textContent = data.likes_count;
-                    })
-                    .catch(error => {
-                        btn.classList.remove('pointer-events-none');
-                        console.error('Error:', error);
-                        iziToast.error({
-                            title: 'Error',
-                            message: 'Gagal memproses Like. Silakan coba lagi.',
-                            position: 'topRight'
-                        });
-                    });
-                });
-            }
+            // Initial load logic for colors and sizes...
 
             // 5. Review Star Rating Logic
             const ratingContainer = document.querySelector('.group-rating');
@@ -916,57 +824,7 @@
                 });
             }
 
-            // 8. Olshop Modal Logic
-            const olshopModal = document.getElementById('olshopModal');
-            const olshopModalContent = document.getElementById('olshopModalContent');
-            const showOlshopBtn = document.getElementById('btnOrderOlshop');
-            const closeOlshopBtn = document.getElementById('closeOlshopModal');
-            const olshopBackdrop = document.getElementById('olshopModalBackdrop');
 
-            if (showOlshopBtn && olshopModal && olshopModalContent) {
-                showOlshopBtn.addEventListener('click', () => {
-                    // Validation before opening modal
-                    if (!selectedSizeId) {
-                        alert('Silakan pilih ukuran terlebih dahulu!');
-                        return;
-                    }
-                    if (colorBtns.length > 0 && !selectedColor) {
-                        alert('Silakan pilih warna terlebih dahulu!');
-                        return;
-                    }
-
-                    // Update WA Link with selected variants
-                    const waLink = olshopModal.querySelector('a[href^="https://wa.me/"]');
-                    if (waLink) {
-                        const productName = "{{ $product->name }}";
-                        const activeSizeBtn = document.querySelector('.size-btn.active');
-                        const sizeName = activeSizeBtn ? activeSizeBtn.textContent.trim() : '-';
-                        const colorName = selectedColor ? ` warna ${selectedColor}` : '';
-                        const quantity = qtyInput.value;
-                        const message = `Halo Arimbi Queen, saya tertarik dengan produk ${productName} ukuran ${sizeName}${colorName} sebanyak ${quantity} pcs.`;
-                        waLink.href = `https://wa.me/6282337115553?text=${encodeURIComponent(message)}`;
-                    }
-
-                    olshopModal.classList.remove('hidden');
-                    olshopModal.classList.add('flex');
-                    setTimeout(() => {
-                        olshopModalContent.classList.remove('scale-95', 'opacity-0');
-                        olshopModalContent.classList.add('scale-100', 'opacity-100');
-                    }, 10);
-                });
-
-                const closeOlshop = () => {
-                    olshopModalContent.classList.remove('scale-100', 'opacity-100');
-                    olshopModalContent.classList.add('scale-95', 'opacity-0');
-                    setTimeout(() => {
-                        olshopModal.classList.add('hidden');
-                        olshopModal.classList.remove('flex');
-                    }, 300);
-                };
-
-                if (closeOlshopBtn) closeOlshopBtn.addEventListener('click', closeOlshop);
-                if (olshopBackdrop) olshopBackdrop.addEventListener('click', closeOlshop);
-            }
         });
 
         // Global functions for Review Image Preview

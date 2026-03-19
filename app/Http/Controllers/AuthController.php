@@ -29,7 +29,14 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->has('remember'))) {
             $request->session()->regenerate();
 
-            // Redirect based on role if exists, otherwise home
+            // Block login if email not verified
+            if (!Auth::user()->hasVerifiedEmail()) {
+                Auth::logout();
+                return redirect()->route('verification.notice')
+                    ->with('warning', 'Email kamu belum diverifikasi. Silakan cek inbox emailmu.');
+            }
+
+            // Redirect based on role
             if (Auth::user()->role === 'admin') {
                 return redirect()->intended('/dashboard')->with('success', 'Selamat datang kembali, Admin!');
             }
@@ -45,21 +52,45 @@ class AuthController extends Controller
     public function register(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'name'     => ['required', 'string', 'max:255'],
+            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'client', // Default role for registration
+            'role'     => 'client',
         ]);
 
+        // Send verification email
+        $user->sendEmailVerificationNotification();
+
+        // Login temporarily so verification routes work
         Auth::login($user);
 
-        return redirect('/')->with('success', 'Registrasi berhasil! Selamat datang di Arimbi Queen.');
+        return redirect()->route('verification.notice')
+            ->with('success', 'Registrasi berhasil! Kami sudah mengirim email verifikasi ke ' . $user->email . '. Silakan cek inbox kamu.');
+    }
+
+    public function verificationNotice()
+    {
+        if (Auth::check() && Auth::user()->hasVerifiedEmail()) {
+            return redirect('/');
+        }
+        return view('public.auth.verify-email');
+    }
+
+    public function resendVerification(Request $request)
+    {
+        if ($request->user()->hasVerifiedEmail()) {
+            return redirect('/');
+        }
+
+        $request->user()->sendEmailVerificationNotification();
+
+        return back()->with('success', 'Email verifikasi berhasil dikirim ulang. Silakan cek inbox kamu.');
     }
 
     public function logout(Request $request)
