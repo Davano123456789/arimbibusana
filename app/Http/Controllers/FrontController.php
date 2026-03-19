@@ -49,7 +49,14 @@ class FrontController extends Controller
             ->take(3)
             ->get();
 
-        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts', 'discountedProducts', 'latestPosts', 'popup'));
+        $likedProducts = collect();
+        $likedProductIds = [];
+        if (Auth::check()) {
+            $likedProducts = Auth::user()->likedProducts()->with(['images'])->get();
+            $likedProductIds = Auth::user()->likedProducts()->pluck('products.id')->toArray();
+        }
+
+        return view('public.beranda', compact('bestSellers', 'recommended', 'latestProducts', 'discountedProducts', 'latestPosts', 'popup', 'likedProducts', 'likedProductIds'));
     }
 
     public function produk(Request $request)
@@ -98,7 +105,12 @@ class FrontController extends Controller
 
         $products = $query->get();
 
-        return view('public.produk', compact('categories', 'products'));
+        $likedProductIds = [];
+        if (Auth::check()) {
+            $likedProductIds = Auth::user()->likedProducts()->pluck('products.id')->toArray();
+        }
+
+        return view('public.produk', compact('categories', 'products', 'likedProductIds'));
     }
 
     public function produkUnggulan(Request $request)
@@ -148,7 +160,12 @@ class FrontController extends Controller
 
         $products = $query->get();
 
-        return view('public.produkUnggulan', compact('products', 'categories'));
+        $likedProductIds = [];
+        if (Auth::check()) {
+            $likedProductIds = Auth::user()->likedProducts()->pluck('products.id')->toArray();
+        }
+
+        return view('public.produkUnggulan', compact('products', 'categories', 'likedProductIds'));
     }
 
     public function detailProduk($id)
@@ -204,7 +221,6 @@ class FrontController extends Controller
     public function storeTestimonial(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
             'comment' => 'required|string',
             'rating' => 'required|integer|min:1|max:5',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -218,9 +234,9 @@ class FrontController extends Controller
         }
 
         Testimonial::create([
-            'user_id' => 1, // Hardcoded as requested
+            'user_id' => auth()->id(),
             'product_id' => $product->id,
-            'name' => $request->name,
+            'name' => auth()->user()->name,
             'comment' => $request->comment,
             'rating' => $request->rating,
             'image' => $imagePath,
@@ -266,6 +282,70 @@ class FrontController extends Controller
         }
 
         return view('public.pembayaran', compact('cartItems', 'total'));
+    }
+
+    public function storeOrder(Request $request)
+    {
+        $userId = Auth::id();
+        $cartItems = \App\Models\Cart::with(['product', 'size'])->where('user_id', $userId)->get();
+
+        if ($cartItems->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'Keranjang kosong'], 400);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'required|string',
+            'province_id' => 'required|string',
+            'province_name' => 'required|string',
+            'city_id' => 'required|string',
+            'city_name' => 'required|string',
+            'shipping_cost' => 'required|numeric',
+        ]);
+
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            $subtotal += $item->product->price * $item->quantity;
+        }
+
+        $totalPrice = $subtotal + $request->shipping_cost;
+
+        $order = \App\Models\Order::create([
+            'user_id' => $userId,
+            'order_number' => 'AQ-' . strtoupper(uniqid()),
+            'customer_name' => $request->name,
+            'customer_phone' => $request->phone,
+            'customer_address' => $request->address,
+            'province_id' => $request->province_id,
+            'province_name' => $request->province_name,
+            'city_id' => $request->city_id,
+            'city_name' => $request->city_name,
+            'shipping_cost' => $request->shipping_cost,
+            'total_price' => $totalPrice,
+            'status' => 'unpaid',
+            'notes' => $request->notes,
+        ]);
+
+        foreach ($cartItems as $item) {
+            \App\Models\OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $item->product_id,
+                'product_size_id' => $item->product_size_id,
+                'size_name' => $item->size->size,
+                'quantity' => $item->quantity,
+                'price' => $item->product->price,
+            ]);
+        }
+
+        // Clear cart
+        \App\Models\Cart::where('user_id', $userId)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order created successfully',
+            'order_id' => $order->id
+        ]);
     }
 
     public function blog()

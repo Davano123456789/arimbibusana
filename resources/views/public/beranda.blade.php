@@ -330,7 +330,9 @@
                     Hemat {{ $product->discount_percentage }}%
                   </span>
                 </div>
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i class="fa-regular fa-heart"></i></button>
+                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10" data-id="{{ $product->id }}">
+                  <i class="{{ in_array($product->id, $likedProductIds) ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+                </button>
               </div>
               <div class="p-5 flex-1 flex flex-col">
                 <h4 class="font-bold text-gray-900 mb-1 line-clamp-1">{{ $product->name }}</h4>
@@ -400,8 +402,9 @@
                 </div>
                 @endif
 
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
-                    class="fa-regular fa-heart"></i></button>
+                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10" data-id="{{ $product->id }}">
+                  <i class="{{ in_array($product->id, $likedProductIds) ? 'fa-solid' : 'fa-regular' }} fa-heart"></i>
+                </button>
               </div>
               <div class="p-4 flex-1 flex flex-col">
                 <h4 class="font-bold text-gray-900 mb-1 line-clamp-1 truncate">{{ $product->name }}</h4>
@@ -457,10 +460,9 @@
             @endif
 
             <div class="img-overlay"></div>
-            <button
-              class="absolute right-4 top-4 bg-white/90 text-red-500 w-10 h-10 rounded-full shadow-lg like-btn z-10 transition-all hover:scale-110 hover:bg-white flex items-center justify-center">
-              <i class="fa-regular fa-heart text-lg"></i>
-            </button>
+            <button class="absolute right-4 top-4 bg-white/90 text-red-500 w-10 h-10 rounded-full shadow-lg like-btn z-10 transition-all hover:scale-110 hover:bg-white flex items-center justify-center" data-id="{{ $product->id }}">
+                <i class="{{ in_array($product->id, $likedProductIds) ? 'fa-solid' : 'fa-regular' }} fa-heart fa-lg"></i>
+              </button>
           </div>
           <div class="p-6 flex flex-col flex-1">
             <p class="text-[10px] text-accent font-bold uppercase tracking-widest mb-1">{{ $product->category->name ?? 'Koleksi' }}</p>
@@ -493,56 +495,68 @@
 
 
 
-    {{-- 
-    <!-- Yang Kamu Suka (recommend slider) -->
-    <section id="recommendation" class="mt-20">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-2xl font-semibold flex items-center gap-2"><i class="fa-solid fa-heart text-red-500"></i> Yang
-          Kamu Suka</h3>
-        <a href="#" class="text-sm text-accent">Lihat Semua <i class="fa-solid fa-chevron-right ml-1"></i></a>
-      </div>
 
-      <div class="relative">
-        <!-- arrows -->
-        <button id="prevRecommend"
-          class="slider-btn absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-md ml-2"
-          aria-label="Sebelumnya" title="Sebelumnya"><i class="fa-solid fa-chevron-left text-accent"></i></button>
-        <button id="nextRecommend"
-          class="slider-btn absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-md mr-2"
-          aria-label="Berikutnya" title="Berikutnya"><i class="fa-solid fa-chevron-right text-accent"></i></button>
+    <!-- Yang Kamu Suka -->
+    @auth
+    <section id="recommendation" class="py-20 bg-[#FBF8F3]" data-aos="fade-up">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-xl md:text-2xl font-semibold flex items-center gap-2">
+            <i class="fa-solid fa-heart text-red-500"></i> Yang Kamu Suka
+          </h3>
+          <span class="text-sm text-gray-400">{{ $likedProducts->count() }} produk disukai</span>
+        </div>
 
-        <div id="recommendTrack" class="overflow-hidden">
-          <div id="recommendTrackInner" class="flex gap-6 no-scrollbar">
+        @if($likedProducts->count() > 0)
+        <div class="relative">
+          <!-- arrows -->
+          <button id="prevRecommend"
+            class="slider-btn absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-md -ml-4"
+            aria-label="Sebelumnya" title="Sebelumnya"><i class="fa-solid fa-chevron-left text-accent"></i></button>
+          <button id="nextRecommend"
+            class="slider-btn absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 bg-white rounded-full shadow-md -mr-4"
+            aria-label="Berikutnya" title="Berikutnya"><i class="fa-solid fa-chevron-right text-accent"></i></button>
 
-            @foreach($recommended as $product)
-            <article
-              class="slide bg-white rounded-lg overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm">
-              <div class="img-container relative">
-                @php
-                    $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
-                @endphp
-                <img class="w-full h-52 object-cover" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
-                <div class="img-overlay"></div>
-                <button class="absolute right-3 top-3 bg-white/80 text-red-500 p-2 rounded-full shadow like-btn z-10"><i
-                    class="fa-regular fa-heart"></i></button>
-              </div>
-              <div class="p-4">
-                <h4 class="font-medium">{{ $product->name }}</h4>
-                <p class="text-xs text-gray-500 mt-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
-                <div class="mt-4 flex items-center gap-2">
-                  <a href="{{ url('/detail-produk/' . $product->id) }}"
-                    class="flex-1 text-center text-xs btn-cream-dark text-white px-2 py-2 rounded">Lihat Detail</a>
-                  <a href="#" class="inline-flex items-center justify-center btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors text-xs"><i class="fa-solid fa-cart-shopping"></i></a>
+          <div id="recommendTrack" class="overflow-hidden">
+            <div id="recommendTrackInner" class="flex gap-6 no-scrollbar">
+              @foreach($likedProducts as $product)
+              <article class="slide bg-white rounded-2xl overflow-hidden min-w-[85%] md:min-w-[32%] lg:min-w-[23%] shadow-sm border border-gray-50 group flex flex-col">
+                <div class="img-container relative h-56 overflow-hidden">
+                  @php
+                      $imagePath = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
+                  @endphp
+                  <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" src="{{ $imagePath }}" alt="{{ $product->name }}" loading="lazy" />
+                  <div class="img-overlay"></div>
+                  <button class="absolute right-3 top-3 bg-red-50 text-red-500 p-2 rounded-full shadow like-btn z-10" data-id="{{ $product->id }}">
+                    <i class="fa-solid fa-heart"></i>
+                  </button>
                 </div>
-              </div>
-            </article>
-            @endforeach
-
+                <div class="p-4 flex flex-col flex-1">
+                  <h4 class="font-medium text-gray-900">{{ $product->name }}</h4>
+                  <p class="text-xs text-gray-500 mt-1">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                  <div class="mt-auto pt-3 flex items-center gap-2">
+                    <a href="{{ url('/detail-produk/' . $product->id) }}"
+                      class="flex-1 text-center text-xs btn-cream-dark text-white px-2 py-2 rounded">Lihat Detail</a>
+                    <a href="#" class="inline-flex items-center justify-center btn-cream-dark px-3 py-2 rounded shadow-md text-white transition-colors text-xs"><i class="fa-solid fa-cart-shopping"></i></a>
+                  </div>
+                </div>
+              </article>
+              @endforeach
+            </div>
           </div>
         </div>
+        @else
+        <div class="text-center py-16 text-gray-400">
+          <i class="fa-regular fa-heart text-5xl mb-4 block"></i>
+          <p class="text-sm">Kamu belum menyukai produk apapun.</p>
+          <a href="/produk" class="mt-4 inline-block text-xs btn-cream-dark text-white px-5 py-2 rounded-full">Jelajahi Produk</a>
+        </div>
+        @endif
       </div>
     </section>
-    --}}
+    @endauth
+
+
 
 
     <!-- Testimoni -->

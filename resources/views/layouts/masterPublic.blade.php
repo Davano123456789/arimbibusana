@@ -117,16 +117,68 @@
     });
 
     // Like button toggle (global)
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', async (e) => {
       const likeBtn = e.target.closest('.like-btn');
       if (!likeBtn) return;
+      
+      const productId = likeBtn.getAttribute('data-id');
+      if (!productId) return;
+
       const icon = likeBtn.querySelector('i');
-      if (icon.classList.contains('fa-regular')) {
-        icon.classList.remove('fa-regular');
-        icon.classList.add('fa-solid', 'text-red-500');
-      } else {
-        icon.classList.remove('fa-solid', 'text-red-500');
-        icon.classList.add('fa-regular');
+      
+      // Prevent multiple clicks
+      if (likeBtn.classList.contains('pointer-events-none')) return;
+      likeBtn.classList.add('pointer-events-none');
+
+      try {
+        const response = await fetch(`/detail-produk/${productId}/like`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        });
+
+        const data = await response.json();
+        
+        if (data.status === 'liked') {
+          icon.classList.remove('fa-regular');
+          icon.classList.add('fa-solid');
+          
+          // Specialized UI handling (for detail page)
+          if (likeBtn.classList.contains('border-2')) {
+            likeBtn.classList.add('bg-red-50', 'border-red-100');
+            likeBtn.classList.remove('border-gray-100');
+          }
+
+          // Update count if exists
+          const countSpan = document.getElementById('likeCount');
+          if (countSpan) countSpan.textContent = data.likes_count;
+        } else {
+          icon.classList.remove('fa-solid');
+          icon.classList.add('fa-regular');
+          
+          // Specialized UI handling (for detail page)
+          if (likeBtn.classList.contains('border-2')) {
+            likeBtn.classList.remove('bg-red-50', 'border-red-100');
+            likeBtn.classList.add('border-gray-100');
+          }
+
+          // Update count if exists
+          const countSpan = document.getElementById('likeCount');
+          if (countSpan) countSpan.textContent = data.likes_count;
+        }
+      } catch (error) {
+        console.error('Error toggling like:', error);
+        if (typeof iziToast !== 'undefined') {
+          iziToast.error({
+            title: 'Error',
+            message: 'Gagal memproses Like. Silakan coba lagi.',
+            position: 'topRight'
+          });
+        }
+      } finally {
+        likeBtn.classList.remove('pointer-events-none');
       }
     });
   </script>
