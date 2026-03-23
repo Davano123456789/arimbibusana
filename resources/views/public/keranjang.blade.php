@@ -82,7 +82,9 @@
                         <!-- Product Info -->
                         <div class="col-span-1 md:col-span-6 flex gap-4">
                             <div class="w-24 h-32 flex-shrink-0 bg-gray-100 rounded-xl overflow-hidden">
-                                @if($item->product->images->count() > 0)
+                                @if($item->size->image)
+                                    <img src="{{ asset('storage/' . $item->size->image->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
+                                @elseif($item->product->images->count() > 0)
                                     <img src="{{ asset('storage/' . $item->product->images->sortByDesc('is_cover')->first()->image) }}" alt="{{ $item->product->name }}" class="w-full h-full object-cover">
                                 @else
                                     <img src="{{ asset('images/no-image.jpg') }}" alt="No Image" class="w-full h-full object-cover">
@@ -90,7 +92,10 @@
                             </div>
                             <div class="flex flex-col justify-center">
                                 <h4 class="font-bold text-gray-900 text-lg mb-1 font-serif">{{ $item->product->name }}</h4>
-                                <p class="text-sm text-gray-500 mb-2">Ukuran: <span class="font-medium text-gray-900">{{ $item->size->size }}</span></p>
+                                <div class="flex flex-wrap gap-x-3 gap-y-1 mb-2">
+                                    <p class="text-sm text-gray-500">Warna: <span class="font-medium text-gray-900">{{ $item->size->image->color ?? '-' }}</span></p>
+                                    <p class="text-sm text-gray-500">Ukuran: <span class="font-medium text-gray-900">{{ $item->size->size }}</span></p>
+                                </div>
                                 <form action="{{ route('cart.destroy', $item->id) }}" method="POST" class="delete-form">
                                     @csrf
                                     @method('DELETE')

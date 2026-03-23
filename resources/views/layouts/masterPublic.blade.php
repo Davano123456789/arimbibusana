@@ -185,7 +185,6 @@
   <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
   @include('layouts.notifications')
   @yield('scripts')
-  @yield('scripts')
 </body>
 
 </html>

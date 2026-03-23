@@ -23,9 +23,16 @@ class Order extends Model
         'district_id',
         'district_name',
         'shipping_cost',
+        'courier',
         'total_price',
         'status',
         'notes',
+        'tracking_number',
+        'shipped_at',
+        'cancel_reason',
+        'refund_bank',
+        'refund_account_number',
+        'refund_receipt',
     ];
 
     public function user()

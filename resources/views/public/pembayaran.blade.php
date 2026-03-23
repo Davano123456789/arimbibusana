@@ -59,6 +59,7 @@
             border-radius: 10px;
         }
     </style>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 @endsection
 
 @section('content')
@@ -136,9 +137,12 @@
                                     <i class="fa-solid fa-map text-gray-400 group-focus-within:text-accent transition-colors"></i>
                                 </div>
                                 <select id="province" name="province_id" 
-                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none" required>
+                                    class="w-full pl-11 pr-10 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none cursor-pointer" required>
                                     <option value="">Pilih Provinsi</option>
                                 </select>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-gray-400 group-focus-within:text-accent transition-colors text-xs"></i>
+                                </div>
                             </div>
                         </div>
 
@@ -150,9 +154,32 @@
                                     <i class="fa-solid fa-city text-gray-400 group-focus-within:text-accent transition-colors"></i>
                                 </div>
                                 <select id="city" name="city_id" 
-                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none" disabled required>
+                                    class="w-full pl-11 pr-10 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none cursor-pointer" disabled required>
                                     <option value="">Pilih Kota</option>
                                 </select>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-gray-400 group-focus-within:text-accent transition-colors text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kurir Pengiriman -->
+                        <div>
+                            <label for="courier" class="block text-sm font-bold text-gray-700 mb-2">Kurir Pengiriman</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-truck text-gray-400 group-focus-within:text-accent transition-colors"></i>
+                                </div>
+                                <select id="courier" name="courier" 
+                                    class="w-full pl-11 pr-10 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none cursor-pointer" required>
+                                    <option value="jnt" selected>J&T Express</option>
+                                    <option value="jne">JNE Express</option>
+                                    <option value="sicepat">SiCepat</option>
+                                    <option value="pos">POS Indonesia</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-chevron-down text-gray-400 group-focus-within:text-accent transition-colors text-xs"></i>
+                                </div>
                             </div>
                         </div>
 
@@ -167,66 +194,19 @@
                 <section>
                     <h2 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                         <span class="w-8 h-8 rounded-full bg-cream-dark text-white flex items-center justify-center text-sm">2</span>
-                        Metode Pembayaran
+                        Konfirmasi Pesanan
                     </h2>
 
-                    <div class="space-y-4">
-                        <!-- Transfer Bank -->
-                        <label class="relative block cursor-pointer group">
-                            <input type="radio" name="payment_method" value="transfer" class="peer sr-only payment-radio" checked>
-                            <div class="payment-card p-5 rounded-xl border border-gray-200 hover:border-accent/50 transition-all bg-white flex items-center justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                                        <i class="fa-solid fa-building-columns text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">Transfer Bank</h4>
-                                        <p class="text-sm text-gray-500">BCA, Mandiri, BRI, BNI</p>
-                                    </div>
-                                </div>
-                                <div class="check-icon w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center opacity-0 transform scale-75 transition-all">
-                                    <i class="fa-solid fa-check text-xs"></i>
-                                </div>
-                            </div>
-                        </label>
-
-                        <!-- E-Wallet -->
-                        <label class="relative block cursor-pointer group">
-                            <input type="radio" name="payment_method" value="ewallet" class="peer sr-only payment-radio">
-                            <div class="payment-card p-5 rounded-xl border border-gray-200 hover:border-accent/50 transition-all bg-white flex items-center justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center">
-                                        <i class="fa-solid fa-wallet text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">E-Wallet (QRIS)</h4>
-                                        <p class="text-sm text-gray-500">GoPay, OVO, Dana, ShopeePay</p>
-                                    </div>
-                                </div>
-                                <div class="check-icon w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center opacity-0 transform scale-75 transition-all">
-                                    <i class="fa-solid fa-check text-xs"></i>
-                                </div>
-                            </div>
-                        </label>
-
-                        <!-- COD -->
-                        <label class="relative block cursor-pointer group">
-                            <input type="radio" name="payment_method" value="cod" class="peer sr-only payment-radio">
-                            <div class="payment-card p-5 rounded-xl border border-gray-200 hover:border-accent/50 transition-all bg-white flex items-center justify-between">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-12 h-12 rounded-lg bg-green-50 text-green-600 flex items-center justify-center">
-                                        <i class="fa-solid fa-money-bill-wave text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">Bayar di Tempat (COD)</h4>
-                                        <p class="text-sm text-gray-500">Bayar tunai saat kurir datang</p>
-                                    </div>
-                                </div>
-                                <div class="check-icon w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center opacity-0 transform scale-75 transition-all">
-                                    <i class="fa-solid fa-check text-xs"></i>
-                                </div>
-                            </div>
-                        </label>
+                    <div class="bg-blue-50 border border-blue-100 p-6 rounded-2xl flex gap-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-circle-info text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-900 mb-1">Metode Pembayaran</h4>
+                            <p class="text-sm text-blue-700 leading-relaxed text-light">
+                                Setelah klik "Buat Pesanan", Anda akan diarahkan ke jendela pembayaran aman dari <strong>Midtrans</strong> untuk memilih metode Transfer Bank, E-Wallet, atau Kartu Kredit.
+                            </p>
+                        </div>
                     </div>
                 </section>
             </div>
@@ -263,8 +243,12 @@
                             <span id="subtotal" data-value="{{ $total }}">Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                         <div class="flex justify-between text-gray-600">
-                            <span>Biaya Pengiriman (J&T)</span>
+                            <span>Biaya Pengiriman (<span id="selected_courier_label">J&T</span>)</span>
                             <span id="shipping_cost" class="text-gray-400 font-medium italic">Pilih alamat...</span>
+                        </div>
+                        <div class="flex justify-between text-gray-500 text-[13px] mt-1">
+                            <span>Estimasi Waktu Tiba</span>
+                            <span id="shipping_etd" class="font-medium italic">-</span>
                         </div>
                         <div class="border-t border-dashed border-gray-300 my-2"></div>
                         <div class="flex justify-between items-center">
@@ -355,11 +339,18 @@
             });
 
             // 3. Calculate Cost
-            citySelect.addEventListener('change', async function() {
-                const cityId = this.value;
-                const cityName = this.options[this.selectedIndex].text;
-                document.getElementById('city_name').value = cityName;
-                document.getElementById('province_name').value = provinceSelect.options[provinceSelect.selectedIndex].text;
+            async function calculateShippingCost() {
+                const cityId = citySelect.value;
+                const courier = document.getElementById('courier').value;
+                const courierName = document.getElementById('courier').options[document.getElementById('courier').selectedIndex].text;
+                
+                // Save metadata for the order
+                if (cityId) {
+                    document.getElementById('city_name').value = citySelect.options[citySelect.selectedIndex].text;
+                    document.getElementById('province_name').value = provinceSelect.options[provinceSelect.selectedIndex].text;
+                }
+
+                document.getElementById('selected_courier_label').textContent = courierName.split(' ')[0]; // Show first word only (e.g. "J&T")
 
                 if (!cityId) {
                     resetShipping();
@@ -379,18 +370,38 @@
                         body: JSON.stringify({
                             destination: cityId,
                             weight: totalWeight,
-                            courier: 'jnt'
+                            courier: courier
                         })
                     });
                     
                     const data = await response.json();
                     if (data.length > 0) {
-                        // Handle RajaOngkir format (nested) or Komerce format (flat)
-                        let cost = 0;
-                        if (data[0].costs && data[0].costs.length > 0) {
-                            cost = data[0].costs[0].cost[0].value;
-                        } else if (data[0].cost !== undefined) {
-                            cost = data[0].cost;
+                        let cost = Infinity;
+                        let etd = '';
+
+                        // Support both Komerce and standard RajaOngkir format
+                        if (data[0].costs) {
+                            // Standard RajaOngkir nesting
+                            data[0].costs.forEach(service => {
+                                if (service.cost && service.cost[0] && service.cost[0].value < cost) {
+                                    cost = service.cost[0].value;
+                                    etd = service.cost[0].etd || '';
+                                }
+                            });
+                        } else {
+                            // Komerce flat list
+                            data.forEach(service => {
+                                if (service.cost < cost && service.cost > 0) {
+                                    cost = service.cost;
+                                    etd = service.etd || service.estimasi || '';
+                                }
+                            });
+                        }
+
+                        if (cost === Infinity) {
+                            shippingCostDisplay.textContent = 'Tidak tersedia';
+                            resetShipping();
+                            return;
                         }
 
                         document.getElementById('shipping_cost_input').value = cost;
@@ -401,21 +412,36 @@
                         shippingCostDisplay.classList.remove('animate-pulse', 'italic', 'text-gray-400');
                         shippingCostDisplay.classList.add('text-gray-900', 'font-bold');
 
+                        let parsedEtd = etd;
+                        if (parsedEtd) {
+                            parsedEtd = parsedEtd.replace(/days?|hari/gi, '').trim() + ' Hari';
+                            document.getElementById('shipping_etd').textContent = parsedEtd;
+                            document.getElementById('shipping_etd').classList.remove('italic');
+                        } else {
+                            document.getElementById('shipping_etd').textContent = '-';
+                        }
+
                         const totalPayment = subtotal + cost;
                         const formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalPayment);
                         totalPaymentDisplay.textContent = formattedTotal;
                     } else {
                         shippingCostDisplay.textContent = 'Tidak tersedia';
+                        resetShipping();
                     }
                 } catch (error) {
                     console.error('Error calculating cost:', error);
                     shippingCostDisplay.textContent = 'Gagal';
                 }
-            });
+            }
+
+            citySelect.addEventListener('change', calculateShippingCost);
+            document.getElementById('courier').addEventListener('change', calculateShippingCost);
 
             function resetShipping() {
                 shippingCostDisplay.textContent = 'Pilih alamat...';
                 shippingCostDisplay.className = 'text-gray-400 font-medium italic';
+                document.getElementById('shipping_etd').textContent = '-';
+                document.getElementById('shipping_etd').classList.add('italic');
                 totalPaymentDisplay.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
                 document.getElementById('shipping_cost_input').value = 0;
             }
@@ -431,6 +457,7 @@
             const provinceName = document.getElementById('province_name').value;
             const cityId = document.getElementById('city').value;
             const cityName = document.getElementById('city_name').value;
+            const courier = document.getElementById('courier').value;
             const shippingCost = document.getElementById('shipping_cost_input').value;
 
             if (!name || !phone || !address || !cityId) {
@@ -478,6 +505,7 @@
                             province_name: provinceName,
                             city_id: cityId,
                             city_name: cityName,
+                            courier: courier,
                             shipping_cost: shippingCost,
                         })
                     });
@@ -485,13 +513,24 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        Swal.fire({
-                            title: 'Pesanan Berhasil!',
-                            text: 'Terima kasih telah berbelanja di Arimbi Queen. Pesanan Anda telah tercatat.',
-                            icon: 'success',
-                            confirmButtonColor: '#5B3A29'
-                        }).then(() => {
-                            window.location.href = "{{ url('/') }}";
+                        window.snap.pay(data.snap_token, {
+                            onSuccess: function(result) {
+                                window.location.href = "{{ url('/pembayaran/finish') }}?order_id=" + result.order_id;
+                            },
+                            onPending: function(result) {
+                                window.location.href = "{{ url('/pembayaran/finish') }}?order_id=" + result.order_id;
+                            },
+                            onError: function(result) {
+                                window.location.href = "{{ url('/pembayaran/finish') }}?order_id=" + result.order_id;
+                            },
+                            onClose: function() {
+                                Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Pembayaran Dibatalkan',
+                                    text: 'Anda menutup jendela pembayaran sebelum selesai.',
+                                    confirmButtonColor: '#5B3A29'
+                                });
+                            }
                         });
                     } else {
                         throw new Error(data.message || 'Gagal menyimpan pesanan');

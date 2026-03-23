@@ -29,6 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/keranjang/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/keranjang/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::get('/pembayaran', [FrontController::class, 'pembayaran'])->name('checkout.index');
+    Route::get('/pesanan', [FrontController::class, 'pesanan'])->name('pesanan.index');
+    Route::post('/pesanan/{id}/cancel', [FrontController::class, 'cancelOrder'])->name('pesanan.cancel');
+    Route::post('/pesanan/{id}/refund', [FrontController::class, 'requestRefund'])->name('pesanan.refund');
+    Route::post('/pesanan/{id}/complete', [FrontController::class, 'completeOrder'])->name('pesanan.complete');
+    Route::get('/invoice/{order_number}', [FrontController::class, 'invoice'])->name('pesanan.invoice');
     Route::post('/detail-produk/{id}/ulasan', [FrontController::class, 'storeTestimonial']);
 });
 
@@ -64,6 +69,9 @@ Route::post('/testimoni', [FrontController::class, 'storeGeneralTestimonial']);
 Route::get('/shipping/provinces', [\App\Http\Controllers\ShippingController::class, 'getProvinces']);
 Route::get('/shipping/cities/{provinceId}', [\App\Http\Controllers\ShippingController::class, 'getCities']);
 Route::post('/shipping/cost', [\App\Http\Controllers\ShippingController::class, 'getCost']);
+Route::get('/pembayaran/finish', [\App\Http\Controllers\FrontController::class, 'finishOrder'])->name('checkout.finish');
+Route::get('/pembayaran/berhasil/{order_number}', [\App\Http\Controllers\FrontController::class, 'paymentSuccess'])->name('checkout.success');
+Route::post('/midtrans/notification', [FrontController::class, 'handleNotification']);
 Route::post('/pembayaran', [\App\Http\Controllers\FrontController::class, 'storeOrder'])->name('checkout.store');
 
 Route::get('/blog', [FrontController::class, 'blog'])->name('public.blog');
@@ -118,6 +126,13 @@ Route::prefix('dashboard')->group(function () {
     // User Management
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('dashboard.users.index');
     Route::delete('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('dashboard.users.destroy');
+
+    // Order Management
+    Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('dashboard.orders.index');
+    Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('dashboard.orders.show');
+    Route::post('/orders/{id}/resi', [\App\Http\Controllers\Admin\OrderController::class, 'inputResi'])->name('dashboard.orders.resi');
+    Route::post('/orders/{id}/refund', [\App\Http\Controllers\Admin\OrderController::class, 'uploadRefund'])->name('dashboard.orders.refund');
+    Route::post('/orders/{id}/complete', [\App\Http\Controllers\Admin\OrderController::class, 'markAsCompleted'])->name('dashboard.orders.complete');
 });
 
 Route::get('/live', [FrontController::class, 'live'])->name('public.live');

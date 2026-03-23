@@ -27,11 +27,11 @@
         <div class="hidden md:flex items-center gap-5 ml-4">
             @auth
                 @if(Auth::user()->role === 'admin')
-                    <a href="{{ url('/dashboard') }}" class="text-gray-500 hover:text-accent transition-colors">
+                    <a href="{{ url('/dashboard') }}" class="text-gray-500 hover:text-accent transition-colors" title="Dashboard Admin">
                         <i class="fa-solid fa-gauge-high text-xl"></i>
                     </a>
                 @endif
-                <form action="{{ route('logout') }}" method="POST" class="m-0">
+                <form action="{{ route('logout') }}" method="POST" class="m-0 ml-4">
                     @csrf
                     <button type="submit" class="flex items-center gap-2 px-5 py-2 border border-accent text-accent rounded-full text-sm font-medium hover:bg-accent hover:text-white transition-all duration-300 shadow-sm">
                         <i class="fa-solid fa-right-from-bracket text-xs"></i>
@@ -43,6 +43,11 @@
                     <i class="fa-solid fa-user text-xs"></i>
                     Login
                 </a>
+            @endauth
+            @auth
+            <a href="{{ url('/pesanan') }}" class="text-gray-500 hover:text-accent transition-colors" title="Pesanan Saya">
+                <i class="fa-solid fa-clipboard-list text-xl"></i>
+            </a>
             @endauth
             <a href="{{ url('/keranjang') }}" class="relative group text-gray-500 hover:text-accent transition-colors">
                 <i class="fa-solid fa-cart-shopping text-xl"></i>
@@ -106,6 +111,12 @@
             <a href="{{ url('/tentang') }}" class="py-2 border-b mobile-nav-link">Tentang Kami</a>
             <a href="{{ route('public.blog') }}" class="py-2 border-b mobile-nav-link">Blog</a>
             <a href="#informasi" class="py-2 border-b mobile-nav-link">Informasi Kami</a>
+            @auth
+            <a href="{{ url('/pesanan') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
+                Pesanan Saya
+                <i class="fa-solid fa-clipboard-list text-gray-400"></i>
+            </a>
+            @endauth
             <a href="{{ url('/keranjang') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
                 Keranjang Belanja
                 @if($cartCount > 0)

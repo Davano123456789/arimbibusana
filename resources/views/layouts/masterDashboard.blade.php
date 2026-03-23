@@ -57,9 +57,9 @@
           </div>
           <ul class="navbar-nav  justify-content-end">
             <li class="nav-item d-flex align-items-center">
-              <a href="javascript:;" class="nav-link text-white font-weight-bold px-0">
-                <i class="fa fa-user me-sm-1"></i>
-                <span class="d-sm-inline d-none">Sign In</span>
+              <a href="{{ url('/') }}" class="nav-link text-white font-weight-bold px-0">
+                <i class="fa-solid fa-house me-sm-1"></i>
+                <span class="d-sm-inline d-none">Beranda</span>
               </a>
             </li>
             <li class="nav-item d-xl-none ps-3 d-flex align-items-center">

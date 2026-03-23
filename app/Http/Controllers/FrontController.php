@@ -9,6 +9,11 @@ use App\Models\Product;
 use App\Models\ProductLike;
 use App\Models\Announcement;
 use App\Models\BlogPost;
+use App\Mail\RefundRequested;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Midtrans\Config;
+use Midtrans\Snap;
 
 class FrontController extends Controller
 {
@@ -301,6 +306,7 @@ class FrontController extends Controller
             'province_name' => 'required|string',
             'city_id' => 'required|string',
             'city_name' => 'required|string',
+            'courier' => 'required|string',
             'shipping_cost' => 'required|numeric',
         ]);
 
@@ -321,6 +327,7 @@ class FrontController extends Controller
             'province_name' => $request->province_name,
             'city_id' => $request->city_id,
             'city_name' => $request->city_name,
+            'courier' => $request->courier,
             'shipping_cost' => $request->shipping_cost,
             'total_price' => $totalPrice,
             'status' => 'unpaid',
@@ -333,9 +340,56 @@ class FrontController extends Controller
                 'product_id' => $item->product_id,
                 'product_size_id' => $item->product_size_id,
                 'size_name' => $item->size->size,
+                'color_name' => $item->size->image ? $item->size->image->color : null,
                 'quantity' => $item->quantity,
                 'price' => $item->product->price,
             ]);
+        }
+
+        // Midtrans Configuration
+        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
+        Config::$is3ds = env('MIDTRANS_IS_3DS', true);
+
+        $params = [
+            'transaction_details' => [
+                'order_id' => $order->order_number,
+                'gross_amount' => (int) $totalPrice,
+            ],
+            'customer_details' => [
+                'first_name' => $request->name,
+                'email' => Auth::user()->email,
+                'phone' => $request->phone,
+            ],
+            'item_details' => $cartItems->map(function($item) {
+                return [
+                    'id' => $item->product_id,
+                    'price' => (int) $item->product->price,
+                    'quantity' => $item->quantity,
+                    'name' => $item->product->name . ' (' . $item->size->size . ')',
+                ];
+            })->toArray(),
+        ];
+
+        // Add shipping cost as an item
+        if ($request->shipping_cost > 0) {
+            $params['item_details'][] = [
+                'id' => 'shipping_cost',
+                'price' => (int) $request->shipping_cost,
+                'quantity' => 1,
+                'name' => 'Ongkos Kirim (' . strtoupper($request->courier) . ')',
+            ];
+        }
+
+        try {
+            $snapToken = Snap::getSnapToken($params);
+            $order->update(['snap_token' => $snapToken]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal membuat token pembayaran: ' . $e->getMessage()
+            ], 500);
         }
 
         // Clear cart
@@ -343,9 +397,154 @@ class FrontController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Order created successfully',
-            'order_id' => $order->id
+            'message' => 'Pesanan berhasil dibuat',
+            'order_id' => $order->id,
+            'snap_token' => $snapToken
         ]);
+    }
+
+    public function handleNotification(Request $request)
+    {
+        $serverKey = env('MIDTRANS_SERVER_KEY');
+        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+        
+        if ($hashed == $request->signature_key) {
+            $order = \App\Models\Order::where('order_number', $request->order_id)->first();
+            if ($order) {
+                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                    if ($order->status !== 'settlement') {
+                        $order->update(['status' => 'settlement']);
+                        \Illuminate\Support\Facades\Mail::send('emails.invoice', ['order' => $order], function ($m) use ($order) {
+                            $m->to($order->user->email, $order->customer_name)->subject('Invoice Pesanan ' . $order->order_number);
+                        });
+                    }
+                } elseif ($request->transaction_status == 'pending') {
+                    $order->update(['status' => 'pending']);
+                } elseif ($request->transaction_status == 'deny' || $request->transaction_status == 'cancel') {
+                    $order->update(['status' => 'cancel']);
+                } elseif ($request->transaction_status == 'expire') {
+                    $order->update(['status' => 'expire']);
+                }
+            }
+        }
+
+        return response()->json(['status' => 'success']);
+    }
+
+    public function finishOrder(Request $request)
+    {
+        $orderId = $request->order_id;
+        
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
+        \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS', true);
+
+        try {
+            $statusRes = \Midtrans\Transaction::status($orderId);
+            $order = \App\Models\Order::where('order_number', $orderId)->first();
+
+            if ($order) {
+                if ($statusRes->transaction_status == 'settlement' || $statusRes->transaction_status == 'capture') {
+                    if ($order->status !== 'settlement') {
+                        $order->update(['status' => 'settlement']);
+                        \Illuminate\Support\Facades\Mail::send('emails.invoice', ['order' => $order], function ($m) use ($order) {
+                            $m->to($order->user->email, $order->customer_name)->subject('Invoice Pesanan ' . $order->order_number);
+                        });
+                    }
+                    return redirect()->route('checkout.success', $orderId)->with('success', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');
+                }
+            }
+            
+            return redirect('/')->with('info', 'Status pembayaran Anda: ' . $statusRes->transaction_status);
+        } catch (\Exception $e) {
+            return redirect('/')->with('error', 'Gagal memverifikasi pembayaran: ' . $e->getMessage());
+        }
+    }
+
+    public function paymentSuccess($order_number)
+    {
+        $order = \App\Models\Order::with(['items.product'])->where('order_number', $order_number)->firstOrFail();
+        
+        // Ensure user can only view their own order
+        if ($order->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403);
+        }
+
+        return view('public.pembayaran-berhasil', compact('order'));
+    }
+
+    public function invoice($order_number)
+    {
+        $order = \App\Models\Order::with(['items.product', 'user'])->where('order_number', $order_number)->firstOrFail();
+        
+        if ($order->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            abort(403);
+        }
+
+        return view('public.invoice-web', compact('order'));
+    }
+
+    public function pesanan()
+    {
+        $orders = \App\Models\Order::with(['items', 'items.product', 'items.product.images'])
+            ->where('user_id', \Illuminate\Support\Facades\Auth::id())
+            ->latest()
+            ->get();
+            
+        return view('public.pesanan', compact('orders'));
+    }
+
+    public function cancelOrder(Request $request, $id)
+    {
+        $order = \App\Models\Order::where('id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->firstOrFail();
+        if ($order->status !== 'unpaid') return back()->with('error', 'Pesanan tidak bisa dibatalkan.');
+
+        $order->update([
+            'status' => 'cancel',
+            'cancel_reason' => $request->cancel_reason
+        ]);
+
+        return back()->with('success', 'Pesanan berhasil dibatalkan.');
+    }
+
+    public function requestRefund(Request $request, $id)
+    {
+        $order = \App\Models\Order::where('id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->firstOrFail();
+        if ($order->status !== 'settlement') return back()->with('error', 'Status pesanan tidak valid untuk refund.');
+
+        $request->validate([
+            'cancel_reason' => 'required|string',
+            'refund_bank' => 'required|string',
+            'refund_account_number' => 'required|string'
+        ]);
+
+        $order->update([
+            'status'                => 'waiting_refund',
+            'cancel_reason'         => $request->cancel_reason,
+            'refund_bank'           => $request->refund_bank,
+            'refund_account_number' => $request->refund_account_number
+        ]);
+
+        // Kirim notifikasi ke admin
+        try {
+            $adminEmail = env('MAIL_ADMIN_ADDRESS', env('MAIL_FROM_ADDRESS'));
+            Mail::to($adminEmail)->send(new RefundRequested($order));
+        } catch (\Exception $e) {
+            Log::error('Gagal kirim email refund requested ke admin: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Pengajuan refund berhasil dikirim. Menunggu proses admin.');
+    }
+
+    public function completeOrder(Request $request, $id)
+    {
+        $order = \App\Models\Order::where('id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->firstOrFail();
+        if ($order->status !== 'shipped') return back()->with('error', 'Pesanan tidak bisa diselesaikan saat ini.');
+
+        $order->update(['status' => 'completed']);
+
+        return back()->with('success', 'Terima kasih, pesanan telah diselesaikan!');
     }
 
     public function blog()

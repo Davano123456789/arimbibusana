@@ -40,6 +40,14 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ request()->is('dashboard/orders*') ? 'active' : '' }}" href="{{ route('dashboard.orders.index') }}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-bag-shopping text-primary text-sm"></i>
+          </div>
+          <span class="nav-link-text ms-1">Daftar Pesanan</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ Request::is('dashboard/categories*') ? 'active' : '' }}" href="{{ route('dashboard.categories.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fa-solid fa-layer-group text-success text-sm"></i>
@@ -77,6 +85,22 @@
             <i class="fa-solid fa-sliders text-primary text-sm"></i>
           </div>
           <span class="nav-link-text ms-1">Pengaturan</span>
+        </a>
+      </li>
+
+      <li class="nav-item mt-3">
+        <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Opsi</h6>
+      </li>
+
+      <li class="nav-item">
+        <form action="{{ route('logout') }}" method="POST" id="logout-form-sidebar" class="d-none">
+          @csrf
+        </form>
+        <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-right-from-bracket text-danger text-sm"></i>
+          </div>
+          <span class="nav-link-text ms-1 text-danger font-weight-bold">Keluar</span>
         </a>
       </li>
     </ul>
