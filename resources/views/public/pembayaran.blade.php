@@ -459,6 +459,7 @@
             const cityName = document.getElementById('city_name').value;
             const courier = document.getElementById('courier').value;
             const shippingCost = document.getElementById('shipping_cost_input').value;
+            const shippingEtd = document.getElementById('shipping_etd').textContent;
 
             if (!name || !phone || !address || !cityId) {
                 Swal.fire({
@@ -507,6 +508,7 @@
                             city_name: cityName,
                             courier: courier,
                             shipping_cost: shippingCost,
+                            shipping_etd: shippingEtd,
                         })
                     });
 

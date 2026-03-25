@@ -23,6 +23,7 @@ class Order extends Model
         'district_id',
         'district_name',
         'shipping_cost',
+        'shipping_etd',
         'courier',
         'total_price',
         'status',

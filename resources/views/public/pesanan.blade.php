@@ -5,6 +5,7 @@
 
 @section('head')
     <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         .status-badge {
             padding: 4px 12px;
@@ -97,14 +98,28 @@
                                 <h4 class="font-bold text-gray-900 text-base mb-1 truncate">
                                     {{ $firstItem ? $firstItem->product->name : 'Produk Tidak Ditemukan' }}
                                 </h4>
-                                <p class="text-sm text-gray-500 mb-2">
-                                    {{ $firstItem ? $firstItem->quantity . ' x Rp ' . number_format($firstItem->price, 0, ',', '.') : '' }}
-                                </p>
+                                <div class="flex flex-wrap gap-x-4 gap-y-1 items-center">
+                                    <p class="text-sm text-gray-500">
+                                        {{ $firstItem ? $firstItem->quantity . ' x Rp ' . number_format($firstItem->price, 0, ',', '.') : '' }}
+                                    </p>
+                                    @if($order->shipping_etd && $order->shipping_etd !== '-')
+                                        <div class="flex items-center gap-1.5 text-xs text-gray-400">
+                                            <i class="fa-solid fa-truck-fast"></i> Estimasi {{ $order->shipping_etd }}
+                                        </div>
+                                    @endif
+                                </div>
                                 
                                 @if($order->items->count() > 1)
-                                    <p class="text-xs text-gray-400 bg-gray-50 inline-block px-2 py-1 rounded-md">
+                                    <p class="text-xs text-gray-400 bg-gray-50 inline-block px-2 py-1 rounded-md mt-2">
                                         + {{ $order->items->count() - 1 }} produk lainnya
                                     </p>
+                                @endif
+
+                                @if($order->status === 'unpaid')
+                                    <div class="mt-3 flex items-center gap-2 text-[11px] font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 inline-flex">
+                                        <i class="fa-solid fa-stopwatch animate-pulse"></i>
+                                        BAYAR SEBELUM: {{ $order->created_at->addHours(24)->format('d M, H:i') }} WIB
+                                    </div>
                                 @endif
                             </div>
 
@@ -184,13 +199,27 @@
                         </div>
                     @elseif(in_array($order->status, ['waiting_refund', 'refunded']))
                         <div class="bg-gray-50 px-6 py-4 border-t border-gray-100 flex justify-between items-center flex-wrap gap-4">
-                            <div class="text-sm">
-                                <p class="text-gray-500 text-xs font-bold uppercase mb-1">Tujuan Refund</p>
-                                <p class="text-gray-800 font-medium">{{ strtoupper($order->refund_bank) }} - {{ $order->refund_account_number }}</p>
+                            <div class="flex gap-6">
+                                <div class="text-sm">
+                                    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Tujuan Refund</p>
+                                    <p class="text-gray-800 font-bold">{{ strtoupper($order->refund_bank) }}</p>
+                                    <p class="text-xs text-gray-500">{{ $order->refund_account_number }}</p>
+                                </div>
+                                @if($order->status === 'refunded' && $order->refund_receipt)
+                                <div class="h-10 w-px bg-gray-200"></div>
+                                <div class="text-sm">
+                                    <p class="text-gray-500 text-[10px] font-bold uppercase tracking-wider mb-1">Bukti Transfer</p>
+                                    <a href="{{ asset('storage/' . $order->refund_receipt) }}" target="_blank" class="text-accent hover:underline font-bold flex items-center gap-1.5">
+                                        <i class="fa-solid fa-image"></i> Buka Foto Bukti
+                                    </a>
+                                </div>
+                                @endif
                             </div>
-                            <a href="{{ route('pesanan.invoice', $order->order_number) }}" class="px-6 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-xl shadow-sm transition-all">
-                                Lihat Detail
-                            </a>
+                            <div class="flex gap-2">
+                                <a href="{{ route('pesanan.invoice', $order->order_number) }}" class="px-6 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-xl shadow-sm transition-all">
+                                    Detail Invoice
+                                </a>
+                            </div>
                         </div>
                     @else
                         <div class="bg-gray-50/50 px-6 py-4 flex items-center justify-end border-t border-gray-100 gap-4 flex-wrap">
@@ -201,6 +230,11 @@
                     @endif
                 </div>
             @endforeach
+
+            <!-- Pagination Links -->
+            <div class="mt-8">
+                {{ $orders->links() }}
+            </div>
         </div>
     @endif
 </div>
@@ -250,19 +284,21 @@
         const { value: formValues } = await Swal.fire({
             title: 'Ajukan Pengembalian Dana',
             html: `
-                <p class="text-sm text-gray-500 mb-4 text-left">Dana akan kami transfer kembali maksimal 2x24 Jam kerja ke rekening Anda.</p>
-                <div class="space-y-3 text-left">
-                    <div>
-                        <label class="font-bold text-xs uppercase text-gray-500">Alasan Pembatalan</label>
-                        <input id="swal-reason" class="swal2-input !mt-1 !w-full !box-border" placeholder="Contoh: Salah ukuran">
-                    </div>
-                    <div>
-                        <label class="font-bold text-xs uppercase text-gray-500">Nama Bank Tujuan</label>
-                        <input id="swal-bank" class="swal2-input !mt-1 !w-full !box-border" placeholder="Contoh: BCA a/n Devan">
-                    </div>
-                    <div>
-                        <label class="font-bold text-xs uppercase text-gray-500">Nomor Rekening</label>
-                        <input id="swal-acc" class="swal2-input !mt-1 !w-full !box-border" placeholder="Nomor Rekening Valid">
+                <div class="px-2">
+                    <p class="text-sm text-gray-500 mb-6 text-left leading-relaxed">Dana akan kami transfer kembali maksimal 2x24 Jam kerja ke rekening Anda setelah disetujui.</p>
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <label class="block font-bold text-xs uppercase text-gray-500 mb-1">Alasan Pembatalan</label>
+                            <input id="swal-reason" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all" placeholder="Contoh: Salah ukuran/warna">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-xs uppercase text-gray-500 mb-1">Nama Bank Tujuan</label>
+                            <input id="swal-bank" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all" placeholder="Contoh: BCA a/n Devan">
+                        </div>
+                        <div>
+                            <label class="block font-bold text-xs uppercase text-gray-500 mb-1">Nomor Rekening</label>
+                            <input id="swal-acc" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-accent/20 focus:border-accent outline-none transition-all" placeholder="Masukkan nomor rekening valid">
+                        </div>
                     </div>
                 </div>
             `,
@@ -270,6 +306,9 @@
             showCancelButton: true,
             confirmButtonText: 'Ajukan Refund',
             confirmButtonColor: '#e3342f',
+            cancelButtonText: 'Batal',
+            width: '32rem',
+            padding: '2rem',
             preConfirm: () => {
                 const reason = document.getElementById('swal-reason').value;
                 const bank = document.getElementById('swal-bank').value;

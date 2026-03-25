@@ -308,6 +308,7 @@ class FrontController extends Controller
             'city_name' => 'required|string',
             'courier' => 'required|string',
             'shipping_cost' => 'required|numeric',
+            'shipping_etd' => 'nullable|string',
         ]);
 
         $subtotal = 0;
@@ -329,6 +330,7 @@ class FrontController extends Controller
             'city_name' => $request->city_name,
             'courier' => $request->courier,
             'shipping_cost' => $request->shipping_cost,
+            'shipping_etd' => $request->shipping_etd,
             'total_price' => $totalPrice,
             'status' => 'unpaid',
             'notes' => $request->notes,
@@ -490,7 +492,7 @@ class FrontController extends Controller
         $orders = \App\Models\Order::with(['items', 'items.product', 'items.product.images'])
             ->where('user_id', \Illuminate\Support\Facades\Auth::id())
             ->latest()
-            ->get();
+            ->paginate(5);
             
         return view('public.pesanan', compact('orders'));
     }

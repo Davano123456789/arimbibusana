@@ -25,10 +25,8 @@ class OrderController extends Controller
             $query->where('status', 'shipped');
         } elseif ($status === 'completed') {
             $query->where('status', 'completed');
-        } elseif ($status === 'canceled') {
-            $query->whereIn('status', ['cancel', 'expire']);
         } elseif ($status === 'refund') {
-            $query->whereIn('status', ['waiting_refund', 'refunded']);
+            $query->whereIn('status', ['cancel', 'expire', 'waiting_refund', 'refunded']);
         } elseif ($status === 'unpaid') {
             $query->where('status', 'unpaid')->where('snap_token', '!=', null);
         }

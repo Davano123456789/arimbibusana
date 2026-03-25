@@ -11,27 +11,27 @@
                 <div class="nav-wrapper position-relative w-100 w-md-auto">
                     <ul class="nav nav-pills nav-fill p-1 bg-gray-100 rounded-lg">
                         <li class="nav-item">
-                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'processing' ? 'active' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'processing']) }}">
+                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'processing' ? 'active bg-white shadow text-dark font-weight-bold' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'processing']) }}">
                                 <span class="ms-1">Perlu Dikemas</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'shipped' ? 'active' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'shipped']) }}">
+                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'shipped' ? 'active bg-white shadow text-dark font-weight-bold' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'shipped']) }}">
                                 <span class="ms-1">Sedang Dikirim</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'completed' ? 'active' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'completed']) }}">
+                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'completed' ? 'active bg-white shadow text-dark font-weight-bold' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'completed']) }}">
                                 <span class="ms-1">Selesai</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'refund' ? 'active' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'refund']) }}">
+                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'refund' ? 'active bg-white shadow text-dark font-weight-bold' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'refund']) }}">
                                 <span class="ms-1">Batal/Refund</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'unpaid' ? 'active' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'unpaid']) }}">
+                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'unpaid' ? 'active bg-white shadow text-dark font-weight-bold' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'unpaid']) }}">
                                 <span class="ms-1">Belum Dibayar</span>
                             </a>
                         </li>
@@ -49,6 +49,9 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Pelanggan</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Total Bayar</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal</th>
+                                @if($status === 'refund')
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status/Alasan</th>
+                                @endif
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                             </tr>
                         </thead>
@@ -76,6 +79,20 @@
                                 <td class="align-middle text-center">
                                     <span class="text-secondary text-xs">{{ $order->created_at->format('d M Y, H:i') }}</span>
                                 </td>
+                                @if($status === 'refund')
+                                <td class="align-middle text-center">
+                                    @if($order->status === 'cancel' || $order->status === 'expire')
+                                        <span class="badge badge-sm bg-gradient-secondary">Batal / Expired</span>
+                                    @elseif($order->status === 'waiting_refund')
+                                        <span class="badge badge-sm bg-gradient-warning">Antrean Refund</span>
+                                    @elseif($order->status === 'refunded')
+                                        <span class="badge badge-sm bg-gradient-success">Refund Terkirim</span>
+                                    @endif
+                                    @if($order->cancel_reason)
+                                        <p class="text-xxs text-secondary mb-0 mt-1" style="max-width: 150px; white-space: normal;">Alasan: {{ $order->cancel_reason }}</p>
+                                    @endif
+                                </td>
+                                @endif
                                 <td class="align-middle text-center">
                                     <a href="{{ route('dashboard.orders.show', $order->id) }}" class="btn btn-sm bg-gradient-info text-white me-2">
                                         Pilih / Detail

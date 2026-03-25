@@ -28,7 +28,7 @@
                             @forelse($products as $product)
                             <tr>
                                 <td class="align-middle text-center">
-                                    <span class="text-secondary text-xs font-weight-bold">{{ $loop->iteration }}</span>
+                                    <span class="text-secondary text-xs font-weight-bold">{{ $loop->iteration + $products->firstItem() - 1 }}</span>
                                 </td>
                                 <td>
                                     <div class="d-flex px-2 py-1">
@@ -84,6 +84,9 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div class="card-footer px-4 border-top">
+                {{ $products->links() }}
             </div>
         </div>
     </div>
