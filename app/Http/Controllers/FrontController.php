@@ -289,9 +289,9 @@ class FrontController extends Controller
         return view('public.pembayaran', compact('cartItems', 'total'));
     }
 
-    public function storeOrder(Request $request)
+    public function placeOrder(Request $request)
     {
-        $userId = Auth::id();
+        $userId = \Illuminate\Support\Facades\Auth::id();
         $cartItems = \App\Models\Cart::with(['product', 'size'])->where('user_id', $userId)->get();
 
         if ($cartItems->isEmpty()) {
@@ -311,98 +311,113 @@ class FrontController extends Controller
             'shipping_etd' => 'nullable|string',
         ]);
 
-        $subtotal = 0;
-        foreach ($cartItems as $item) {
-            $subtotal += $item->product->price * $item->quantity;
-        }
-
-        $totalPrice = $subtotal + $request->shipping_cost;
-
-        $order = \App\Models\Order::create([
-            'user_id' => $userId,
-            'order_number' => 'AQ-' . strtoupper(uniqid()),
-            'customer_name' => $request->name,
-            'customer_phone' => $request->phone,
-            'customer_address' => $request->address,
-            'province_id' => $request->province_id,
-            'province_name' => $request->province_name,
-            'city_id' => $request->city_id,
-            'city_name' => $request->city_name,
-            'courier' => $request->courier,
-            'shipping_cost' => $request->shipping_cost,
-            'shipping_etd' => $request->shipping_etd,
-            'total_price' => $totalPrice,
-            'status' => 'unpaid',
-            'notes' => $request->notes,
-        ]);
-
-        foreach ($cartItems as $item) {
-            \App\Models\OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $item->product_id,
-                'product_size_id' => $item->product_size_id,
-                'size_name' => $item->size->size,
-                'color_name' => $item->size->image ? $item->size->image->color : null,
-                'quantity' => $item->quantity,
-                'price' => $item->product->price,
-            ]);
-        }
-
-        // Midtrans Configuration
-        Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-        Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-        Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
-        Config::$is3ds = env('MIDTRANS_IS_3DS', true);
-
-        $params = [
-            'transaction_details' => [
-                'order_id' => $order->order_number,
-                'gross_amount' => (int) $totalPrice,
-            ],
-            'customer_details' => [
-                'first_name' => $request->name,
-                'email' => Auth::user()->email,
-                'phone' => $request->phone,
-            ],
-            'item_details' => $cartItems->map(function($item) {
-                return [
-                    'id' => $item->product_id,
-                    'price' => (int) $item->product->price,
-                    'quantity' => $item->quantity,
-                    'name' => $item->product->name . ' (' . $item->size->size . ')',
-                ];
-            })->toArray(),
-        ];
-
-        // Add shipping cost as an item
-        if ($request->shipping_cost > 0) {
-            $params['item_details'][] = [
-                'id' => 'shipping_cost',
-                'price' => (int) $request->shipping_cost,
-                'quantity' => 1,
-                'name' => 'Ongkos Kirim (' . strtoupper($request->courier) . ')',
-            ];
-        }
-
         try {
-            $snapToken = Snap::getSnapToken($params);
-            $order->update(['snap_token' => $snapToken]);
+            return \Illuminate\Support\Facades\DB::transaction(function() use ($request, $cartItems, $userId) {
+                // ... same logic ...
+                $subtotal = 0;
+                foreach ($cartItems as $item) {
+                    $subtotal += $item->product->price * $item->quantity;
+                }
+                $totalPrice = $subtotal + $request->shipping_cost;
+
+                // 1. First, check all stocks and lock them
+                foreach ($cartItems as $item) {
+                    $productSize = \App\Models\ProductSize::where('id', $item->product_size_id)->lockForUpdate()->first();
+                    if (!$productSize || $productSize->stock < $item->quantity) {
+                        throw new \Exception("Stok {$item->product->name} (Size {$item->size->size}) tidak mencukupi atau baru saja habis.");
+                    }
+                }
+
+                // 2. Decrement stocks
+                foreach ($cartItems as $item) {
+                    \App\Models\ProductSize::where('id', $item->product_size_id)->decrement('stock', $item->quantity);
+                    \App\Models\Product::where('id', $item->product_id)->decrement('stock', $item->quantity);
+                }
+
+                // 3. Create Order
+                $order = \App\Models\Order::create([
+                    'user_id' => $userId,
+                    'order_number' => 'AQ-' . strtoupper(uniqid()),
+                    'customer_name' => $request->name,
+                    'customer_phone' => $request->phone,
+                    'customer_address' => $request->address,
+                    'province_id' => $request->province_id,
+                    'province_name' => $request->province_name,
+                    'city_id' => $request->city_id,
+                    'city_name' => $request->city_name,
+                    'courier' => $request->courier,
+                    'shipping_cost' => $request->shipping_cost,
+                    'shipping_etd' => $request->shipping_etd,
+                    'total_price' => $totalPrice,
+                    'status' => 'unpaid',
+                    'notes' => $request->notes,
+                ]);
+
+                foreach ($cartItems as $item) {
+                    \App\Models\OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'product_size_id' => $item->product_size_id,
+                        'size_name' => $item->size->size,
+                        'color_name' => $item->size->image ? $item->size->image->color : null,
+                        'quantity' => $item->quantity,
+                        'price' => $item->product->price,
+                    ]);
+                }
+
+                // Midtrans Configuration
+                \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+                \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+                \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
+                \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS', true);
+
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $order->order_number,
+                        'gross_amount' => (int) $totalPrice,
+                    ],
+                    'customer_details' => [
+                        'first_name' => $request->name,
+                        'email' => \Illuminate\Support\Facades\Auth::user()->email,
+                        'phone' => $request->phone,
+                    ],
+                    'item_details' => $cartItems->map(function($item) {
+                        return [
+                            'id' => $item->product_id,
+                            'price' => (int) $item->product->price,
+                            'quantity' => $item->quantity,
+                            'name' => \Illuminate\Support\Str::limit($item->product->name, 45) . ' (' . $item->size->size . ')',
+                        ];
+                    })->toArray(),
+                ];
+
+                if ($request->shipping_cost > 0) {
+                    $params['item_details'][] = [
+                        'id' => 'shipping_cost',
+                        'price' => (int) $request->shipping_cost,
+                        'quantity' => 1,
+                        'name' => 'Ongkos Kirim (' . strtoupper($request->courier) . ')',
+                    ];
+                }
+
+                $snapToken = \Midtrans\Snap::getSnapToken($params);
+                $order->update(['snap_token' => $snapToken]);
+
+                \App\Models\Cart::where('user_id', $userId)->delete();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Pesanan berhasil dibuat',
+                    'order_id' => $order->id,
+                    'snap_token' => $snapToken
+                ]);
+            });
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal membuat token pembayaran: ' . $e->getMessage()
-            ], 500);
+                'message' => $e->getMessage()
+            ], 400);
         }
-
-        // Clear cart
-        \App\Models\Cart::where('user_id', $userId)->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pesanan berhasil dibuat',
-            'order_id' => $order->id,
-            'snap_token' => $snapToken
-        ]);
     }
 
     public function handleNotification(Request $request)
@@ -423,9 +438,15 @@ class FrontController extends Controller
                 } elseif ($request->transaction_status == 'pending') {
                     $order->update(['status' => 'pending']);
                 } elseif ($request->transaction_status == 'deny' || $request->transaction_status == 'cancel') {
-                    $order->update(['status' => 'cancel']);
+                    if ($order->status !== 'cancel') {
+                        $order->update(['status' => 'cancel']);
+                        $this->returnStock($order);
+                    }
                 } elseif ($request->transaction_status == 'expire') {
-                    $order->update(['status' => 'expire']);
+                    if ($order->status !== 'expire') {
+                        $order->update(['status' => 'expire']);
+                        $this->returnStock($order);
+                    }
                 }
             }
         }
@@ -504,10 +525,12 @@ class FrontController extends Controller
 
         $order->update([
             'status' => 'cancel',
-            'cancel_reason' => $request->cancel_reason
+            'cancel_reason' => $request->cancel_reason ?? 'Dibatalkan oleh pelanggan'
         ]);
 
-        return back()->with('success', 'Pesanan berhasil dibatalkan.');
+        $this->returnStock($order);
+
+        return back()->with('success', 'Pesanan berhasil dibatalkan dan stok telah dikembalikan.');
     }
 
     public function requestRefund(Request $request, $id)
@@ -576,5 +599,19 @@ class FrontController extends Controller
     public function live()
     {
         return view('public.live');
+    }
+
+    private function returnStock($order)
+    {
+        // Only return stock if items were already decremented
+        // Based on our new flow, they are always decremented at creation
+        foreach ($order->items as $item) {
+            // Return to size stock
+            if ($item->product_size_id) {
+                \App\Models\ProductSize::where('id', $item->product_size_id)->increment('stock', $item->quantity);
+            }
+            // Return to global product stock
+            \App\Models\Product::where('id', $item->product_id)->increment('stock', $item->quantity);
+        }
     }
 }

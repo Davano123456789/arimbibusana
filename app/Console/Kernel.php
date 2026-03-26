@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('orders:auto-complete')->daily();
+        $schedule->command('orders:expire-unpaid')->hourly();
     }
 
     /**
