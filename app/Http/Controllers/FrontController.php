@@ -73,7 +73,7 @@ class FrontController extends Controller
 
         // Filter by Category
         if ($request->has('category') && $request->category != '') {
-            $query->whereHas('category', function($q) use ($request) {
+            $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
@@ -128,7 +128,7 @@ class FrontController extends Controller
 
         // Filter by Category
         if ($request->has('category') && $request->category != '') {
-            $query->whereHas('category', function($q) use ($request) {
+            $query->whereHas('category', function ($q) use ($request) {
                 $q->where('slug', $request->category);
             });
         }
@@ -175,9 +175,14 @@ class FrontController extends Controller
 
     public function detailProduk($id)
     {
-        $product = Product::with(['category', 'images', 'sizes', 'testimonials' => function($q) {
-            $q->where('is_displayed', true)->latest();
-        }])->findOrFail($id);
+        $product = Product::with([
+            'category',
+            'images',
+            'sizes',
+            'testimonials' => function ($q) {
+                $q->where('is_displayed', true)->latest();
+            }
+        ])->findOrFail($id);
 
         $relatedProducts = Product::with(['category', 'images'])
             ->where('category_id', $product->category_id)
@@ -228,7 +233,7 @@ class FrontController extends Controller
         $request->validate([
             'comment' => 'required|string',
             'rating' => 'required|integer|min:1|max:5',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webm|max:20480',
         ]);
 
         $product = Product::findOrFail($id);
@@ -242,6 +247,34 @@ class FrontController extends Controller
             'user_id' => auth()->id(),
             'product_id' => $product->id,
             'name' => auth()->user()->name,
+            'comment' => $request->comment,
+            'rating' => $request->rating,
+            'image' => $imagePath,
+            'is_displayed' => true,
+        ]);
+
+        return back()->with('success', 'Terima kasih atas ulasan Anda!');
+    }
+
+    public function storeGeneralTestimonial(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'product_id' => 'required|exists:products,id',
+            'comment' => 'required|string|max:1000',
+            'rating' => 'required|integer|min:1|max:5',
+            'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webm|max:20480',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('testimonials', 'public');
+        }
+
+        Testimonial::create([
+            'user_id' => auth()->id(), // null if not logged in
+            'product_id' => $request->product_id,
+            'name' => $request->name,
             'comment' => $request->comment,
             'rating' => $request->rating,
             'image' => $imagePath,
@@ -289,7 +322,7 @@ class FrontController extends Controller
         return view('public.pembayaran', compact('cartItems', 'total'));
     }
 
-    public function placeOrder(Request $request)
+    public function storeOrder(Request $request)
     {
         $userId = \Illuminate\Support\Facades\Auth::id();
         $cartItems = \App\Models\Cart::with(['product', 'size'])->where('user_id', $userId)->get();
@@ -302,17 +335,20 @@ class FrontController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
+            'postal_code' => 'required|digits:5',
             'province_id' => 'required|string',
             'province_name' => 'required|string',
             'city_id' => 'required|string',
             'city_name' => 'required|string',
+            'district_id' => 'required|string',
+            'district_name' => 'required|string',
             'courier' => 'required|string',
             'shipping_cost' => 'required|numeric',
             'shipping_etd' => 'nullable|string',
         ]);
 
         try {
-            return \Illuminate\Support\Facades\DB::transaction(function() use ($request, $cartItems, $userId) {
+            return \Illuminate\Support\Facades\DB::transaction(function () use ($request, $cartItems, $userId) {
                 // ... same logic ...
                 $subtotal = 0;
                 foreach ($cartItems as $item) {
@@ -322,7 +358,7 @@ class FrontController extends Controller
 
                 // 1. First, check all stocks and lock them
                 foreach ($cartItems as $item) {
-                    $productSize = \App\Models\ProductSize::where('id', $item->product_size_id)->lockForUpdate()->first();
+                    $productSize = \App\Models\ProductSize::where('id', $item->size_id)->lockForUpdate()->first();
                     if (!$productSize || $productSize->stock < $item->quantity) {
                         throw new \Exception("Stok {$item->product->name} (Size {$item->size->size}) tidak mencukupi atau baru saja habis.");
                     }
@@ -330,7 +366,7 @@ class FrontController extends Controller
 
                 // 2. Decrement stocks
                 foreach ($cartItems as $item) {
-                    \App\Models\ProductSize::where('id', $item->product_size_id)->decrement('stock', $item->quantity);
+                    \App\Models\ProductSize::where('id', $item->size_id)->decrement('stock', $item->quantity);
                     \App\Models\Product::where('id', $item->product_id)->decrement('stock', $item->quantity);
                 }
 
@@ -341,15 +377,19 @@ class FrontController extends Controller
                     'customer_name' => $request->name,
                     'customer_phone' => $request->phone,
                     'customer_address' => $request->address,
+                    'customer_postal_code' => $request->postal_code,
                     'province_id' => $request->province_id,
                     'province_name' => $request->province_name,
                     'city_id' => $request->city_id,
                     'city_name' => $request->city_name,
+                    'district_id' => $request->district_id,
+                    'district_name' => $request->district_name,
                     'courier' => $request->courier,
                     'shipping_cost' => $request->shipping_cost,
                     'shipping_etd' => $request->shipping_etd,
                     'total_price' => $totalPrice,
                     'status' => 'unpaid',
+                    'expired_at' => now()->addMinutes(60),
                     'notes' => $request->notes,
                 ]);
 
@@ -357,7 +397,7 @@ class FrontController extends Controller
                     \App\Models\OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item->product_id,
-                        'product_size_id' => $item->product_size_id,
+                        'product_size_id' => $item->size_id,
                         'size_name' => $item->size->size,
                         'color_name' => $item->size->image ? $item->size->image->color : null,
                         'quantity' => $item->quantity,
@@ -381,7 +421,7 @@ class FrontController extends Controller
                         'email' => \Illuminate\Support\Facades\Auth::user()->email,
                         'phone' => $request->phone,
                     ],
-                    'item_details' => $cartItems->map(function($item) {
+                    'item_details' => $cartItems->map(function ($item) {
                         return [
                             'id' => $item->product_id,
                             'price' => (int) $item->product->price,
@@ -389,6 +429,11 @@ class FrontController extends Controller
                             'name' => \Illuminate\Support\Str::limit($item->product->name, 45) . ' (' . $item->size->size . ')',
                         ];
                     })->toArray(),
+                    'expiry' => [
+                        'start_time' => date("Y-m-d H:i:s O"),
+                        'unit' => 'minute',
+                        'duration' => 60,
+                    ],
                 ];
 
                 if ($request->shipping_cost > 0) {
@@ -424,7 +469,7 @@ class FrontController extends Controller
     {
         $serverKey = env('MIDTRANS_SERVER_KEY');
         $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
-        
+
         if ($hashed == $request->signature_key) {
             $order = \App\Models\Order::where('order_number', $request->order_id)->first();
             if ($order) {
@@ -457,7 +502,7 @@ class FrontController extends Controller
     public function finishOrder(Request $request)
     {
         $orderId = $request->order_id;
-        
+
         \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
         \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
         \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
@@ -478,7 +523,7 @@ class FrontController extends Controller
                     return redirect()->route('checkout.success', $orderId)->with('success', 'Pembayaran berhasil! Pesanan Anda sedang diproses.');
                 }
             }
-            
+
             return redirect('/')->with('info', 'Status pembayaran Anda: ' . $statusRes->transaction_status);
         } catch (\Exception $e) {
             return redirect('/')->with('error', 'Gagal memverifikasi pembayaran: ' . $e->getMessage());
@@ -488,7 +533,7 @@ class FrontController extends Controller
     public function paymentSuccess($order_number)
     {
         $order = \App\Models\Order::with(['items.product'])->where('order_number', $order_number)->firstOrFail();
-        
+
         // Ensure user can only view their own order
         if ($order->user_id !== \Illuminate\Support\Facades\Auth::id()) {
             abort(403);
@@ -500,7 +545,7 @@ class FrontController extends Controller
     public function invoice($order_number)
     {
         $order = \App\Models\Order::with(['items.product', 'user'])->where('order_number', $order_number)->firstOrFail();
-        
+
         if ($order->user_id !== \Illuminate\Support\Facades\Auth::id()) {
             abort(403);
         }
@@ -514,14 +559,15 @@ class FrontController extends Controller
             ->where('user_id', \Illuminate\Support\Facades\Auth::id())
             ->latest()
             ->paginate(5);
-            
+
         return view('public.pesanan', compact('orders'));
     }
 
     public function cancelOrder(Request $request, $id)
     {
         $order = \App\Models\Order::where('id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->firstOrFail();
-        if ($order->status !== 'unpaid') return back()->with('error', 'Pesanan tidak bisa dibatalkan.');
+        if ($order->status !== 'unpaid')
+            return back()->with('error', 'Pesanan tidak bisa dibatalkan.');
 
         $order->update([
             'status' => 'cancel',
@@ -536,7 +582,8 @@ class FrontController extends Controller
     public function requestRefund(Request $request, $id)
     {
         $order = \App\Models\Order::where('id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->firstOrFail();
-        if ($order->status !== 'settlement') return back()->with('error', 'Status pesanan tidak valid untuk refund.');
+        if ($order->status !== 'settlement')
+            return back()->with('error', 'Status pesanan tidak valid untuk refund.');
 
         $request->validate([
             'cancel_reason' => 'required|string',
@@ -545,9 +592,9 @@ class FrontController extends Controller
         ]);
 
         $order->update([
-            'status'                => 'waiting_refund',
-            'cancel_reason'         => $request->cancel_reason,
-            'refund_bank'           => $request->refund_bank,
+            'status' => 'waiting_refund',
+            'cancel_reason' => $request->cancel_reason,
+            'refund_bank' => $request->refund_bank,
             'refund_account_number' => $request->refund_account_number
         ]);
 
@@ -565,7 +612,8 @@ class FrontController extends Controller
     public function completeOrder(Request $request, $id)
     {
         $order = \App\Models\Order::where('id', $id)->where('user_id', \Illuminate\Support\Facades\Auth::id())->firstOrFail();
-        if ($order->status !== 'shipped') return back()->with('error', 'Pesanan tidak bisa diselesaikan saat ini.');
+        if ($order->status !== 'shipped')
+            return back()->with('error', 'Pesanan tidak bisa diselesaikan saat ini.');
 
         $order->update(['status' => 'completed']);
 
@@ -577,7 +625,7 @@ class FrontController extends Controller
         $posts = BlogPost::where('status', 'published')
             ->latest()
             ->paginate(9);
-            
+
         return view('public.blog', compact('posts'));
     }
 
@@ -586,7 +634,7 @@ class FrontController extends Controller
         $post = BlogPost::where('slug', $slug)
             ->where('status', 'published')
             ->firstOrFail();
-            
+
         $recentPosts = BlogPost::where('id', '!=', $post->id)
             ->where('status', 'published')
             ->latest()

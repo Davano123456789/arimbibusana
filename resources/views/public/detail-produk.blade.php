@@ -134,8 +134,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-24">
             <!-- Left: Image Gallery -->
             <div class="space-y-4" data-aos="fade-right">
-                <div
-                    class="relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-100 shadow-sm border border-gray-50">
+                <div class="relative aspect-[4/5] overflow-hidden rounded-3xl bg-gray-100 shadow-sm border border-gray-50">
                     @php
                         $firstImage = $product->cover_image ? asset('storage/' . $product->cover_image) : ($product->images->first() ? asset('storage/' . $product->images->first()->image) : 'https://images.unsplash.com/photo-1589156191108-c762ff4b96ab?q=80&w=800&auto=format&fit=crop');
                     @endphp
@@ -144,23 +143,21 @@
                 </div>
                 <div class="flex gap-4 overflow-x-auto no-scrollbar py-2" id="thumbnail-container">
                     @if($product->cover_image)
-                    <button
-                        id="cover-thumb-btn"
-                        class="thumbnail-btn thumb-active border-accent relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all hover:border-accent/50"
-                        data-img="{{ asset('storage/' . $product->cover_image) }}"
-                        data-is-cover="1">
-                        <img src="{{ asset('storage/' . $product->cover_image) }}" class="w-full h-full object-cover" />
-                        <span class="absolute bottom-0 left-0 right-0 text-[9px] text-center bg-black/50 text-white py-0.5">Cover</span>
-                    </button>
+                        <button id="cover-thumb-btn"
+                            class="thumbnail-btn thumb-active border-accent relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all hover:border-accent/50"
+                            data-img="{{ asset('storage/' . $product->cover_image) }}" data-is-cover="1">
+                            <img src="{{ asset('storage/' . $product->cover_image) }}" class="w-full h-full object-cover" />
+                            <span
+                                class="absolute bottom-0 left-0 right-0 text-[9px] text-center bg-black/50 text-white py-0.5">Cover</span>
+                        </button>
                     @endif
                     @foreach($product->images as $key => $image)
-                    <button
-                        class="thumbnail-btn {{ !$product->cover_image && $image->is_cover ? 'thumb-active border-accent' : 'border-transparent' }} relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all hover:border-accent/50"
-                        data-img="{{ asset('storage/' . $image->image) }}"
-                        data-color="{{ $image->color }}"
-                        data-image-id="{{ $image->id }}">
-                        <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover" />
-                    </button>
+                        <button
+                            class="thumbnail-btn {{ !$product->cover_image && $image->is_cover ? 'thumb-active border-accent' : 'border-transparent' }} relative w-24 h-24 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all hover:border-accent/50"
+                            data-img="{{ asset('storage/' . $image->image) }}" data-color="{{ $image->color }}"
+                            data-image-id="{{ $image->id }}">
+                            <img src="{{ asset('storage/' . $image->image) }}" class="w-full h-full object-cover" />
+                        </button>
                     @endforeach
                 </div>
             </div>
@@ -169,13 +166,13 @@
             <div class="flex flex-col" data-aos="fade-left">
                 <div class="mb-2">
                     @if($product->is_best_seller)
-                    <span
-                        class="inline-block px-3 py-1 bg-amber-50 text-accent text-[10px] font-bold uppercase tracking-widest rounded-full">Koleksi
-                        Terlaris</span>
+                        <span
+                            class="inline-block px-3 py-1 bg-amber-50 text-accent text-[10px] font-bold uppercase tracking-widest rounded-full">Koleksi
+                            Terlaris</span>
                     @endif
                     @if($product->is_recommended)
-                    <span
-                        class="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Rekomendasi</span>
+                        <span
+                            class="inline-block px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest rounded-full">Rekomendasi</span>
                     @endif
                 </div>
                 <h2 class="text-4xl font-bold text-gray-900 mb-2 font-serif">{{ $product->name }}</h2>
@@ -192,11 +189,16 @@
 
                 <div class="flex items-center gap-3 mb-8">
                     @if($product->discount_price)
-                        <span class="text-4xl font-bold text-gray-900 font-inter">Rp {{ number_format($product->discount_price, 0, ',', '.') }}</span>
-                        <span class="text-lg text-gray-400 line-through font-inter">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                        <span class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold">-{{ $product->discount_percentage }}% OFF</span>
+                        <span class="text-4xl font-bold text-gray-900 font-inter">Rp
+                            {{ number_format($product->discount_price, 0, ',', '.') }}</span>
+                        <span class="text-lg text-gray-400 line-through font-inter">Rp
+                            {{ number_format($product->price, 0, ',', '.') }}</span>
+                        <span
+                            class="bg-red-100 text-red-600 px-3 py-1 rounded-lg text-xs font-bold">-{{ $product->discount_percentage }}%
+                            OFF</span>
                     @else
-                        <span class="text-4xl font-bold text-gray-900 font-inter">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                        <span class="text-4xl font-bold text-gray-900 font-inter">Rp
+                            {{ number_format($product->price, 0, ',', '.') }}</span>
                     @endif
                 </div>
 
@@ -213,13 +215,13 @@
                     <script>
                         const productVariations = {
                             @foreach($product->images as $image)
-                                "{{ $image->id }}": [
-                                    @foreach($image->sizes as $size)
-                                        { id: "{{ $size->id }}", size: "{{ $size->size }}", stock: {{ $size->stock }} },
-                                    @endforeach
-                                ],
+                                    "{{ $image->id }}": [
+                                @foreach($image->sizes as $size)
+                                    { id: "{{ $size->id }}", size: "{{ $size->size }}", stock: {{ $size->stock }} },
+                                @endforeach
+                                    ],
                             @endforeach
-                        };
+                            };
                     </script>
 
                     <!-- Colors (derived from images) -->
@@ -227,34 +229,34 @@
                         $colors = $product->images->pluck('color')->unique()->filter();
                     @endphp
                     @if($colors->count() > 0)
-                    <div class="mb-6">
-                        <div class="flex justify-between items-center mb-4">
-                            <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Pilih Warna</h4>
-                            <span class="text-xs font-bold text-accent" id="selectedColorDisplay">
-                                @php
-                                    $coverImage = $product->images->first();
-                                    echo $coverImage ? ($coverImage->color ?? 'Standar') : 'Standar';
-                                @endphp
-                            </span>
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Pilih Warna</h4>
+                                <span class="text-xs font-bold text-accent" id="selectedColorDisplay">
+                                    @php
+                                        $coverImage = $product->images->first();
+                                        echo $coverImage ? ($coverImage->color ?? 'Standar') : 'Standar';
+                                    @endphp
+                                </span>
+                            </div>
+                            <div class="flex gap-3 flex-wrap">
+                                @foreach($colors as $color)
+                                    <button type="button"
+                                        class="color-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all"
+                                        data-color="{{ $color }}">
+                                        {{ $color }}
+                                    </button>
+                                @endforeach
+                            </div>
                         </div>
-                        <div class="flex gap-3 flex-wrap">
-                            @foreach($colors as $color)
-                            <button 
-                                type="button"
-                                class="color-btn px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:border-accent transition-all" 
-                                data-color="{{ $color }}">
-                                {{ $color }}
-                            </button>
-                            @endforeach
-                        </div>
-                    </div>
                     @endif
 
                     <!-- Size -->
                     <div class="mb-6">
                         <div class="flex justify-between items-center mb-4">
                             <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider">Pilih Ukuran</h4>
-                            <button id="showSizeGuide" class="text-xs text-accent font-semibold underline decoration-accent/30 underline-offset-4 flex items-center gap-1 hover:text-accent/80 transition-all">
+                            <button id="showSizeGuide"
+                                class="text-xs text-accent font-semibold underline decoration-accent/30 underline-offset-4 flex items-center gap-1 hover:text-accent/80 transition-all">
                                 <i class="fa-solid fa-ruler-combined"></i> Lihat Size Guide
                             </button>
                         </div>
@@ -268,11 +270,18 @@
                         <h4 class="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Jumlah</h4>
                         <div class="flex items-center gap-4">
                             <div class="flex items-center border border-gray-300 rounded-xl bg-white">
-                                <button type="button" id="btnMinus" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-accent transition-colors"><i class="fa-solid fa-minus"></i></button>
-                                <input type="number" id="qtyInput" value="1" min="1" max="{{ $product->stock }}" class="w-12 text-center border-none focus:ring-0 text-gray-900 font-bold p-0 appearance-none bg-transparent" readonly />
-                                <button type="button" id="btnPlus" class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-accent transition-colors"><i class="fa-solid fa-plus"></i></button>
+                                <button type="button" id="btnMinus"
+                                    class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-accent transition-colors"><i
+                                        class="fa-solid fa-minus"></i></button>
+                                <input type="number" id="qtyInput" value="1" min="1" max="{{ $product->stock }}"
+                                    class="w-12 text-center border-none focus:ring-0 text-gray-900 font-bold p-0 appearance-none bg-transparent"
+                                    readonly />
+                                <button type="button" id="btnPlus"
+                                    class="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-accent transition-colors"><i
+                                        class="fa-solid fa-plus"></i></button>
                             </div>
-                            <span class="text-xs text-gray-500">Tersedia <span id="displayStock">{{ $product->stock }}</span> stok</span>
+                            <span class="text-xs text-gray-500">Tersedia <span
+                                    id="displayStock">{{ $product->stock }}</span> stok</span>
                         </div>
                     </div>
                 </div>
@@ -283,7 +292,7 @@
                     <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <input type="hidden" name="size_id" id="sizeInput">
                     <input type="hidden" name="quantity" id="finalQtyInput" value="1">
-                    
+
                     <div class="flex flex-col sm:flex-row gap-4">
                         <button type="submit" id="addToCartBtn"
                             class="flex-1 btn-cream-dark py-4 rounded-2xl font-bold flex items-center justify-center gap-3 shadow-xl hover:brightness-110 transition-all active:scale-95">
@@ -317,62 +326,73 @@
                         <h3 class="text-2xl font-bold font-serif mb-6">Tulis Ulasan</h3>
                         <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
                             @auth
-                            <form action="{{ url('/detail-produk/' . $product->id . '/ulasan') }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="mb-4">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Rating Kamu</label>
-                                    <div class="flex gap-2 text-gray-300 text-xl cursor-pointer group-rating">
-                                        <i class="fa-solid fa-star hover:text-amber-400 transition-colors" data-value="1"></i>
-                                        <i class="fa-solid fa-star hover:text-amber-400 transition-colors" data-value="2"></i>
-                                        <i class="fa-solid fa-star hover:text-amber-400 transition-colors" data-value="3"></i>
-                                        <i class="fa-solid fa-star hover:text-amber-400 transition-colors" data-value="4"></i>
-                                        <i class="fa-solid fa-star hover:text-amber-400 transition-colors" data-value="5"></i>
+                                <form action="{{ url('/detail-produk/' . $product->id . '/ulasan') }}" method="POST"
+                                    enctype="multipart/form-data">
+                                    @csrf
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">Rating Kamu</label>
+                                        <div class="flex gap-2 text-gray-300 text-xl cursor-pointer group-rating">
+                                            <i class="fa-solid fa-star hover:text-amber-400 transition-colors"
+                                                data-value="1"></i>
+                                            <i class="fa-solid fa-star hover:text-amber-400 transition-colors"
+                                                data-value="2"></i>
+                                            <i class="fa-solid fa-star hover:text-amber-400 transition-colors"
+                                                data-value="3"></i>
+                                            <i class="fa-solid fa-star hover:text-amber-400 transition-colors"
+                                                data-value="4"></i>
+                                            <i class="fa-solid fa-star hover:text-amber-400 transition-colors"
+                                                data-value="5"></i>
+                                        </div>
+                                        <input type="hidden" name="rating" id="ratingInput" value="5">
                                     </div>
-                                    <input type="hidden" name="rating" id="ratingInput" value="5">
-                                </div>
-                                <div class="mb-4">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Mengirim sebagai:</label>
-                                    <p class="font-bold text-accent">{{ auth()->user()->name }}</p>
-                                </div>
-                                <div class="mb-6">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Ulasan</label>
-                                    <textarea name="comment" rows="4" required
-                                        class="w-full px-4 py-3 rounded-xl border-gray-200 bg-white focus:border-accent focus:ring-2 focus:ring-accent/10 focus:outline-none transition-all resize-none"
-                                        placeholder="Ceritakan pengalamanmu..."></textarea>
-                                </div>
-                                <div class="mb-6">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Foto Testimoni (Opsional)</label>
-                                    <div class="relative">
-                                        <input type="file" name="image" id="reviewImage" accept="image/*" class="hidden" onchange="previewReviewImage(this)">
-                                        <label for="reviewImage" 
-                                            class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-accent hover:bg-gray-50 transition-all">
-                                            <div class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-400" id="uploadPlaceholder">
-                                                <i class="fa-solid fa-cloud-arrow-up text-2xl mb-2"></i>
-                                                <p class="text-xs text-center"><span class="font-bold">Klik untuk upload</span><br>atau drag and drop</p>
-                                            </div>
-                                            <img id="imagePreview" class="hidden w-full h-full object-cover rounded-xl" />
-                                            <button type="button" id="removeImageBtn" onclick="removeReviewImage(event)" 
-                                                class="hidden absolute top-2 right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center shadow-md hover:bg-red-50 transition-colors">
-                                                <i class="fa-solid fa-xmark text-xs"></i>
-                                            </button>
-                                        </label>
+                                    <div class="mb-4">
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">Mengirim sebagai:</label>
+                                        <p class="font-bold text-accent">{{ auth()->user()->name }}</p>
                                     </div>
-                                </div>
-                                <button type="submit"
-                                    class="w-full btn-cream-dark py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all active:scale-95">Kirim
-                                    Ulasan</button>
-                            </form>
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">Ulasan</label>
+                                        <textarea name="comment" rows="4" required
+                                            class="w-full px-4 py-3 rounded-xl border-gray-200 bg-white focus:border-accent focus:ring-2 focus:ring-accent/10 focus:outline-none transition-all resize-none"
+                                            placeholder="Ceritakan pengalamanmu..."></textarea>
+                                    </div>
+                                    <div class="mb-6">
+                                        <label class="block text-sm font-bold text-gray-700 mb-2">Foto / Video Testimoni (Opsional)</label>
+                                        <div class="relative">
+                                            <input type="file" name="image" id="reviewImage" accept="image/*,video/mp4,video/webm" class="hidden"
+                                                onchange="previewReviewImage(this)">
+                                            <label for="reviewImage"
+                                                class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-accent hover:bg-gray-50 transition-all hover:z-0">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6 text-gray-400 pointer-events-none"
+                                                    id="uploadPlaceholder">
+                                                    <i class="fa-solid fa-cloud-arrow-up text-2xl mb-2"></i>
+                                                    <p class="text-xs text-center"><span class="font-bold">Klik untuk upload</span><br>atau drag and drop (maks 20MB)</p>
+                                                </div>
+                                                <img id="imagePreview" class="hidden w-full h-full object-cover rounded-xl" />
+                                                <video id="videoPreview" class="hidden w-full h-full object-cover rounded-xl" muted controls></video>
+                                                <button type="button" id="removeImageBtn" onclick="removeReviewImage(event)"
+                                                    class="hidden absolute top-2 right-2 bg-white text-red-500 rounded-full w-6 h-6 flex items-center justify-center shadow-md hover:bg-red-50 transition-colors z-10">
+                                                    <i class="fa-solid fa-xmark text-xs"></i>
+                                                </button>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <button type="submit"
+                                        class="w-full btn-cream-dark py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all active:scale-95">Kirim
+                                        Ulasan</button>
+                                </form>
                             @else
-                            <div class="text-center py-6">
-                                <div class="w-16 h-16 bg-cream/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i class="fa-solid fa-user-lock text-accent text-2xl"></i>
+                                <div class="text-center py-6">
+                                    <div
+                                        class="w-16 h-16 bg-cream/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <i class="fa-solid fa-user-lock text-accent text-2xl"></i>
+                                    </div>
+                                    <p class="text-sm text-gray-600 mb-6">Silakan masuk ke akun Anda untuk memberikan ulasan
+                                        produk ini.</p>
+                                    <a href="{{ route('login') }}"
+                                        class="inline-block bg-accent text-white px-8 py-3 rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all shadow-md shadow-accent/10">
+                                        Masuk Sekarang
+                                    </a>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-6">Silakan masuk ke akun Anda untuk memberikan ulasan produk ini.</p>
-                                <a href="{{ route('login') }}" 
-                                    class="inline-block bg-accent text-white px-8 py-3 rounded-xl font-bold hover:brightness-110 active:scale-95 transition-all shadow-md shadow-accent/10">
-                                    Masuk Sekarang
-                                </a>
-                            </div>
                             @endauth
                         </div>
                     </div>
@@ -381,53 +401,64 @@
                 <!-- Right: Reviews List (8 cols) -->
                 <div class="lg:col-span-8">
                     <div class="flex items-center justify-between mb-8">
-                        <h3 class="text-2xl font-bold font-serif">Ulasan Pembeli ({{ $product->testimonials->count() }})</h3>
+                        <h3 class="text-2xl font-bold font-serif">Ulasan Pembeli ({{ $product->testimonials->count() }})
+                        </h3>
                     </div>
 
                     <div class="space-y-6">
                         @forelse($product->testimonials as $testi)
-                        <div class="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
-                            <div class="flex-shrink-0">
-                                <div class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center font-bold text-lg">
-                                    {{ strtoupper(substr($testi->name, 0, 1)) }}
+                            <div
+                                class="flex gap-4 p-6 bg-white rounded-2xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+                                <div class="flex-shrink-0">
+                                    <div
+                                        class="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center font-bold text-lg">
+                                        {{ strtoupper(substr($testi->name, 0, 1)) }}
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">{{ $testi->name }}</h4>
-                                        <div class="flex text-amber-400 text-xs mt-1">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <i class="{{ $i <= $testi->rating ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
-                                            @endfor
+                                <div class="flex-1">
+                                    <div class="flex justify-between items-start mb-2">
+                                        <div>
+                                            <h4 class="font-bold text-gray-900">{{ $testi->name }}</h4>
+                                            <div class="flex text-amber-400 text-xs mt-1">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i class="{{ $i <= $testi->rating ? 'fa-solid' : 'fa-regular' }} fa-star"></i>
+                                                @endfor
+                                            </div>
                                         </div>
+                                        <span class="text-xs text-gray-400">{{ $testi->created_at->diffForHumans() }}</span>
                                     </div>
-                                    <span class="text-xs text-gray-400">{{ $testi->created_at->diffForHumans() }}</span>
-                                </div>
-                                <p class="text-gray-600 text-sm leading-relaxed">{{ $testi->comment }}</p>
+                                    <p class="text-gray-600 text-sm leading-relaxed">{{ $testi->comment }}</p>
 
-                                @if($testi->image)
-                                <div class="flex gap-2 mt-4">
-                                    <div class="w-24 h-24 rounded-xl bg-gray-100 overflow-hidden cursor-pointer hover:opacity-90 border border-gray-200 transition-all">
-                                        <img src="{{ asset('storage/' . $testi->image) }}" class="w-full h-full object-cover" onclick="window.open(this.src)">
-                                    </div>
+                                    @if($testi->image)
+                                        <div class="flex gap-2 mt-4">
+                                            @if(in_array(pathinfo($testi->image, PATHINFO_EXTENSION), ['mp4', 'webm', 'ogg']))
+                                            <div class="w-48 h-auto rounded-xl bg-black overflow-hidden border border-gray-100 shadow-sm">
+                                                <video src="{{ asset('storage/' . $testi->image) }}" class="w-full h-full" controls playsinline preload="metadata"></video>
+                                            </div>
+                                            @else
+                                            <div class="w-24 h-24 rounded-xl bg-gray-100 overflow-hidden cursor-pointer hover:opacity-90 border border-gray-200 transition-all">
+                                                <img src="{{ asset('storage/' . $testi->image) }}"
+                                                    class="w-full h-full object-cover" onclick="window.open(this.src)">
+                                            </div>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
-                                @endif
                             </div>
-                        </div>
                         @empty
-                        <div class="text-center py-12 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                            <i class="fa-solid fa-message-slash text-4xl text-gray-300 mb-4"></i>
-                            <p class="text-gray-500">Belum ada ulasan untuk produk ini.<br>Jadilah yang pertama memberikan ulasan!</p>
-                        </div>
+                            <div class="text-center py-12 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                                <i class="fa-solid fa-message-slash text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-gray-500">Belum ada ulasan untuk produk ini.<br>Jadilah yang pertama memberikan
+                                    ulasan!</p>
+                            </div>
                         @endforelse
                     </div>
 
                     @if($product->testimonials->count() > 5)
-                    <button
-                        class="w-full mt-8 py-3 border border-gray-200 rounded-xl text-gray-500 font-medium hover:bg-gray-50 transition-colors">
-                        Lihat Semua Ulasan
-                    </button>
+                        <button
+                            class="w-full mt-8 py-3 border border-gray-200 rounded-xl text-gray-500 font-medium hover:bg-gray-50 transition-colors">
+                            Lihat Semua Ulasan
+                        </button>
                     @endif
                 </div>
             </div>
@@ -444,37 +475,38 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
                 @forelse($relatedProducts as $item)
-                <article class="product-card group">
-                    <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
-                        @php
-                            $relatedImage = $item->cover_image ? asset('storage/' . $item->cover_image) : ($item->images->first() ? asset('storage/' . $item->images->first()->image) : asset('images/placeholder.jpg'));
-                        @endphp
-                        <img src="{{ $relatedImage }}" alt="{{ $item->name }}" class="w-full h-full object-cover" />
-                        <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500">
+                    <article class="product-card group">
+                        <div class="img-container relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 mb-4">
+                            @php
+                                $relatedImage = $item->cover_image ? asset('storage/' . $item->cover_image) : ($item->images->first() ? asset('storage/' . $item->images->first()->image) : asset('images/placeholder.jpg'));
+                            @endphp
+                            <img src="{{ $relatedImage }}" alt="{{ $item->name }}" class="w-full h-full object-cover" />
+                            <div class="absolute inset-0 bg-black/5 group-hover:bg-black/20 transition-all duration-500">
+                            </div>
+                            <button
+                                class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
+                                <i class="fa-regular fa-heart"></i>
+                            </button>
+                            <div
+                                class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center px-4">
+                                <a href="{{ url('/detail-produk/' . $item->id) }}"
+                                    class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
+                                    <i class="fa-solid fa-eye"></i> Lihat Detail
+                                </a>
+                            </div>
                         </div>
-                        <button
-                            class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-red-500 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all shadow-sm">
-                            <i class="fa-regular fa-heart"></i>
-                        </button>
-                        <div
-                            class="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all text-center px-4">
-                            <a href="{{ url('/detail-produk/' . $item->id) }}"
-                                class="block w-full bg-white text-gray-900 font-semibold py-3 rounded-xl shadow-xl hover:bg-accent hover:text-white transition-colors">
-                                <i class="fa-solid fa-eye"></i> Lihat Detail
-                            </a>
+                        <div>
+                            <span
+                                class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">{{ $item->category->name ?? 'Busana' }}</span>
+                            <h4 class="text-lg font-semibold text-gray-800 mb-1 leading-tight">{{ $item->name }}</h4>
+                            <p class="text-accent font-bold font-inter text-sm">Rp
+                                {{ number_format($item->price, 0, ',', '.') }}</p>
                         </div>
-                    </div>
-                    <div>
-                        <span
-                            class="text-[10px] text-accent font-bold uppercase tracking-wider mb-1 block">{{ $item->category->name ?? 'Busana' }}</span>
-                        <h4 class="text-lg font-semibold text-gray-800 mb-1 leading-tight">{{ $item->name }}</h4>
-                        <p class="text-accent font-bold font-inter text-sm">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
-                    </div>
-                </article>
+                    </article>
                 @empty
-                <div class="col-span-full py-8 text-center text-gray-500 italic">
-                    Belum ada produk terkait lainnya.
-                </div>
+                    <div class="col-span-full py-8 text-center text-gray-500 italic">
+                        Belum ada produk terkait lainnya.
+                    </div>
                 @endforelse
             </div>
         </div>
@@ -493,7 +525,8 @@
                 <h3 class="text-2xl font-bold text-gray-900 mb-6">Size Guide {{ $product->name }}</h3>
                 <div class="rounded-2xl overflow-hidden shadow-inner bg-gray-50 p-2">
                     @if($product->size_guide)
-                        <img src="{{ asset('storage/' . $product->size_guide) }}" alt="Size Guide {{ $product->name }}" class="w-full h-auto" />
+                        <img src="{{ asset('storage/' . $product->size_guide) }}" alt="Size Guide {{ $product->name }}"
+                            class="w-full h-auto" />
                     @else
                         <img src="{{ asset('images/sizeguide.jpg') }}" alt="Size Guide Default" class="w-full h-auto" />
                     @endif
@@ -504,38 +537,7 @@
         </div>
     </div>
 
-                        <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
 
-                    <!-- Shopee -->
-                    <a href="https://shopee.co.id/ArimbiQueen.Scarves" target="_blank" 
-                        class="flex items-center gap-4 p-4 rounded-2xl bg-[#EE4D2D] text-white hover:scale-[1.02] transition-transform shadow-md group">
-                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                           <i class="fa-solid fa-bag-shopping text-2xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="block font-bold text-base">Shopee</span>
-                            <span class="text-xs text-white/60">ArimbiQueen.Scarves</span>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
-
-                    <!-- WhatsApp -->
-                    <a href="https://wa.me/6282337115553?text=Halo%20Arimbi%20Queen,%20saya%20tertarik%20dengan%20produk%20{{ urlencode($product->name) }}" target="_blank" 
-                        class="flex items-center gap-4 p-4 rounded-2xl bg-[#25D366] text-white hover:scale-[1.02] transition-transform shadow-md group">
-                        <div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center group-hover:bg-white/20 transition-colors">
-                            <i class="fa-brands fa-whatsapp text-3xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <span class="block font-bold text-base">WhatsApp</span>
-                            <span class="text-xs text-white/60">0823-3711-5553</span>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-xs opacity-40 group-hover:opacity-100 transition-opacity"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Floating WhatsApp -->
     <a href="https://wa.me/6282337115553"
@@ -547,7 +549,7 @@
 
 @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('Product Detail Scripts Initialized');
 
             // 1. Core Selection Elements
@@ -567,7 +569,7 @@
             function renderSizes(imageId) {
                 sizeButtonsContainer.innerHTML = ''; // Clear existing
                 const sizes = productVariations[imageId] || [];
-                
+
                 if (sizes.length === 0) {
                     sizeButtonsContainer.innerHTML = '<span class="text-sm text-gray-500 italic">Tidak ada ukuran tersedia untuk warna ini.</span>';
                     currentSizeId = null;
@@ -589,15 +591,15 @@
                     btn.textContent = sizeObj.size;
 
                     // Add click event for the size button
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         if (this.disabled) return;
-                        
+
                         document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active', 'border-accent', 'bg-accent/5'));
                         this.classList.add('active', 'border-accent', 'bg-accent/5');
-                        
+
                         currentSizeId = this.dataset.id;
                         if (sizeInput) sizeInput.value = currentSizeId;
-                        
+
                         updateStockDisplay(parseInt(this.dataset.stock));
                     });
 
@@ -625,7 +627,7 @@
                     qtyInput.setAttribute('max', Math.max(1, stockValue));
                     // Reset qty if it exceeds new stock or if stock is 0
                     if (parseInt(qtyInput.value) > stockValue) {
-                        qtyInput.value = stockValue === 0 ? 1 : stockValue; 
+                        qtyInput.value = stockValue === 0 ? 1 : stockValue;
                     }
                     if (finalQtyInput) finalQtyInput.value = qtyInput.value;
                 }
@@ -634,12 +636,12 @@
             // 2. Thumbnail Click Logic
             if (mainImage && thumbnails.length > 0) {
                 thumbnails.forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         const isCover = this.getAttribute('data-is-cover') === '1';
                         const newImg = this.getAttribute('data-img');
                         const imgColor = this.getAttribute('data-color');
                         const imgId = this.getAttribute('data-image-id');
-                        
+
                         if (!newImg) return;
 
                         // Swap Main Image
@@ -658,7 +660,7 @@
                             if (selectedColorDisplay) {
                                 selectedColorDisplay.textContent = '';
                             }
-                            
+
                             // Deactivate all color buttons
                             document.querySelectorAll('.color-btn').forEach(b => {
                                 b.classList.remove('active', 'border-accent', 'bg-accent/5');
@@ -676,7 +678,7 @@
                             if (selectedColorDisplay) {
                                 selectedColorDisplay.textContent = imgColor || 'Standar';
                             }
-                            
+
                             // Highlight correct color button
                             document.querySelectorAll('.color-btn').forEach(b => {
                                 if (b.getAttribute('data-color') === imgColor) {
@@ -685,18 +687,18 @@
                                     b.classList.remove('active', 'border-accent', 'bg-accent/5');
                                 }
                             });
-                            
+
                             // Render Sizes for this Image
                             currentImageId = imgId;
                             renderSizes(currentImageId);
                         }
                     });
                 });
-                
+
                 // Color Buttons Click Logic
                 const colorBtns = document.querySelectorAll('.color-btn');
                 colorBtns.forEach(btn => {
-                    btn.addEventListener('click', function() {
+                    btn.addEventListener('click', function () {
                         const targetColor = this.getAttribute('data-color');
                         const matchedThumb = Array.from(thumbnails).find(t => t.getAttribute('data-color') === targetColor);
                         if (matchedThumb) {
@@ -704,7 +706,7 @@
                         }
                     });
                 });
-                
+
                 // On initial load: show cover image, no color selected yet,
                 // sizes show a prompt until user picks a color.
                 if (selectedColorDisplay) {
@@ -746,14 +748,14 @@
             // 5. Review Star Rating Logic
             const ratingContainer = document.querySelector('.group-rating');
             const ratingInput = document.getElementById('ratingInput');
-            
+
             if (ratingContainer && ratingInput) {
                 const stars = ratingContainer.querySelectorAll('i');
                 stars.forEach((star, index) => {
                     star.addEventListener('click', () => {
                         const val = index + 1;
                         ratingInput.value = val;
-                        
+
                         stars.forEach((s, i) => {
                             if (i <= index) {
                                 s.classList.remove('text-gray-300', 'fa-regular');
@@ -765,7 +767,7 @@
                         });
                     });
                 });
-                
+
                 // Initialize default (5 stars)
                 stars[4].click();
             }
@@ -803,7 +805,7 @@
             // 7. Add to Cart Logic
             const addToCartForm = document.getElementById('addToCartForm');
             if (addToCartForm) {
-                addToCartForm.addEventListener('submit', function(e) {
+                addToCartForm.addEventListener('submit', function (e) {
                     @guest
                         e.preventDefault();
                         iziToast.warning({
@@ -817,7 +819,7 @@
                         return;
                     @endguest
 
-                    if (!selectedSizeId) {
+                        if (!selectedSizeId) {
                         e.preventDefault();
                         alert('Silakan pilih ukuran terlebih dahulu!');
                     }
@@ -828,18 +830,36 @@
         });
 
         // Global functions for Review Image Preview
-        window.previewReviewImage = function(input) {
-            const preview = document.getElementById('imagePreview');
+        window.previewReviewImage = function (input) {
+            const imgPreview = document.getElementById('imagePreview');
+            const vidPreview = document.getElementById('videoPreview');
             const placeholder = document.getElementById('uploadPlaceholder');
             const removeBtn = document.getElementById('removeImageBtn');
             const container = input.nextElementSibling;
-            
+
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                if (file.size > 20 * 1024 * 1024) {
+                    alert('Ukuran file terlalu besar! Maksimal 20 MB.');
+                    input.value = '';
+                    return;
+                }
+
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    if (preview) {
-                        preview.src = e.target.result;
-                        preview.classList.remove('hidden');
+                reader.onload = function (e) {
+                    if (file.type.startsWith('video/')) {
+                        if (vidPreview) {
+                            vidPreview.src = e.target.result;
+                            vidPreview.classList.remove('hidden');
+                        }
+                        if (imgPreview) imgPreview.classList.add('hidden');
+                    } else {
+                        if (imgPreview) {
+                            imgPreview.src = e.target.result;
+                            imgPreview.classList.remove('hidden');
+                        }
+                        if (vidPreview) vidPreview.classList.add('hidden');
                     }
                     if (placeholder) placeholder.classList.add('hidden');
                     if (removeBtn) removeBtn.classList.remove('hidden');
@@ -848,19 +868,20 @@
                         container.classList.remove('border-gray-300', 'border-dashed');
                     }
                 }
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
         };
 
-        window.removeReviewImage = function(e) {
+        window.removeReviewImage = function (e) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             const input = document.getElementById('reviewImage');
-            const preview = document.getElementById('imagePreview');
+            const imgPreview = document.getElementById('imagePreview');
+            const vidPreview = document.getElementById('videoPreview');
             const placeholder = document.getElementById('uploadPlaceholder');
             const removeBtn = document.getElementById('removeImageBtn');
-            
+
             if (input) {
                 input.value = '';
                 const container = input.nextElementSibling;
@@ -869,10 +890,8 @@
                     container.classList.add('border-gray-300', 'border-dashed');
                 }
             }
-            if (preview) {
-                preview.src = '';
-                preview.classList.add('hidden');
-            }
+            if (imgPreview) { imgPreview.src = ''; imgPreview.classList.add('hidden'); }
+            if (vidPreview) { vidPreview.src = ''; vidPreview.classList.add('hidden'); }
             if (placeholder) placeholder.classList.remove('hidden');
             if (removeBtn) removeBtn.classList.add('hidden');
         };

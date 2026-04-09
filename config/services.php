@@ -31,10 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'rajaongkir' => [
-        'key' => env('RAJAONGKIR_API_KEY'),
-        'base_url' => env('RAJAONGKIR_BASE_URL', 'https://api.rajaongkir.com/starter'),
-        'origin' => env('RAJAONGKIR_ORIGIN', 444),
+    'biteship' => [
+        'key' => env('BITESHIP_API_KEY'),
+        'origin_postal_code' => env('STORE_POSTAL_CODE', '60111'),
     ],
 
     'midtrans' => [

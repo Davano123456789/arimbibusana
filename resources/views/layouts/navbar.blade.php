@@ -45,8 +45,14 @@
                 </a>
             @endauth
             @auth
-            <a href="{{ url('/pesanan') }}" class="text-gray-500 hover:text-accent transition-colors" title="Pesanan Saya">
+            <a href="{{ url('/pesanan') }}" class="relative text-gray-500 hover:text-accent transition-colors" title="Pesanan Saya">
                 <i class="fa-solid fa-clipboard-list text-xl"></i>
+                @if($pendingOrdersCount > 0)
+                <span class="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500 border border-white"></span>
+                </span>
+                @endif
             </a>
             @endauth
             <a href="{{ url('/keranjang') }}" class="relative group text-gray-500 hover:text-accent transition-colors">
@@ -113,7 +119,15 @@
             <a href="#informasi" class="py-2 border-b mobile-nav-link">Informasi Kami</a>
             @auth
             <a href="{{ url('/pesanan') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
-                Pesanan Saya
+                <span class="flex items-center gap-2">
+                    Pesanan Saya
+                    @if($pendingOrdersCount > 0)
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    @endif
+                </span>
                 <i class="fa-solid fa-clipboard-list text-gray-400"></i>
             </a>
             @endauth

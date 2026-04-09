@@ -28,11 +28,9 @@ class ExpireUnpaidOrders extends Command
      */
     public function handle()
     {
-        $this->info('Checking for unpaid orders older than 24 hours...');
-
-        // Find unpaid orders created more than 24 hours ago
+        // Find unpaid orders created more than 60 minutes ago
         $expiredOrders = Order::where('status', 'unpaid')
-            ->where('created_at', '<', Carbon::now()->subHours(24))
+            ->where('created_at', '<', Carbon::now()->subMinutes(60))
             ->with('items')
             ->get();
 
@@ -49,7 +47,7 @@ class ExpireUnpaidOrders extends Command
                     // 1. Update status
                     $order->update([
                         'status' => 'expire',
-                        'cancel_reason' => 'Batal otomatis: Pembayaran melewati batas 24 jam.'
+                        'cancel_reason' => 'Batal otomatis: Pembayaran melewati batas 60 menit.'
                     ]);
 
                     // 2. Return Stock
