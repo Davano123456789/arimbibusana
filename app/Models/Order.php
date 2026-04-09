@@ -25,6 +25,7 @@ class Order extends Model
         'shipping_cost',
         'shipping_etd',
         'courier',
+        'customer_postal_code',
         'total_price',
         'status',
         'notes',
@@ -34,6 +35,12 @@ class Order extends Model
         'refund_bank',
         'refund_account_number',
         'refund_receipt',
+        'expired_at',
+    ];
+    
+    protected $casts = [
+        'expired_at' => 'datetime',
+        'shipped_at' => 'datetime',
     ];
 
     public function user()

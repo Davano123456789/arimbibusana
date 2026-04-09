@@ -115,7 +115,13 @@
                                     </p>
                                 @endif
 
-                                @if($order->status === 'unpaid')
+                                 @if($order->status === 'unpaid' && $order->expired_at)
+                                    <div class="mt-3 flex items-center gap-2 text-[11px] font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 inline-flex countdown-container" 
+                                         data-expiry="{{ $order->expired_at->timestamp }}">
+                                        <i class="fa-solid fa-stopwatch animate-pulse"></i>
+                                        SISA WAKTU: <span class="countdown-timer">--:--</span>
+                                    </div>
+                                @elseif($order->status === 'unpaid')
                                     <div class="mt-3 flex items-center gap-2 text-[11px] font-bold text-red-500 bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 inline-flex">
                                         <i class="fa-solid fa-stopwatch animate-pulse"></i>
                                         BAYAR SEBELUM: {{ $order->created_at->addHours(24)->format('d M, H:i') }} WIB
@@ -354,5 +360,48 @@
             showConfirmButton: false
         });
     }
+
+    // Countdown Timer Logic
+    function initCountdowns() {
+        const containers = document.querySelectorAll('.countdown-container');
+        
+        containers.forEach(container => {
+            const expiryTimestamp = parseInt(container.dataset.expiry);
+            const timerElement = container.querySelector('.countdown-timer');
+            
+            function updateTimer() {
+                const now = Math.floor(Date.now() / 1000);
+                const distance = expiryTimestamp - now;
+                
+                if (distance < 0) {
+                    container.classList.remove('text-red-500', 'bg-red-50', 'border-red-100');
+                    container.classList.add('text-gray-500', 'bg-gray-50', 'border-gray-100');
+                    container.innerHTML = '<i class="fa-solid fa-clock-rotate-left"></i> WAKTU HABIS / KADALUARSA';
+                    
+                    // Optional: find and disable payment button if needed
+                    const orderCard = container.closest('.bg-white');
+                    const payBtn = orderCard ? orderCard.querySelector('button[onclick^="payNow"]') : null;
+                    if (payBtn) {
+                        payBtn.disabled = true;
+                        payBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        payBtn.innerHTML = 'Kadaluarsa';
+                    }
+                    return;
+                }
+                
+                const minutes = Math.floor(distance / 60);
+                const seconds = Math.floor(distance % 60);
+                
+                timerElement.textContent = 
+                    (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                    (seconds < 10 ? "0" + seconds : seconds);
+            }
+            
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initCountdowns);
 </script>
 @endsection

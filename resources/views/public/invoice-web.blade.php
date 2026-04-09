@@ -45,8 +45,21 @@
                     <h2 class="text-4xl font-black text-gray-200 tracking-wider mb-2">INVOICE</h2>
                     <p class="text-sm font-semibold text-gray-800">{{ $order->order_number }}</p>
                     <p class="text-sm text-gray-500">Tanggal: {{ $order->updated_at ? $order->updated_at->format('d M Y') : now()->format('d M Y') }}</p>
-                    <span class="inline-block mt-3 px-3 py-1 bg-green-100 text-green-700 font-bold text-xs rounded-full uppercase tracking-widest border border-green-200">
-                        {{ $order->status === 'settlement' ? 'LUNAS' : ($order->status === 'pending' ? 'MENUNGGU PEMBAYARAN' : 'DIBATALKAN') }}
+                    @php
+                        $statusData = [
+                            'unpaid' => ['label' => 'MENUNGGU PEMBAYARAN', 'class' => 'bg-orange-100 text-orange-700 border-orange-200'],
+                            'pending' => ['label' => 'MENUNGGU PEMBAYARAN', 'class' => 'bg-orange-100 text-orange-700 border-orange-200'],
+                            'settlement' => ['label' => 'LUNAS', 'class' => 'bg-green-100 text-green-700 border-green-200'],
+                            'shipped' => ['label' => 'SEDANG DIKIRIM', 'class' => 'bg-blue-100 text-blue-700 border-blue-200'],
+                            'completed' => ['label' => 'SELESAI', 'class' => 'bg-teal-100 text-teal-700 border-teal-200'],
+                            'cancel' => ['label' => 'DIBATALKAN', 'class' => 'bg-red-100 text-red-700 border-red-200'],
+                            'expire' => ['label' => 'KADALUARSA', 'class' => 'bg-gray-100 text-gray-700 border-gray-200'],
+                            'waiting_refund' => ['label' => 'MENUNGGU REFUND', 'class' => 'bg-purple-100 text-purple-700 border-purple-200'],
+                        ];
+                        $currentStatus = $statusData[$order->status] ?? ['label' => strtoupper($order->status), 'class' => 'bg-gray-100 text-gray-700 border-gray-200'];
+                    @endphp
+                    <span class="inline-block mt-3 px-3 py-1 font-bold text-xs rounded-full uppercase tracking-widest border {{ $currentStatus['class'] }}">
+                        {{ $currentStatus['label'] }}
                     </span>
                 </div>
             </div>

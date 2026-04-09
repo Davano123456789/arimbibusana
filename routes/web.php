@@ -65,9 +65,11 @@ Route::get('/testimoni', [FrontController::class, 'testimoni']);
 Route::get('/tentang', [FrontController::class, 'tentang']);
 Route::post('/testimoni', [FrontController::class, 'storeGeneralTestimonial']);
 
-// Shipping (RajaOngkir)
+// Shipping (RajaOngkir/Biteship)
 Route::get('/shipping/provinces', [\App\Http\Controllers\ShippingController::class, 'getProvinces']);
 Route::get('/shipping/cities/{provinceId}', [\App\Http\Controllers\ShippingController::class, 'getCities']);
+Route::get('/shipping/districts/{cityId}', [\App\Http\Controllers\ShippingController::class, 'getDistricts']);
+Route::post('/shipping/postal-code', [\App\Http\Controllers\ShippingController::class, 'getPostalCode']);
 Route::post('/shipping/cost', [\App\Http\Controllers\ShippingController::class, 'getCost']);
 Route::get('/pembayaran/finish', [\App\Http\Controllers\FrontController::class, 'finishOrder'])->name('checkout.finish');
 Route::get('/pembayaran/berhasil/{order_number}', [\App\Http\Controllers\FrontController::class, 'paymentSuccess'])->name('checkout.success');

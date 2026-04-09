@@ -22,10 +22,18 @@ class AppServiceProvider extends ServiceProvider
         // Share cart count with all views
         \Illuminate\Support\Facades\View::composer(['layouts.navbar', 'resources.views.layouts.navbar'], function ($view) {
             $cartCount = 0;
+            $pendingOrdersCount = 0;
             if (\Illuminate\Support\Facades\Auth::check()) {
-                $cartCount = \App\Models\Cart::where('user_id', \Illuminate\Support\Facades\Auth::id())->sum('quantity');
+                $userId = \Illuminate\Support\Facades\Auth::id();
+                $cartCount = \App\Models\Cart::where('user_id', $userId)->sum('quantity');
+                $pendingOrdersCount = \App\Models\Order::where('user_id', $userId)
+                    ->whereIn('status', ['unpaid', 'pending'])
+                    ->count();
             }
-            $view->with('cartCount', $cartCount);
+            $view->with([
+                'cartCount' => $cartCount,
+                'pendingOrdersCount' => $pendingOrdersCount
+            ]);
         });
 
         // Share settings with all views
