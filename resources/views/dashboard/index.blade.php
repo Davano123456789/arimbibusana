@@ -11,8 +11,15 @@
           <div class="col-8">
             <div class="numbers">
               <p class="text-sm mb-0 text-uppercase font-weight-bold">Pesanan Hari Ini</p>
-              <h5 class="font-weight-bolder">24</h5>
-              <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+12%</span> dibanding kemarin</p>
+              <h5 class="font-weight-bolder">{{ $ordersToday }}</h5>
+              <p class="mb-0">
+                @if($ordersDiffPercent >= 0)
+                  <span class="text-success text-sm font-weight-bolder">+{{ number_format($ordersDiffPercent, 1) }}%</span>
+                @else
+                  <span class="text-danger text-sm font-weight-bolder">{{ number_format($ordersDiffPercent, 1) }}%</span>
+                @endif
+                dibanding kemarin
+              </p>
             </div>
           </div>
           <div class="col-4 text-end">
@@ -31,8 +38,15 @@
           <div class="col-8">
             <div class="numbers">
               <p class="text-sm mb-0 text-uppercase font-weight-bold">Pendapatan</p>
-              <h5 class="font-weight-bolder">Rp 7.850.000</h5>
-              <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+5%</span> minggu ini</p>
+              <h5 class="font-weight-bolder">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h5>
+              <p class="mb-0">
+                @if($revenueDiffPercent >= 0)
+                  <span class="text-success text-sm font-weight-bolder">+{{ number_format($revenueDiffPercent, 1) }}%</span>
+                @else
+                  <span class="text-danger text-sm font-weight-bolder">{{ number_format($revenueDiffPercent, 1) }}%</span>
+                @endif
+                minggu ini
+              </p>
             </div>
           </div>
           <div class="col-4 text-end">
@@ -50,9 +64,16 @@
         <div class="row">
           <div class="col-8">
             <div class="numbers">
-              <p class="text-sm mb-0 text-uppercase font-weight-bold">Pelanggan Baru</p>
-              <h5 class="font-weight-bolder">18</h5>
-              <p class="mb-0"><span class="text-danger text-sm font-weight-bolder">-2%</span> dari minggu lalu</p>
+              <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Pelanggan</p>
+              <h5 class="font-weight-bolder">{{ $totalClients }}</h5>
+              <p class="mb-0">
+                @if($clientsDiffPercent >= 0)
+                  <span class="text-success text-sm font-weight-bolder">+{{ number_format($clientsDiffPercent, 1) }}%</span>
+                @else
+                  <span class="text-danger text-sm font-weight-bolder">{{ number_format($clientsDiffPercent, 1) }}%</span>
+                @endif
+                dari minggu lalu
+              </p>
             </div>
           </div>
           <div class="col-4 text-end">
@@ -71,8 +92,10 @@
           <div class="col-8">
             <div class="numbers">
               <p class="text-sm mb-0 text-uppercase font-weight-bold">Produk Aktif</p>
-              <h5 class="font-weight-bolder">126</h5>
-              <p class="mb-0"><span class="text-success text-sm font-weight-bolder">+8</span> produk baru</p>
+              <h5 class="font-weight-bolder">{{ $activeProductsCount }}</h5>
+              <p class="mb-0">
+                <span class="text-success text-sm font-weight-bolder">+{{ $newProductsThisWeek }}</span> produk baru minggu ini
+              </p>
             </div>
           </div>
           <div class="col-4 text-end">

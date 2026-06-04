@@ -18,6 +18,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama</th>
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal Registrasi</th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jumlah Pembelian</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                             </tr>
                         </thead>
@@ -25,7 +26,7 @@
                             @forelse($users as $user)
                             <tr>
                                 <td class="align-middle text-center">
-                                    <span class="text-secondary text-xs font-weight-bold">{{ $loop->iteration }}</span>
+                                    <span class="text-secondary text-xs font-weight-bold">{{ $loop->iteration + $users->firstItem() - 1 }}</span>
                                 </td>
                                 <td>
                                     <div class="d-flex px-2 py-1">
@@ -45,13 +46,21 @@
                                 <td class="align-middle text-center text-sm">
                                     <span class="text-secondary text-xs font-weight-bold">{{ $user->created_at->format('d/m/Y H:i') }}</span>
                                 </td>
+                                <td class="align-middle text-center text-sm">
+                                    <span class="badge badge-sm bg-gradient-{{ $user->successful_purchases_count > 0 ? 'success' : 'secondary' }}">
+                                        {{ $user->successful_purchases_count }} Kali
+                                    </span>
+                                </td>
                                 <td class="align-middle text-center">
+                                    <a href="{{ route('dashboard.users.show', $user->id) }}" class="text-info font-weight-bold text-xs me-3" data-toggle="tooltip" title="Lihat Detail Belanja">
+                                        <i class="fas fa-eye me-1"></i> Detail
+                                    </a>
                                     @if($user->id !== auth()->id())
                                     <form action="{{ route('dashboard.users.destroy', $user->id) }}" method="POST" class="d-inline delete-form-{{ $user->id }}">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" class="border-0 bg-transparent text-danger font-weight-bold text-xs delete-btn" data-id="{{ $user->id }}" data-toggle="tooltip" title="Hapus User">
-                                            <i class="fas fa-trash"></i>
+                                            <i class="fas fa-trash me-1"></i> Hapus
                                         </button>
                                     </form>
                                     @else
@@ -61,7 +70,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="5" class="text-center py-4">
+                                <td colspan="6" class="text-center py-4">
                                     <p class="text-xs font-weight-bold mb-0 text-secondary">Belum ada user yang terdaftar.</p>
                                 </td>
                             </tr>
@@ -69,6 +78,9 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+            <div class="card-footer px-4 border-top">
+                {{ $users->links() }}
             </div>
         </div>
     </div>
