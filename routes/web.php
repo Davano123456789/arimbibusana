@@ -127,6 +127,7 @@ Route::prefix('dashboard')->group(function () {
     
     // User Management
     Route::get('/users', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('dashboard.users.index');
+    Route::get('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'show'])->name('dashboard.users.show');
     Route::delete('/users/{id}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('dashboard.users.destroy');
 
     // Order Management

@@ -48,6 +48,14 @@
         </a>
       </li>
       <li class="nav-item">
+        <a class="nav-link {{ request()->is('dashboard/users*') ? 'active' : '' }}" href="{{ route('dashboard.users.index') }}">
+          <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+            <i class="fa-solid fa-users text-info text-sm"></i>
+          </div>
+          <span class="nav-link-text ms-1">Member (Pelanggan)</span>
+        </a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link {{ Request::is('dashboard/categories*') ? 'active' : '' }}" href="{{ route('dashboard.categories.index') }}">
           <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
             <i class="fa-solid fa-layer-group text-success text-sm"></i>
