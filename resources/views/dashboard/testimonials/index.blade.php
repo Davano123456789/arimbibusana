@@ -6,8 +6,19 @@
     <div class="row">
         <div class="col-12">
             <div class="card mb-4">
-                <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+                <div class="card-header pb-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <h6>Daftar Testimonial</h6>
+                    <div class="d-flex align-items-center ms-md-auto">
+                        <form action="{{ route('dashboard.testimonials.index') }}" method="GET" class="mb-0">
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="search" class="form-control" placeholder="Cari nama/feedback..." value="{{ request('search') }}">
+                                <button class="btn btn-outline-primary mb-0" type="submit">Cari</button>
+                                @if(request('search'))
+                                    <a href="{{ route('dashboard.testimonials.index') }}" class="btn btn-outline-secondary mb-0">Reset</a>
+                                @endif
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 <div class="card-body px-0 pt-0 pb-2">
                     <div class="table-responsive p-0">

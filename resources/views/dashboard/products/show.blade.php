@@ -81,7 +81,7 @@
                         </div>
                     </div>
                     
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-control-label d-block">Status Produk</label>
                         <div class="form-check form-switch ps-0">
                             <input class="form-check-input ms-auto" type="checkbox" {{ $product->status == 'active' ? 'checked' : '' }} disabled>
@@ -89,19 +89,11 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-control-label d-block">Label Khusus</label>
                         <div class="form-check form-switch ps-0">
                             <input class="form-check-input ms-auto" type="checkbox" {{ $product->is_best_seller ? 'checked' : '' }} disabled>
-                            <label class="form-check-label ms-2">Best Seller</label>
-                        </div>
-                    </div>
-
-                    <div class="col-md-4">
-                        <label class="form-control-label d-block">&nbsp;</label>
-                        <div class="form-check form-switch ps-0">
-                            <input class="form-check-input ms-auto" type="checkbox" {{ $product->is_recommended ? 'checked' : '' }} disabled>
-                            <label class="form-check-label ms-2">Produk Rekomendasi</label>
+                            <label class="form-check-label ms-2">Produk Unggulan</label>
                         </div>
                     </div>
                 </div>

@@ -6,9 +6,20 @@
 <div class="row">
     <div class="col-12">
         <div class="card mb-4">
-            <div class="card-header pb-0 d-flex justify-content-between align-items-center">
+            <div class="card-header pb-0 d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <h6>Daftar Blog</h6>
-                <a href="{{ route('dashboard.blogs.create') }}" class="btn btn-primary btn-sm ms-auto">Tambah Blog</a>
+                <div class="d-flex align-items-center ms-md-auto gap-2 flex-wrap">
+                    <form action="{{ route('dashboard.blogs.index') }}" method="GET" class="mb-0">
+                        <div class="input-group input-group-sm">
+                            <input type="text" name="search" class="form-control" placeholder="Cari judul/author..." value="{{ request('search') }}">
+                            <button class="btn btn-outline-primary mb-0" type="submit">Cari</button>
+                            @if(request('search'))
+                                <a href="{{ route('dashboard.blogs.index') }}" class="btn btn-outline-secondary mb-0">Reset</a>
+                            @endif
+                        </div>
+                    </form>
+                    <a href="{{ route('dashboard.blogs.create') }}" class="btn btn-primary btn-sm mb-0">Tambah Blog</a>
+                </div>
             </div>
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-0">

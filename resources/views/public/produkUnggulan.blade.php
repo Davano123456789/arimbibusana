@@ -145,7 +145,7 @@
                     <div class="flex gap-3" data-aos="fade-up" data-aos-delay="600">
                         <button id="heroMute"
                             class="inline-flex items-center gap-2 border border-gray-200 px-4 py-2 rounded text-sm bg-white/10 uppercase font-bold tracking-wider">Unmute
-                            <i class="fa-solid fa-volume-high ml-2"></i></button>
+                            <i class="fa-solid fa-volume-xmark ml-2"></i></button>
                     </div>
                 </div>
             </div>
@@ -352,8 +352,8 @@
         function setHeroMuteLabel() {
             if (!heroMute) return;
             heroMute.innerHTML = heroVideo && heroVideo.muted ?
-                'Unmute <i class="fa-solid fa-volume-high ml-2"></i>' :
-                'Mute <i class="fa-solid fa-volume-xmark ml-2"></i>';
+                'Unmute <i class="fa-solid fa-volume-xmark ml-2"></i>' :
+                'Mute <i class="fa-solid fa-volume-high ml-2"></i>';
         }
 
         function showPlayBtn() {

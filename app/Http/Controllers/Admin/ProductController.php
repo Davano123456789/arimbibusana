@@ -14,9 +14,21 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'images'])->latest()->paginate(10);
+        $search = $request->input('search');
+        $products = Product::with(['category', 'images'])
+            ->when($search, function($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                             ->orWhere('slug', 'like', "%{$search}%")
+                             ->orWhereHas('category', function($q) use ($search) {
+                                 $q->where('name', 'like', "%{$search}%");
+                             });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return view('dashboard.products.index', compact('products'));
     }
 

@@ -247,7 +247,7 @@
             <a href="#testimoni" class="border border-gray-300 px-5 py-3 rounded">Lihat Testimoni</a>
             <button id="heroMute"
               class="hidden md:inline-flex items-center gap-2 border border-gray-200 px-4 py-2 rounded text-sm bg-white/10">Unmute
-              <i class="fa-solid fa-volume-high ml-2"></i></button>
+              <i class="fa-solid fa-volume-xmark ml-2"></i></button>
           </div>
 
         </div>
@@ -813,7 +813,7 @@
 
     function setHeroMuteLabel() {
       if (!heroMute) return;
-      heroMute.innerHTML = heroVideo && heroVideo.muted ? 'Unmute <i class="fa-solid fa-volume-high ml-2"></i>' : 'Mute <i class="fa-solid fa-volume-xmark ml-2"></i>';
+      heroMute.innerHTML = heroVideo && heroVideo.muted ? 'Unmute <i class="fa-solid fa-volume-xmark ml-2"></i>' : 'Mute <i class="fa-solid fa-volume-high ml-2"></i>';
     }
 
     function showPlayBtn() { if (heroPlayBtn) heroPlayBtn.classList.remove('hidden'); }
