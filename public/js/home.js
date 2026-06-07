@@ -23,7 +23,7 @@ const heroMute = document.getElementById('heroMute');
 const heroPlayBtn = document.getElementById('heroPlayBtn');
 function setHeroMuteLabel() {
   if (!heroMute) return;
-  heroMute.innerHTML = heroVideo && heroVideo.muted ? 'Unmute <i class="fa-solid fa-volume-high ml-2"></i>' : 'Mute <i class="fa-solid fa-volume-xmark ml-2"></i>';
+  heroMute.innerHTML = heroVideo && heroVideo.muted ? 'Unmute <i class="fa-solid fa-volume-xmark ml-2"></i>' : 'Mute <i class="fa-solid fa-volume-high ml-2"></i>';
 }
 function showPlayBtn() { if (heroPlayBtn) heroPlayBtn.classList.remove('hidden'); }
 function hidePlayBtn() { if (heroPlayBtn) heroPlayBtn.classList.add('hidden'); }

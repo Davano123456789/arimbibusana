@@ -11,9 +11,18 @@ use Carbon\Carbon;
 
 class BlogController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $blogs = BlogPost::latest()->paginate(10);
+        $search = $request->input('search');
+        $blogs = BlogPost::latest()
+            ->when($search, function($query, $search) {
+                return $query->where('title', 'like', "%{$search}%")
+                             ->orWhere('author', 'like', "%{$search}%")
+                             ->orWhere('excerpt', 'like', "%{$search}%");
+            })
+            ->paginate(10)
+            ->withQueryString();
+
         return view('dashboard.blogs.index', compact('blogs'));
     }
 

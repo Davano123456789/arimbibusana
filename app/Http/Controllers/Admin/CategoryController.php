@@ -8,9 +8,18 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('products')->get();
+        $search = $request->input('search');
+        $categories = Category::withCount('products')
+            ->when($search, function($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                             ->orWhere('slug', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
         return view('dashboard.categories.index', compact('categories'));
     }
 

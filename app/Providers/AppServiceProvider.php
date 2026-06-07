@@ -1,9 +1,10 @@
 <?php
-
+ 
 namespace App\Providers;
-
+ 
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Pagination\Paginator;
+ 
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -13,12 +14,14 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
-
+ 
     /**
      * Bootstrap any application services.
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         // Share cart count with all views
         \Illuminate\Support\Facades\View::composer(['layouts.navbar', 'resources.views.layouts.navbar'], function ($view) {
             $cartCount = 0;
@@ -35,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
                 'pendingOrdersCount' => $pendingOrdersCount
             ]);
         });
-
+ 
         // Share settings with all views
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
             $settings = \App\Models\Setting::all()->pluck('value', 'key');

@@ -141,7 +141,7 @@
                             <hr class="horizontal dark">
                         </div>
                         
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-control-label d-block">Status Produk</label>
                             <div class="form-check form-switch ps-0">
                                 <input class="form-check-input ms-auto" type="checkbox" id="status" name="status" value="active" checked>
@@ -149,19 +149,11 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-6">
                             <label class="form-control-label d-block">Label Khusus</label>
                             <div class="form-check form-switch ps-0">
                                 <input class="form-check-input ms-auto" type="checkbox" id="is_best_seller" name="is_best_seller" value="1">
-                                <label class="form-check-label ms-2" for="is_best_seller">Best Seller</label>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <label class="form-control-label d-block">&nbsp;</label>
-                            <div class="form-check form-switch ps-0">
-                                <input class="form-check-input ms-auto" type="checkbox" id="is_recommended" name="is_recommended" value="1">
-                                <label class="form-check-label ms-2" for="is_recommended">Produk Rekomendasi</label>
+                                <label class="form-check-label ms-2" for="is_best_seller">Produk Unggulan</label>
                             </div>
                         </div>
                     </div>
