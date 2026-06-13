@@ -484,12 +484,7 @@
 
     </main>
 
-    {{-- Floating WhatsApp --}}
-    <a href="https://wa.me/6282337115553"
-        class="fixed bottom-6 right-6 z-50 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl floating-wa transition-all hover:bg-green-600"
-        aria-label="Chat via WhatsApp" title="Hubungi Kami via WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
+
 
 @endsection
 

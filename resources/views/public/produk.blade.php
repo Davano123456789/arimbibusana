@@ -278,12 +278,7 @@
         </div>
     </main>
 
-    <!-- Floating WhatsApp -->
-    <a href="https://wa.me/6282337115553"
-        class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center text-2xl shadow-2xl hover:bg-[#128C7E] transition-all hover:scale-110 active:scale-95 duration-300"
-        aria-label="Chat via WhatsApp">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
+
 @endsection
 
 @section('scripts')

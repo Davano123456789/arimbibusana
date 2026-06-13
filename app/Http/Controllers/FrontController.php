@@ -649,6 +649,52 @@ class FrontController extends Controller
         return view('public.live');
     }
 
+    public function profil()
+    {
+        $user = Auth::user();
+        return view('public.profil', compact('user'));
+    }
+
+    public function updateProfil(Request $request)
+    {
+        $user = Auth::user();
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'province_id' => 'nullable|string',
+            'province_name' => 'nullable|string',
+            'city_id' => 'nullable|string',
+            'city_name' => 'nullable|string',
+            'district_id' => 'nullable|string',
+            'district_name' => 'nullable|string',
+            'postal_code' => 'nullable|string|max:10',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'password' => 'nullable|string|min:8|confirmed',
+        ]);
+
+        $data = $request->only([
+            'name', 'phone', 'address', 'province_id', 'province_name',
+            'city_id', 'city_name', 'district_id', 'district_name', 'postal_code'
+        ]);
+
+        if ($request->filled('password')) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($user->avatar);
+            }
+            $data['avatar'] = $request->file('avatar')->store('avatars', 'public');
+        }
+
+        $user->update($data);
+
+        return back()->with('success', 'Profil berhasil diperbarui!');
+    }
+
     private function returnStock($order)
     {
         // Only return stock if items were already decremented

@@ -34,7 +34,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/pesanan/{id}/refund', [FrontController::class, 'requestRefund'])->name('pesanan.refund');
     Route::post('/pesanan/{id}/complete', [FrontController::class, 'completeOrder'])->name('pesanan.complete');
     Route::get('/invoice/{order_number}', [FrontController::class, 'invoice'])->name('pesanan.invoice');
+    Route::get('/profil', [FrontController::class, 'profil'])->name('profile.index');
+    Route::post('/profil', [FrontController::class, 'updateProfil'])->name('profile.update');
     Route::post('/detail-produk/{id}/ulasan', [FrontController::class, 'storeTestimonial']);
+
+    // Chat API Routes
+    Route::get('/chat/messages/{userId}', [\App\Http\Controllers\ChatController::class, 'getMessages']);
+    Route::post('/chat/messages', [\App\Http\Controllers\ChatController::class, 'sendMessage']);
+    Route::delete('/chat/messages/{id}', [\App\Http\Controllers\ChatController::class, 'destroy']);
 });
 
 /*
@@ -136,6 +143,9 @@ Route::prefix('dashboard')->group(function () {
     Route::post('/orders/{id}/resi', [\App\Http\Controllers\Admin\OrderController::class, 'inputResi'])->name('dashboard.orders.resi');
     Route::post('/orders/{id}/refund', [\App\Http\Controllers\Admin\OrderController::class, 'uploadRefund'])->name('dashboard.orders.refund');
     Route::post('/orders/{id}/complete', [\App\Http\Controllers\Admin\OrderController::class, 'markAsCompleted'])->name('dashboard.orders.complete');
+
+    // Admin Chat Page
+    Route::get('/chats', [\App\Http\Controllers\ChatController::class, 'adminIndex'])->name('dashboard.chats.index');
 });
 
 Route::get('/live', [FrontController::class, 'live'])->name('public.live');

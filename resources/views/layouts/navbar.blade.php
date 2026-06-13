@@ -45,6 +45,13 @@
                 </a>
             @endauth
             @auth
+            <a href="{{ url('/profil') }}" class="relative text-gray-500 hover:text-accent transition-colors flex items-center" title="Profil Saya">
+                @if(Auth::user()->avatar)
+                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-6 h-6 rounded-full object-cover border border-gray-300 hover:border-accent transition-all" alt="Avatar">
+                @else
+                    <i class="fa-solid fa-user text-xl"></i>
+                @endif
+            </a>
             <a href="{{ url('/pesanan') }}" class="relative text-gray-500 hover:text-accent transition-colors" title="Pesanan Saya">
                 <i class="fa-solid fa-clipboard-list text-xl"></i>
                 @if($pendingOrdersCount > 0)
@@ -118,6 +125,17 @@
             <a href="{{ route('public.blog') }}" class="py-2 border-b mobile-nav-link">Blog</a>
             <a href="#informasi" class="py-2 border-b mobile-nav-link">Informasi Kami</a>
             @auth
+            <a href="{{ url('/profil') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    @if(Auth::user()->avatar)
+                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-6 h-6 rounded-full object-cover border border-gray-300" alt="Avatar">
+                    @else
+                        <i class="fa-solid fa-user text-gray-400 text-sm"></i>
+                    @endif
+                    Profil Saya
+                </span>
+                <i class="fa-solid fa-user-gear text-gray-400"></i>
+            </a>
             <a href="{{ url('/pesanan') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
                 <span class="flex items-center gap-2">
                     Pesanan Saya

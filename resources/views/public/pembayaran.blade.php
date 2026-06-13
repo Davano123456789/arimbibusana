@@ -151,6 +151,7 @@
                                         class="fa-solid fa-user text-gray-400 group-focus-within:text-accent transition-colors"></i>
                                 </div>
                                 <input type="text" id="name" name="name"
+                                    value="{{ old('name', Auth::check() ? Auth::user()->name : '') }}"
                                     class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200"
                                     placeholder="Masukkan nama lengkap penerima" required>
                             </div>
@@ -166,6 +167,7 @@
                                         class="fa-brands fa-whatsapp text-gray-400 group-focus-within:text-accent transition-colors text-lg"></i>
                                 </div>
                                 <input type="tel" id="phone" name="phone"
+                                    value="{{ old('phone', Auth::check() ? Auth::user()->phone : '') }}"
                                     class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200"
                                     placeholder="Contoh: 08123456789" required>
                             </div>
@@ -181,7 +183,7 @@
                                 </div>
                                 <textarea id="address" name="address" rows="3"
                                     class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 resize-none"
-                                    placeholder="Nama jalan, nomor rumah, RT/RW, kelurahan, patokan..." required></textarea>
+                                    placeholder="Nama jalan, nomor rumah, RT/RW, kelurahan, patokan..." required>{{ old('address', Auth::check() ? Auth::user()->address : '') }}</textarea>
                             </div>
                         </div>
 
@@ -194,6 +196,7 @@
                                         class="fa-solid fa-envelope text-gray-400 group-focus-within:text-accent transition-colors"></i>
                                 </div>
                                 <input type="text" id="postal_code" name="postal_code" maxlength="5"
+                                    value="{{ old('postal_code', Auth::check() ? Auth::user()->postal_code : '') }}"
                                     class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200"
                                     placeholder="Contoh: 60111" required>
                             </div>
@@ -215,7 +218,7 @@
                                     <i class="fa-solid fa-chevron-down text-gray-400 group-focus-within:text-accent transition-colors text-xs"></i>
                                 </div>
                             </div>
-                            <input type="hidden" id="province_name" name="province_name">
+                            <input type="hidden" id="province_name" name="province_name" value="{{ old('province_name', Auth::check() ? Auth::user()->province_name : '') }}">
                         </div>
 
                         <!-- Kota / Kabupaten -->
@@ -234,7 +237,7 @@
                                     <i class="fa-solid fa-chevron-down text-gray-400 group-focus-within:text-accent transition-colors text-xs"></i>
                                 </div>
                             </div>
-                            <input type="hidden" id="city_name" name="city_name">
+                            <input type="hidden" id="city_name" name="city_name" value="{{ old('city_name', Auth::check() ? Auth::user()->city_name : '') }}">
                         </div>
 
                         <!-- Kecamatan -->
@@ -253,7 +256,7 @@
                                     <i class="fa-solid fa-chevron-down text-gray-400 group-focus-within:text-accent transition-colors text-xs"></i>
                                 </div>
                             </div>
-                            <input type="hidden" id="district_name" name="district_name">
+                            <input type="hidden" id="district_name" name="district_name" value="{{ old('district_name', Auth::check() ? Auth::user()->district_name : '') }}">
                         </div>
 
                         <!-- Kurir Pengiriman -->
@@ -385,6 +388,11 @@
             const totalPaymentDisplay = document.getElementById('total_payment');
             const subtotal = parseInt(document.getElementById('subtotal').dataset.value);
 
+            // Initial Cascading Values
+            const initialProvinceId = "{{ old('province_id', Auth::check() ? Auth::user()->province_id : '') }}";
+            const initialCityId = "{{ old('city_id', Auth::check() ? Auth::user()->city_id : '') }}";
+            const initialDistrictId = "{{ old('district_id', Auth::check() ? Auth::user()->district_id : '') }}";
+
             // Initialize Tom Select
             const tsProvince = new TomSelect('#province', {
                 create: false,
@@ -395,7 +403,7 @@
             const tsCity = new TomSelect('#city_id', {
                 create: false,
                 placeholder: 'Pilih Kota...',
-                maxOptions: 500,
+                maxOptions: 1000,
             });
 
             const tsDistrict = new TomSelect('#district_id', {
@@ -424,6 +432,11 @@
                             tsProvince.addOption({value: province.id, text: province.name});
                         });
                         tsProvince.refreshOptions(false);
+
+                        // Set initial value if exists
+                        if (initialProvinceId) {
+                            tsProvince.setValue(initialProvinceId);
+                        }
                     }
                 } catch (error) {
                     console.error('Error fetching provinces:', error);
@@ -450,6 +463,9 @@
 
                 if (!provinceId) return;
 
+                // Save name
+                document.getElementById('province_name').value = tsProvince.getItem(provinceId).textContent;
+
                 try {
                     const response = await fetch(`/shipping/cities/${provinceId}`);
                     const cities = await response.json();
@@ -460,6 +476,11 @@
                         });
                         tsCity.enable();
                         tsCity.refreshOptions(false);
+
+                        // Set initial value if exists
+                        if (initialCityId && provinceId === initialProvinceId) {
+                            tsCity.setValue(initialCityId);
+                        }
                     }
                 } catch (error) {
                     console.error('Error fetching cities:', error);
@@ -475,6 +496,9 @@
 
                 if (!cityId) return;
 
+                // Save name
+                document.getElementById('city_name').value = tsCity.getItem(cityId).textContent;
+
                 try {
                     const response = await fetch(`/shipping/districts/${cityId}`);
                     const districts = await response.json();
@@ -485,6 +509,11 @@
                         });
                         tsDistrict.enable();
                         tsDistrict.refreshOptions(false);
+
+                        // Set initial value if exists
+                        if (initialDistrictId && cityId === initialCityId) {
+                            tsDistrict.setValue(initialDistrictId);
+                        }
                     }
                 } catch (error) {
                     console.error('Error fetching districts:', error);
@@ -500,41 +529,47 @@
                 // Save metadata
                 document.getElementById('district_name').value = tsDistrict.getItem(districtId).textContent;
 
-                // Auto-fill Postal Code
-                try {
-                    const provinceName = tsProvince.getItem(tsProvince.getValue()).textContent;
-                    const cityName = tsCity.getItem(tsCity.getValue()).textContent;
-                    const districtName = tsDistrict.getItem(districtId).textContent;
+                // Auto-fill Postal Code if it is a user change (not prefilled)
+                const isInitialLoad = (districtId === initialDistrictId && postalCodeInput.value);
 
-                    postalCodeInput.placeholder = 'Mencari kode pos...';
-                    postalCodeInput.classList.add('animate-pulse');
+                if (!isInitialLoad && !postalCodeInput.value) {
+                    try {
+                        const provinceName = tsProvince.getItem(tsProvince.getValue()).textContent;
+                        const cityName = tsCity.getItem(tsCity.getValue()).textContent;
+                        const districtName = tsDistrict.getItem(districtId).textContent;
 
-                    const response = await fetch('/shipping/postal-code', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            province: provinceName,
-                            city: cityName,
-                            district: districtName
-                        })
-                    });
+                        postalCodeInput.placeholder = 'Mencari kode pos...';
+                        postalCodeInput.classList.add('animate-pulse');
 
-                    const data = await response.json();
-                    
-                    if (data.postal_code) {
-                        postalCodeInput.value = data.postal_code;
-                        postalCodeInput.classList.remove('animate-pulse');
-                        postalCodeInput.placeholder = 'Contoh: 60111';
+                        const response = await fetch('/shipping/postal-code', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({
+                                province: provinceName,
+                                city: cityName,
+                                district: districtName
+                            })
+                        });
+
+                        const data = await response.json();
                         
-                        // Trigger shipping cost calculation immediately
-                        calculateShippingCost();
+                        if (data.postal_code) {
+                            postalCodeInput.value = data.postal_code;
+                            postalCodeInput.classList.remove('animate-pulse');
+                            postalCodeInput.placeholder = 'Contoh: 60111';
+                            
+                            // Trigger shipping cost calculation immediately
+                            calculateShippingCost();
+                        }
+                    } catch (error) {
+                        console.error('Error fetching postal code:', error);
+                        postalCodeInput.classList.remove('animate-pulse');
                     }
-                } catch (error) {
-                    console.error('Error fetching postal code:', error);
-                    postalCodeInput.classList.remove('animate-pulse');
+                } else {
+                    calculateShippingCost();
                 }
             });
             async function calculateShippingCost() {
