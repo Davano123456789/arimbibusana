@@ -109,7 +109,6 @@
             background-color: #f3f4f6 !important;
         }
     </style>
-    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
     <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
 @endsection
 
@@ -301,16 +300,16 @@
                         Konfirmasi Pesanan
                     </h2>
 
-                    <div class="bg-blue-50 border border-blue-100 p-6 rounded-2xl flex gap-4">
+                    <div class="bg-amber-50 border border-amber-100 p-6 rounded-2xl flex gap-4">
                         <div
-                            class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center flex-shrink-0">
-                            <i class="fa-solid fa-circle-info text-xl"></i>
+                            class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0">
+                            <i class="fa-solid fa-qrcode text-xl"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-blue-900 mb-1">Metode Pembayaran</h4>
-                            <p class="text-sm text-blue-700 leading-relaxed text-light">
-                                Setelah klik "Buat Pesanan", Anda akan diarahkan ke jendela pembayaran aman dari
-                                <strong>Midtrans</strong> untuk memilih metode Transfer Bank, E-Wallet, atau Kartu Kredit.
+                            <h4 class="font-bold text-amber-900 mb-1">Metode Pembayaran QRIS</h4>
+                            <p class="text-sm text-amber-700 leading-relaxed text-light">
+                                Setelah klik "Buat Pesanan", Anda akan melihat kode **QRIS** resmi toko kami. 
+                                Silakan scan QRIS menggunakan aplikasi perbankan atau e-wallet Anda, selesaikan pembayaran, lalu unggah screenshot bukti transfer untuk konfirmasi.
                             </p>
                         </div>
                     </div>
@@ -795,23 +794,14 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        window.snap.pay(data.snap_token, {
-                            onSuccess: function (result) {
-                                window.location.href = "{{ url('/pembayaran/finish') }}?order_id=" + result.order_id;
-                            },
-                            onPending: function (result) {
-                                window.location.href = "{{ url('/pembayaran/finish') }}?order_id=" + result.order_id;
-                            },
-                            onError: function (result) {
-                                window.location.href = "{{ url('/pembayaran/finish') }}?order_id=" + result.order_id;
-                            },
-                            onClose: function () {
-                                Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Pembayaran Dibatalkan',
-                                    text: 'Anda menutup jendela pembayaran sebelum selesai.',
-                                    confirmButtonColor: '#5B3A29'
-                                });
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Pesanan Berhasil Dibuat!',
+                            text: 'Anda akan dialihkan ke halaman pembayaran.',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            willClose: () => {
+                                window.location.href = "{{ url('/invoice') }}/" + data.order_number;
                             }
                         });
                     } else {

@@ -21,6 +21,8 @@ class OrderController extends Controller
 
         if ($status === 'processing') {
             $query->where('status', 'settlement');
+        } elseif ($status === 'pending') {
+            $query->where('status', 'pending');
         } elseif ($status === 'shipped') {
             $query->where('status', 'shipped');
         } elseif ($status === 'completed') {
@@ -28,7 +30,7 @@ class OrderController extends Controller
         } elseif ($status === 'refund') {
             $query->whereIn('status', ['cancel', 'expire', 'waiting_refund', 'refunded']);
         } elseif ($status === 'unpaid') {
-            $query->where('status', 'unpaid')->where('snap_token', '!=', null);
+            $query->where('status', 'unpaid');
         }
 
         $orders = $query->latest()->paginate(15);
@@ -40,6 +42,12 @@ class OrderController extends Controller
     {
         $order = Order::with(['user', 'items.product'])->findOrFail($id);
         return view('dashboard.orders.show', compact('order'));
+    }
+
+    public function printLabel($id)
+    {
+        $order = Order::with(['user', 'items.product'])->findOrFail($id);
+        return view('dashboard.orders.print', compact('order'));
     }
 
     public function inputResi(Request $request, $id)
@@ -128,5 +136,34 @@ class OrderController extends Controller
         ]);
 
         return back()->with('success', 'Pesanan ditandai selesai secara paksa.');
+    }
+
+    public function confirmManualPayment($id)
+    {
+        $order = Order::with('user', 'items')->findOrFail($id);
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Pesanan tidak dalam proses konfirmasi pembayaran.');
+        }
+
+        $order->update([
+            'status' => 'settlement'
+        ]);
+
+        // Award loyalty points
+        $order->awardPoints();
+
+        // Send email invoice
+        if ($order->user && $order->user->email) {
+            try {
+                \Illuminate\Support\Facades\Mail::send('emails.invoice', ['order' => $order], function ($m) use ($order) {
+                    $m->to($order->user->email, $order->customer_name)->subject('Invoice Pesanan ' . $order->order_number);
+                });
+            } catch (\Exception $e) {
+                Log::error('Gagal kirim email invoice saat konfirmasi QRIS: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('success', 'Pembayaran berhasil dikonfirmasi! Pesanan sekarang berstatus Perlu Dikemas.');
     }
 }

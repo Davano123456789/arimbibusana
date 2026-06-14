@@ -38,6 +38,7 @@ class Order extends Model
         'refund_bank',
         'refund_account_number',
         'refund_receipt',
+        'payment_receipt',
         'expired_at',
     ];
     

@@ -150,11 +150,9 @@
                                 <button onclick="promptCancel({{ $order->id }})" class="px-5 py-2.5 bg-white border border-red-200 hover:bg-red-50 text-red-600 text-sm font-bold rounded-xl shadow-sm transition-all flex items-center gap-2">
                                     Batalkan
                                 </button>
-                                @if($order->snap_token)
-                                    <button onclick="payNow('{{ $order->snap_token }}')" class="px-6 py-2.5 bg-accent hover:brightness-110 text-white text-sm font-bold rounded-xl shadow-lg shadow-accent/20 transition-all flex items-center gap-2">
-                                        Lanjutkan Pembayaran <i class="fa-solid fa-arrow-right"></i>
-                                    </button>
-                                @endif
+                                <a href="{{ route('pesanan.invoice', $order->order_number) }}" class="px-6 py-2.5 bg-accent hover:brightness-110 text-white text-sm font-bold rounded-xl shadow-lg shadow-accent/20 transition-all flex items-center gap-2">
+                                    Bayar / Konfirmasi <i class="fa-solid fa-arrow-right"></i>
+                                </a>
                             </div>
                         </div>
                     @elseif(in_array($order->status, ['settlement', 'pending']))

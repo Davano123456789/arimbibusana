@@ -8,21 +8,26 @@
         <div class="card shadow-sm border-0">
             <div class="card-header pb-0 d-flex justify-content-between align-items-center bg-white border-bottom">
                 <h6 class="mb-0">Informasi Pesanan: {{ $order->order_number }}</h6>
-                @if($order->status == 'settlement')
-                    <span class="badge bg-gradient-warning pb-2">Perlu Dikemas / Lunas</span>
-                @elseif($order->status == 'shipped')
-                    <span class="badge bg-gradient-info pb-2">Sedang Dikirim</span>
-                @elseif($order->status == 'completed')
-                    <span class="badge bg-gradient-success pb-2">Selesai</span>
-                @elseif($order->status == 'waiting_refund')
-                    <span class="badge bg-gradient-danger pb-2">Menunggu Refund</span>
-                @elseif($order->status == 'refunded')
-                    <span class="badge bg-gradient-secondary pb-2">Telah di-Refund</span>
-                @elseif($order->status == 'unpaid')
-                    <span class="badge bg-light text-dark border pb-2">Belum Dibayar</span>
-                @else
-                    <span class="badge bg-gradient-secondary pb-2">{{ strtoupper($order->status) }}</span>
-                @endif
+                <div class="d-flex align-items-center">
+                    <a href="{{ route('dashboard.orders.print', $order->id) }}" target="_blank" class="btn btn-outline-primary btn-sm mb-0 me-3">
+                        <i class="fas fa-print me-1"></i> Cetak Label
+                    </a>
+                    @if($order->status == 'settlement')
+                        <span class="badge bg-gradient-warning pb-2">Perlu Dikemas / Lunas</span>
+                    @elseif($order->status == 'shipped')
+                        <span class="badge bg-gradient-info pb-2">Sedang Dikirim</span>
+                    @elseif($order->status == 'completed')
+                        <span class="badge bg-gradient-success pb-2">Selesai</span>
+                    @elseif($order->status == 'waiting_refund')
+                        <span class="badge bg-gradient-danger pb-2">Menunggu Refund</span>
+                    @elseif($order->status == 'refunded')
+                        <span class="badge bg-gradient-secondary pb-2">Telah di-Refund</span>
+                    @elseif($order->status == 'unpaid')
+                        <span class="badge bg-light text-dark border pb-2">Belum Dibayar</span>
+                    @else
+                        <span class="badge bg-gradient-secondary pb-2">{{ strtoupper($order->status) }}</span>
+                    @endif
+                </div>
             </div>
             
             <div class="card-body">
@@ -130,6 +135,45 @@
     </div>
 
     <div class="col-lg-4 col-md-12">
+        <!-- Konfirmasi Pembayaran QRIS Manual -->
+        @if($order->status == 'pending' || $order->payment_receipt)
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header pb-0 bg-white d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="fas fa-qrcode text-secondary me-2"></i> Bukti Pembayaran QRIS</h6>
+                @if($order->status == 'pending')
+                    <span class="badge bg-gradient-warning">Butuh Verifikasi</span>
+                @else
+                    <span class="badge bg-gradient-success">Telah Dikonfirmasi</span>
+                @endif
+            </div>
+            <div class="card-body">
+                @if($order->payment_receipt)
+                    <div class="text-center mb-3">
+                        <a href="{{ asset('storage/' . $order->payment_receipt) }}" target="_blank" title="Klik untuk memperbesar">
+                            <img src="{{ asset('storage/' . $order->payment_receipt) }}" alt="Bukti Pembayaran" class="img-fluid rounded border shadow-sm" style="max-height: 250px; object-fit: contain;">
+                        </a>
+                        <small class="text-xs text-muted d-block mt-2"><i class="fas fa-search-plus"></i> Klik gambar untuk memperbesar</small>
+                    </div>
+                @else
+                    <p class="text-sm text-center text-muted py-3">Bukti pembayaran belum diunggah.</p>
+                @endif
+
+                @if($order->status == 'pending')
+                    <hr class="horizontal dark my-3">
+                    <p class="text-xs text-secondary mb-3">
+                        Periksa apakah dana sudah masuk ke rekening/e-wallet QRIS Anda sebesar: <strong class="text-dark">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong>.
+                    </p>
+                    <form action="{{ route('dashboard.orders.confirm-payment', $order->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-success w-100 mb-0" onclick="return confirm('Apakah Anda yakin sudah memverifikasi transfer ini dan ingin menandai pesanan sebagai LUNAS?')">
+                            <i class="fas fa-check me-2"></i> Konfirmasi Pembayaran Lunas
+                        </button>
+                    </form>
+                @endif
+            </div>
+        </div>
+        @endif
+
         <!-- Input Resi / Pengiriman -->
         <div class="card shadow-sm border-0 mb-4">
             <div class="card-header pb-0 bg-white">

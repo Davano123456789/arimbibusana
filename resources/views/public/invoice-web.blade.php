@@ -20,6 +20,28 @@
 <body class="py-10 text-gray-800">
 
     <div class="max-w-4xl mx-auto print-container pt-4 px-4 sm:px-0">
+        <!-- Alerts -->
+        @if(session('success'))
+            <div class="mb-6 bg-green-100 border border-green-200 text-green-700 px-4 py-3 rounded-lg flex items-center gap-2 shadow-sm no-print">
+                <i class="fa-solid fa-circle-check"></i>
+                <span class="text-sm font-medium">{{ session('success') }}</span>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="mb-6 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center gap-2 shadow-sm no-print">
+                <i class="fa-solid fa-circle-xmark"></i>
+                <span class="text-sm font-medium">{{ session('error') }}</span>
+            </div>
+        @endif
+        @if($errors->any())
+            <div class="mb-6 bg-red-100 border border-red-200 text-red-700 px-4 py-3 rounded-lg shadow-sm no-print">
+                <ul class="list-disc list-inside text-sm font-medium">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <!-- Actions -->
         <div class="flex justify-between items-center mb-6 no-print">
             <a href="{{ url('/pesanan') }}" class="flex items-center gap-2 text-gray-600 hover:text-gray-900 bg-white px-4 py-2 rounded-lg border shadow-sm transition-colors">
@@ -158,6 +180,79 @@
                 <p class="text-xs text-gray-400">Invoice Sah diterbitkan secara elektronik oleh sistem Arimbi Queen.</p>
             </div>
         </div>
+
+        <!-- QRIS Payment & Confirmation (Hidden in print) -->
+        @if(in_array($order->status, ['unpaid', 'pending']))
+            @php
+                $qrisImage = \App\Models\Setting::getValue('qris_image', '');
+            @endphp
+            
+            <div class="mt-8 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8 sm:p-12 no-print">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2"><i class="fa-solid fa-qrcode text-[#5B3A29]"></i> Konfirmasi Pembayaran QRIS</h3>
+
+                @if($order->status === 'unpaid')
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                        <div class="text-center bg-gray-50 p-6 rounded-xl border">
+                            @if($qrisImage)
+                                <img src="{{ asset('storage/' . $qrisImage) }}" alt="QRIS Toko" class="mx-auto max-w-[200px] rounded shadow-sm mb-4">
+                            @else
+                                <div class="w-[150px] h-[150px] bg-gray-200 border rounded flex items-center justify-center mx-auto mb-4 text-gray-400">
+                                    <i class="fa-solid fa-image text-3xl"></i>
+                                </div>
+                                <p class="text-xs text-red-500 font-medium">QRIS belum diunggah oleh admin.</p>
+                            @endif
+                            <h4 class="font-bold text-gray-700 text-sm">Scan QRIS Arimbi Queen</h4>
+                            <p class="text-[11px] text-gray-500 mt-1">Gunakan aplikasi M-Banking atau E-Wallet (Gopay, OVO, Dana, LinkAja, dll.)</p>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-3 text-sm">Langkah Pembayaran:</h4>
+                            <ol class="list-decimal list-inside text-xs text-gray-600 space-y-2 mb-6">
+                                <li>Scan kode QRIS di samping.</li>
+                                <li>Pastikan nominal transfer sesuai dengan **Total Tagihan**: <strong class="text-sm text-[#5B3A29]">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong></li>
+                                <li>Lakukan pembayaran hingga berhasil.</li>
+                                <li>Ambil screenshot bukti transfer Anda.</li>
+                                <li>Unggah file screenshot di form bawah ini sebagai bukti konfirmasi.</li>
+                            </ol>
+
+                            <form action="{{ route('pesanan.confirm-payment', $order->id) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="mb-4">
+                                    <label class="block text-[11px] font-bold uppercase tracking-wider text-gray-500 mb-2">Unggah Bukti Transfer (Screenshot)</label>
+                                    <input type="file" name="payment_receipt" class="w-full px-4 py-2 border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-accent/20 cursor-pointer" accept="image/*" required>
+                                    <span class="text-[10px] text-gray-400 mt-1 block">Maksimal ukuran file: 4MB (Format: JPG, PNG, JPEG)</span>
+                                </div>
+                                <button type="submit" class="w-full bg-[#5B3A29] hover:bg-[#4a2e20] text-white py-3 rounded-xl font-bold transition shadow-md text-xs">
+                                    Kirim Bukti Pembayaran <i class="fa-solid fa-paper-plane ml-1.5"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <!-- Status is Pending -->
+                    <div class="bg-amber-50 border border-amber-100 p-6 rounded-2xl flex flex-col md:flex-row gap-6 items-center">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 text-xl">
+                            <i class="fa-solid fa-hourglass-half animate-spin" style="animation-duration: 3s;"></i>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <h4 class="font-bold text-amber-900 mb-1 text-sm">Menunggu Verifikasi Admin</h4>
+                            <p class="text-xs text-amber-700 leading-relaxed font-light">
+                                Terima kasih! Bukti pembayaran Anda telah kami terima dan saat ini sedang dalam proses verifikasi oleh tim administrasi kami.
+                                Status pesanan Anda akan berubah menjadi **Lunas (Menunggu Dikemas)** setelah pembayaran dikonfirmasi.
+                            </p>
+                        </div>
+                        @if($order->payment_receipt)
+                            <div class="flex-shrink-0 text-center">
+                                <span class="text-[10px] text-gray-500 font-bold block mb-1">Bukti Transfer Anda:</span>
+                                <a href="{{ asset('storage/' . $order->payment_receipt) }}" target="_blank" class="block border rounded-lg overflow-hidden shadow-sm hover:opacity-90 transition-opacity">
+                                    <img src="{{ asset('storage/' . $order->payment_receipt) }}" alt="Bukti Pembayaran" class="max-h-[80px] object-cover">
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                @endif
+            </div>
+        @endif
     </div>
 
 </body>

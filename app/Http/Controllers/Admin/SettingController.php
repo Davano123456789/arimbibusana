@@ -18,6 +18,14 @@ class SettingController extends Controller
     {
         $data = $request->except('_token');
 
+        if ($request->hasFile('qris_image')) {
+            $request->validate([
+                'qris_image' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
+            $path = $request->file('qris_image')->store('settings', 'public');
+            $data['qris_image'] = $path;
+        }
+
         foreach ($data as $key => $value) {
             Setting::updateOrCreate(
                 ['key' => $key],

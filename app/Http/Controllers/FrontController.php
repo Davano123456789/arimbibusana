@@ -465,65 +465,13 @@ class FrontController extends Controller
                     ]);
                 }
 
-                // Midtrans Configuration
-                \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY');
-                \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-                \Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED', true);
-                \Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS', true);
-
-                $params = [
-                    'transaction_details' => [
-                        'order_id' => $order->order_number,
-                        'gross_amount' => (int) $totalPrice,
-                    ],
-                    'customer_details' => [
-                        'first_name' => $request->name,
-                        'email' => \Illuminate\Support\Facades\Auth::user()->email,
-                        'phone' => $request->phone,
-                    ],
-                    'item_details' => $cartItems->map(function ($item) {
-                        return [
-                            'id' => $item->product_id,
-                            'price' => (int) $item->product->price,
-                            'quantity' => $item->quantity,
-                            'name' => \Illuminate\Support\Str::limit($item->product->name, 45) . ' (' . $item->size->size . ')',
-                        ];
-                    })->toArray(),
-                    'expiry' => [
-                        'start_time' => date("Y-m-d H:i:s O"),
-                        'unit' => 'minute',
-                        'duration' => 60,
-                    ],
-                ];
-
-                if ($request->shipping_cost > 0) {
-                    $params['item_details'][] = [
-                        'id' => 'shipping_cost',
-                        'price' => (int) $request->shipping_cost,
-                        'quantity' => 1,
-                        'name' => 'Ongkos Kirim (' . strtoupper($request->courier) . ')',
-                    ];
-                }
-
-                if ($pointsDiscount > 0) {
-                    $params['item_details'][] = [
-                        'id' => 'points_discount',
-                        'price' => -(int) $pointsDiscount,
-                        'quantity' => 1,
-                        'name' => 'Potongan Poin',
-                    ];
-                }
-
-                $snapToken = \Midtrans\Snap::getSnapToken($params);
-                $order->update(['snap_token' => $snapToken]);
-
                 \App\Models\Cart::where('user_id', $userId)->delete();
 
                 return response()->json([
                     'success' => true,
                     'message' => 'Pesanan berhasil dibuat',
                     'order_id' => $order->id,
-                    'snap_token' => $snapToken
+                    'order_number' => $order->order_number
                 ]);
             });
         } catch (\Exception $e) {
@@ -692,6 +640,30 @@ class FrontController extends Controller
         $order->update(['status' => 'completed']);
 
         return back()->with('success', 'Terima kasih, pesanan telah diselesaikan!');
+    }
+
+    public function confirmPayment(Request $request, $id)
+    {
+        $order = \App\Models\Order::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+        
+        if ($order->status !== 'unpaid') {
+            return back()->with('error', 'Pesanan ini sudah dibayar atau tidak valid untuk konfirmasi.');
+        }
+
+        $request->validate([
+            'payment_receipt' => 'required|image|mimes:jpeg,png,jpg|max:4096'
+        ]);
+
+        if ($request->hasFile('payment_receipt')) {
+            $path = $request->file('payment_receipt')->store('receipts', 'public');
+            $order->update([
+                'payment_receipt' => $path,
+                'status' => 'pending' // pending = Menunggu Konfirmasi Admin
+            ]);
+            return back()->with('success', 'Bukti pembayaran berhasil diunggah! Mohon tunggu konfirmasi admin.');
+        }
+
+        return back()->with('error', 'Gagal mengunggah bukti pembayaran.');
     }
 
     public function blog()

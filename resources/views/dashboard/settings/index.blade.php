@@ -15,7 +15,7 @@
           </div>
         </div>
         <div class="card-body p-4">
-          <form action="{{ route('dashboard.settings.update') }}" method="POST">
+          <form action="{{ route('dashboard.settings.update') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-4">Integrasi TikTok Live</h6>
@@ -47,6 +47,20 @@
                 <input type="url" name="tiktok_live_url" class="form-control" value="{{ $settings['tiktok_live_url'] ?? '' }}" placeholder="https://www.tiktok.com/@username/live">
               </div>
               <small class="text-xs text-muted">Link langsung ke halaman live streaming Anda.</small>
+            </div>
+
+            <h6 class="text-uppercase text-body text-xs font-weight-bolder mb-4 mt-5">Metode Pembayaran QRIS</h6>
+            
+            <div class="mb-4">
+              <label class="form-label">Foto QRIS Toko</label>
+              <input type="file" name="qris_image" class="form-control" accept="image/*">
+              @if($settings['qris_image'] ?? '')
+                <div class="mt-3">
+                  <span class="text-xs text-secondary d-block mb-2">QRIS Saat Ini:</span>
+                  <img src="{{ asset('storage/' . $settings['qris_image']) }}" alt="QRIS Toko" class="img-fluid rounded border shadow-sm" style="max-height: 250px;">
+                </div>
+              @endif
+              <small class="text-xs text-muted">Unggah QRIS Toko Anda untuk discan oleh pelanggan saat melakukan pembayaran.</small>
             </div>
 
             <div class="d-flex justify-content-end mt-4">

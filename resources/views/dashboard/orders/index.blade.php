@@ -11,6 +11,11 @@
                 <div class="nav-wrapper position-relative w-100 w-md-auto">
                     <ul class="nav nav-pills nav-fill p-1 bg-gray-100 rounded-lg">
                         <li class="nav-item">
+                            <a class="nav-link mb-0 px-3 py-1 {{ $status == 'pending' ? 'active bg-white shadow text-dark font-weight-bold' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'pending']) }}">
+                                <span class="ms-1">Konfirmasi Pembayaran</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link mb-0 px-3 py-1 {{ $status == 'processing' ? 'active bg-white shadow text-dark font-weight-bold' : '' }}" href="{{ route('dashboard.orders.index', ['status' => 'processing']) }}">
                                 <span class="ms-1">Perlu Dikemas</span>
                             </a>
