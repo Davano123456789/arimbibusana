@@ -122,6 +122,9 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('dashboard.settings.index');
     Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('dashboard.settings.update');
 
+    Route::get('/loyalty-settings', [\App\Http\Controllers\Admin\LoyaltySettingController::class, 'index'])->name('dashboard.loyalty.index');
+    Route::post('/loyalty-settings', [\App\Http\Controllers\Admin\LoyaltySettingController::class, 'update'])->name('dashboard.loyalty.update');
+
     Route::resource('/blogs', BlogController::class)->names([
         'index' => 'dashboard.blogs.index',
         'create' => 'dashboard.blogs.create',

@@ -70,17 +70,29 @@
             </tbody>
         </table>
 
+        @php
+            $subtotalProducts = $order->items->sum(function($item) {
+                return $item->price * $item->quantity;
+            });
+        @endphp
         <table class="totals">
             <tr>
                 <td style="width: 50%;"></td>
                 <td style="color: #6b7280;">Subtotal</td>
-                <td style="font-weight: bold;">Rp {{ number_format($order->total_price - $order->shipping_cost, 0, ',', '.') }}</td>
+                <td style="font-weight: bold;">Rp {{ number_format($subtotalProducts, 0, ',', '.') }}</td>
             </tr>
             <tr>
                 <td></td>
                 <td style="color: #6b7280;">Ongkos Kirim ({{ strtoupper($order->courier) }})</td>
                 <td style="font-weight: bold;">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</td>
             </tr>
+            @if($order->points_discount > 0)
+            <tr>
+                <td></td>
+                <td style="color: #2e7d32;">Potongan Poin ({{ number_format($order->points_used, 0, ',', '.') }} Poin)</td>
+                <td style="font-weight: bold; color: #2e7d32;">-Rp {{ number_format($order->points_discount, 0, ',', '.') }}</td>
+            </tr>
+            @endif
             <tr>
                 <td></td>
                 <td class="final">Total Dibayar</td>

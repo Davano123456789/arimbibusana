@@ -114,6 +114,12 @@
 @endsection
 
 @section('content')
+@php
+    $loyaltyStatus = \App\Models\Setting::getValue('loyalty_status', '0');
+    $loyaltyPointValue = (int)\App\Models\Setting::getValue('loyalty_point_value', '100');
+    $userPoints = Auth::check() ? Auth::user()->points : 0;
+    $potentialDiscount = $userPoints * $loyaltyPointValue;
+@endphp
     <div class="max-w-6xl mx-auto px-6 py-12">
         <!-- Breadcrumbs -->
         <nav class="flex text-sm text-gray-400 mb-8" aria-label="Breadcrumb">
@@ -187,21 +193,6 @@
                             </div>
                         </div>
 
-                        <!-- Kode Pos -->
-                        <div>
-                            <label for="postal_code" class="block text-sm font-bold text-gray-700 mb-2">Kode Pos</label>
-                            <div class="relative group">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <i
-                                        class="fa-solid fa-envelope text-gray-400 group-focus-within:text-accent transition-colors"></i>
-                                </div>
-                                <input type="text" id="postal_code" name="postal_code" maxlength="5"
-                                    value="{{ old('postal_code', Auth::check() ? Auth::user()->postal_code : '') }}"
-                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200"
-                                    placeholder="Contoh: 60111" required>
-                            </div>
-                        </div>
-
                         <!-- Provinsi -->
                         <div>
                             <label for="province" class="block text-sm font-bold text-gray-700 mb-2">Provinsi</label>
@@ -259,6 +250,21 @@
                             <input type="hidden" id="district_name" name="district_name" value="{{ old('district_name', Auth::check() ? Auth::user()->district_name : '') }}">
                         </div>
 
+                        <!-- Kode Pos -->
+                        <div>
+                            <label for="postal_code" class="block text-sm font-bold text-gray-700 mb-2">Kode Pos</label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <i
+                                        class="fa-solid fa-envelope text-gray-400 group-focus-within:text-accent transition-colors"></i>
+                                </div>
+                                <input type="text" id="postal_code" name="postal_code" maxlength="5"
+                                    value="{{ old('postal_code', Auth::check() ? Auth::user()->postal_code : '') }}"
+                                    class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200"
+                                    placeholder="Contoh: 60111" required>
+                            </div>
+                        </div>
+
                         <!-- Kurir Pengiriman -->
                         <div>
                             <label for="courier" class="block text-sm font-bold text-gray-700 mb-2">Kurir Pengiriman</label>
@@ -270,10 +276,9 @@
                                 <select id="courier" name="courier"
                                     class="w-full pl-11 pr-10 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200 appearance-none cursor-pointer"
                                     required>
-                                    <option value="jnt" selected>J&T</option>
-                                    <option value="jne">JNE</option>
-                                    <option value="sicepat">SiCepat</option>
-                                    <option value="pos">POS Indonesia</option>
+                                    <option value="jne" selected>JNE</option>
+                                    <option value="jnt">J&T</option>
+                                    <option value="paxel">Paxel</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                                     <i
@@ -310,9 +315,7 @@
                         </div>
                     </div>
                 </section>
-            </div>
-
-            <!-- Right Column: Order Summary -->
+            </div>            <!-- Right Column: Order Summary -->
             <div class="w-full lg:w-96 flex-shrink-0">
                 <div class="bg-gray-50 p-6 rounded-2xl sticky top-24 border border-gray-200">
                     <h3 class="font-bold text-xl text-gray-900 mb-6 font-serif">Ringkasan Pesanan</h3>
@@ -341,6 +344,27 @@
                         @endforeach
                     </div>
 
+                    @if($loyaltyStatus == '1' && $userPoints > 0)
+                        <!-- Loyalty Points Box -->
+                        <div class="bg-amber-50/50 border border-amber-200/60 p-4 rounded-xl mb-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i class="fa-solid fa-coins text-amber-500"></i>
+                                <span class="font-bold text-xs text-amber-800 uppercase tracking-wider">Poin Loyalitas</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="text-xs text-gray-600">
+                                    Punya <span class="font-bold text-amber-700">{{ number_format($userPoints, 0, ',', '.') }} Poin</span>
+                                    <br>
+                                    (Setara <span class="font-bold">Rp {{ number_format($userPoints * $loyaltyPointValue, 0, ',', '.') }}</span>)
+                                </div>
+                                <label for="use_points_checkbox" class="flex items-center gap-2 cursor-pointer bg-white px-3 py-1.5 rounded-lg border border-amber-200 shadow-sm hover:bg-amber-50/20 transition-all select-none">
+                                    <input type="checkbox" name="use_points" id="use_points_checkbox" value="1" class="w-4 h-4 text-amber-600 border-amber-300 rounded focus:ring-amber-500 cursor-pointer">
+                                    <span class="text-xs font-bold text-amber-900">Gunakan</span>
+                                </label>
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Cost Breakdown -->
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-gray-600">
@@ -351,6 +375,13 @@
                             <span>Biaya Pengiriman (<span id="selected_courier_label">J&T</span>)</span>
                             <span id="shipping-cost-display" class="text-gray-400 font-medium italic">Pilih alamat...</span>
                         </div>
+                        
+                        <!-- Dynamic Point Discount Row -->
+                        <div id="points-discount-row" class="flex justify-between text-green-600 hidden">
+                            <span>Potongan Poin (<span id="points-used-label">0</span> Poin)</span>
+                            <span>-Rp <span id="points-discount-display">0</span></span>
+                        </div>
+
                         <div class="flex justify-between text-gray-500 text-[13px] mt-1">
                             <span>Estimasi Waktu Tiba</span>
                             <span id="shipping_etd" class="font-medium italic">-</span>
@@ -412,8 +443,8 @@
                 maxOptions: 1000,
             });
 
-            // Total weight calculation (default 200g per item for shipping accuracy)
-            const totalWeight = {{ $cartItems->sum('quantity') }} * 200;
+            // Total weight calculation (default 250g per item for shipping accuracy)
+            const totalWeight = {{ $cartItems->sum('quantity') }} * 250;
 
             // Initialize initial state
             tsCity.disable();
@@ -520,57 +551,14 @@
                 }
             });
 
-            // Handle metadata and auto-fill postal code for districts
-            tsDistrict.on('change', async function(districtId) {
-                const postalCodeInput = document.getElementById('postal_code');
-                
+            // Handle metadata
+            tsDistrict.on('change', function(districtId) {
                 if (!districtId) return;
 
                 // Save metadata
                 document.getElementById('district_name').value = tsDistrict.getItem(districtId).textContent;
 
-                // Auto-fill Postal Code if it is a user change (not prefilled)
-                const isInitialLoad = (districtId === initialDistrictId && postalCodeInput.value);
-
-                if (!isInitialLoad && !postalCodeInput.value) {
-                    try {
-                        const provinceName = tsProvince.getItem(tsProvince.getValue()).textContent;
-                        const cityName = tsCity.getItem(tsCity.getValue()).textContent;
-                        const districtName = tsDistrict.getItem(districtId).textContent;
-
-                        postalCodeInput.placeholder = 'Mencari kode pos...';
-                        postalCodeInput.classList.add('animate-pulse');
-
-                        const response = await fetch('/shipping/postal-code', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                province: provinceName,
-                                city: cityName,
-                                district: districtName
-                            })
-                        });
-
-                        const data = await response.json();
-                        
-                        if (data.postal_code) {
-                            postalCodeInput.value = data.postal_code;
-                            postalCodeInput.classList.remove('animate-pulse');
-                            postalCodeInput.placeholder = 'Contoh: 60111';
-                            
-                            // Trigger shipping cost calculation immediately
-                            calculateShippingCost();
-                        }
-                    } catch (error) {
-                        console.error('Error fetching postal code:', error);
-                        postalCodeInput.classList.remove('animate-pulse');
-                    }
-                } else {
-                    calculateShippingCost();
-                }
+                calculateShippingCost();
             });
             async function calculateShippingCost() {
                 const postalCode = document.getElementById('postal_code').value;
@@ -608,7 +596,7 @@
                     });
 
                     const data = await response.json();
-                    if (data.length > 0) {
+                    if (response.ok && Array.isArray(data) && data.length > 0) {
                         let cost = Infinity;
                         let etd = '';
 
@@ -621,8 +609,7 @@
                         });
 
                         if (cost === Infinity) {
-                            shippingCostDisplay.textContent = 'Tidak tersedia';
-                            resetShipping();
+                            resetShipping('Tidak tersedia');
                             return;
                         }
 
@@ -630,21 +617,14 @@
                         document.getElementById('shipping_cost_input').value = cost;
                         document.getElementById('shipping_etd_input').value = etd;
 
-                        if (cost === Infinity) {
-                            shippingCostDisplay.textContent = 'Tidak tersedia';
-                            resetShipping();
-                            return;
-                        }
-
-                        document.getElementById('shipping_cost_input').value = cost;
-
                         const formattedCost = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(cost);
 
                         shippingCostDisplay.textContent = formattedCost;
+                        shippingCostDisplay.className = 'text-gray-900 font-bold';
+                        shippingCostDisplay.classList.remove('animate-pulse');
                         
-                        // Show service name in label (e.g. "J&T - EZ")
-                        document.getElementById('selected_courier_label').textContent = courierName.split(' ')[0] + ' (' + etd + ')'; // fallback to etd if service name not saved
-                        // Wait, I should use the service name from the loop
+                        // Show service name in label (e.g. "J&T (1-3 Hari)")
+                        document.getElementById('selected_courier_label').textContent = courierName.split(' ')[0] + ' (' + etd + ')';
 
                         let parsedEtd = etd;
                         if (parsedEtd) {
@@ -655,16 +635,13 @@
                             document.getElementById('shipping_etd').textContent = '-';
                         }
 
-                        const totalPayment = subtotal + cost;
-                        const formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalPayment);
-                        totalPaymentDisplay.textContent = formattedTotal;
+                        updateSummary();
                     } else {
-                        shippingCostDisplay.textContent = 'Tidak tersedia';
-                        resetShipping();
+                        resetShipping('Tidak tersedia');
                     }
                 } catch (error) {
                     console.error('Error calculating cost:', error);
-                    shippingCostDisplay.textContent = 'Gagal';
+                    resetShipping('Gagal');
                 }
             }
 
@@ -673,13 +650,60 @@
             districtSelect.addEventListener('change', calculateShippingCost);
             document.getElementById('courier').addEventListener('change', calculateShippingCost);
 
-            function resetShipping() {
-                shippingCostDisplay.textContent = 'Pilih alamat...';
+            // Loyalty points client variables
+            const usePointsCheckbox = document.getElementById('use_points_checkbox');
+            const pointsDiscountRow = document.getElementById('points-discount-row');
+            const pointsDiscountDisplay = document.getElementById('points-discount-display');
+            const pointsUsedLabel = document.getElementById('points-used-label');
+            
+            const userPoints = {{ $userPoints ?? 0 }};
+            const pointValue = {{ $loyaltyPointValue ?? 100 }};
+            let pointsDiscount = 0;
+
+            function updateSummary() {
+                const shippingCost = parseInt(document.getElementById('shipping_cost_input').value) || 0;
+                let pointsUsed = 0;
+                
+                if (usePointsCheckbox && usePointsCheckbox.checked && userPoints > 0) {
+                    const maxDiscount = Math.max(0, subtotal + shippingCost - 1);
+                    const potentialDiscount = userPoints * pointValue;
+                    
+                    if (potentialDiscount > maxDiscount) {
+                        pointsUsed = Math.floor(maxDiscount / pointValue);
+                    } else {
+                        pointsUsed = userPoints;
+                    }
+                    
+                    pointsDiscount = pointsUsed * pointValue;
+                    
+                    if (pointsDiscountRow) {
+                        pointsDiscountRow.classList.remove('hidden');
+                        pointsUsedLabel.textContent = new Intl.NumberFormat('id-ID').format(pointsUsed);
+                        pointsDiscountDisplay.textContent = '-Rp ' + new Intl.NumberFormat('id-ID').format(pointsDiscount);
+                    }
+                } else {
+                    pointsDiscount = 0;
+                    if (pointsDiscountRow) {
+                        pointsDiscountRow.classList.add('hidden');
+                    }
+                }
+
+                const totalPayment = Math.max(0, subtotal + shippingCost - pointsDiscount);
+                const formattedTotal = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalPayment);
+                totalPaymentDisplay.textContent = formattedTotal;
+            }
+
+            if (usePointsCheckbox) {
+                usePointsCheckbox.addEventListener('change', updateSummary);
+            }
+
+            function resetShipping(statusText = 'Pilih alamat...') {
+                shippingCostDisplay.textContent = statusText;
                 shippingCostDisplay.className = 'text-gray-400 font-medium italic';
                 document.getElementById('shipping_etd').textContent = '-';
                 document.getElementById('shipping_etd').classList.add('italic');
-                totalPaymentDisplay.textContent = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(subtotal);
                 document.getElementById('shipping_cost_input').value = 0;
+                updateSummary();
             }
 
             fetchProvinces();
@@ -696,11 +720,13 @@
             const citySelect = document.getElementById('city_id');
             const districtSelect = document.getElementById('district_id');
             const courierSelect = document.getElementById('courier');
+            const usePointsCheckbox = document.getElementById('use_points_checkbox');
 
             const provinceId = provinceSelect.value;
             const cityId = citySelect.value;
             const districtId = districtSelect.value;
             const courier = courierSelect.value;
+            const usePoints = usePointsCheckbox && usePointsCheckbox.checked ? 1 : 0;
 
             // Ensure we have the names too
             const provinceName = provinceId ? provinceSelect.options[provinceSelect.selectedIndex].text : '';
@@ -762,6 +788,7 @@
                             courier: courier,
                             shipping_cost: shippingCost,
                             shipping_etd: shippingEtd,
+                            use_points: usePoints,
                         })
                     });
 

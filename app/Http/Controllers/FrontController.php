@@ -319,7 +319,11 @@ class FrontController extends Controller
             $total += $item->product->price * $item->quantity;
         }
 
-        return view('public.pembayaran', compact('cartItems', 'total'));
+        $loyaltyStatus = \App\Models\Setting::getValue('loyalty_status', '0');
+        $loyaltyPointValue = (int)\App\Models\Setting::getValue('loyalty_point_value', '100');
+        $userPoints = Auth::user()->points ?? 0;
+
+        return view('public.pembayaran', compact('cartItems', 'total', 'loyaltyStatus', 'loyaltyPointValue', 'userPoints'));
     }
 
     public function storeOrder(Request $request)
@@ -345,6 +349,7 @@ class FrontController extends Controller
             'courier' => 'required|string',
             'shipping_cost' => 'required|numeric',
             'shipping_etd' => 'nullable|string',
+            'use_points' => 'nullable|integer|in:0,1',
         ]);
 
         try {
@@ -354,7 +359,46 @@ class FrontController extends Controller
                 foreach ($cartItems as $item) {
                     $subtotal += $item->product->price * $item->quantity;
                 }
-                $totalPrice = $subtotal + $request->shipping_cost;
+
+                // Calculate points used and discount
+                $pointsUsed = 0;
+                $pointsDiscount = 0;
+                
+                $user = \App\Models\User::where('id', $userId)->lockForUpdate()->first();
+                if ($request->use_points && \App\Models\Setting::getValue('loyalty_status', '0') === '1') {
+                    $userPoints = $user ? $user->points : 0;
+                    if ($userPoints > 0) {
+                        $pointValue = (int)\App\Models\Setting::getValue('loyalty_point_value', '100');
+                        $maxDiscount = max(0, $subtotal + $request->shipping_cost - 1);
+                        $potentialDiscount = $userPoints * $pointValue;
+
+                        if ($potentialDiscount > $maxDiscount) {
+                            $pointsUsed = (int) floor($maxDiscount / $pointValue);
+                            $pointsDiscount = $pointsUsed * $pointValue;
+                        } else {
+                            $pointsUsed = $userPoints;
+                            $pointsDiscount = $potentialDiscount;
+                        }
+                    }
+                }
+
+                $pointsEarned = 0;
+                if (\App\Models\Setting::getValue('loyalty_status', '0') === '1') {
+                    $minOrder = (int)\App\Models\Setting::getValue('loyalty_min_order', '1000000');
+                    $pointsGiven = (int)\App\Models\Setting::getValue('loyalty_points_given', '100');
+                    $method = \App\Models\Setting::getValue('loyalty_method', 'flat');
+
+                    if ($minOrder > 0 && $subtotal >= $minOrder) {
+                        if ($method === 'multiplier') {
+                            $multiples = (int) floor($subtotal / $minOrder);
+                            $pointsEarned = $multiples * $pointsGiven;
+                        } else {
+                            $pointsEarned = $pointsGiven;
+                        }
+                    }
+                }
+
+                $totalPrice = $subtotal + $request->shipping_cost - $pointsDiscount;
 
                 // 1. First, check all stocks and lock them
                 foreach ($cartItems as $item) {
@@ -387,11 +431,27 @@ class FrontController extends Controller
                     'courier' => $request->courier,
                     'shipping_cost' => $request->shipping_cost,
                     'shipping_etd' => $request->shipping_etd,
+                    'points_used' => $pointsUsed,
+                    'points_discount' => $pointsDiscount,
+                    'points_earned' => $pointsEarned,
                     'total_price' => $totalPrice,
                     'status' => 'unpaid',
                     'expired_at' => now()->addMinutes(60),
                     'notes' => $request->notes,
                 ]);
+
+                // Deduct points from user balance if points were used
+                if ($pointsUsed > 0 && $user) {
+                    $user->decrement('points', $pointsUsed);
+
+                    \App\Models\PointTransaction::create([
+                        'user_id' => $userId,
+                        'order_id' => $order->id,
+                        'type' => 'redeem',
+                        'amount' => -$pointsUsed,
+                        'description' => "Penukaran {$pointsUsed} poin pada pesanan #{$order->order_number}",
+                    ]);
+                }
 
                 foreach ($cartItems as $item) {
                     \App\Models\OrderItem::create([
@@ -445,6 +505,15 @@ class FrontController extends Controller
                     ];
                 }
 
+                if ($pointsDiscount > 0) {
+                    $params['item_details'][] = [
+                        'id' => 'points_discount',
+                        'price' => -(int) $pointsDiscount,
+                        'quantity' => 1,
+                        'name' => 'Potongan Poin',
+                    ];
+                }
+
                 $snapToken = \Midtrans\Snap::getSnapToken($params);
                 $order->update(['snap_token' => $snapToken]);
 
@@ -476,6 +545,7 @@ class FrontController extends Controller
                 if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
                     if ($order->status !== 'settlement') {
                         $order->update(['status' => 'settlement']);
+                        $order->awardPoints();
                         \Illuminate\Support\Facades\Mail::send('emails.invoice', ['order' => $order], function ($m) use ($order) {
                             $m->to($order->user->email, $order->customer_name)->subject('Invoice Pesanan ' . $order->order_number);
                         });
@@ -485,11 +555,13 @@ class FrontController extends Controller
                 } elseif ($request->transaction_status == 'deny' || $request->transaction_status == 'cancel') {
                     if ($order->status !== 'cancel') {
                         $order->update(['status' => 'cancel']);
+                        $order->refundPoints();
                         $this->returnStock($order);
                     }
                 } elseif ($request->transaction_status == 'expire') {
                     if ($order->status !== 'expire') {
                         $order->update(['status' => 'expire']);
+                        $order->refundPoints();
                         $this->returnStock($order);
                     }
                 }
@@ -516,6 +588,7 @@ class FrontController extends Controller
                 if ($statusRes->transaction_status == 'settlement' || $statusRes->transaction_status == 'capture') {
                     if ($order->status !== 'settlement') {
                         $order->update(['status' => 'settlement']);
+                        $order->awardPoints();
                         \Illuminate\Support\Facades\Mail::send('emails.invoice', ['order' => $order], function ($m) use ($order) {
                             $m->to($order->user->email, $order->customer_name)->subject('Invoice Pesanan ' . $order->order_number);
                         });
@@ -574,6 +647,7 @@ class FrontController extends Controller
             'cancel_reason' => $request->cancel_reason ?? 'Dibatalkan oleh pelanggan'
         ]);
 
+        $order->refundPoints();
         $this->returnStock($order);
 
         return back()->with('success', 'Pesanan berhasil dibatalkan dan stok telah dikembalikan.');
@@ -652,7 +726,8 @@ class FrontController extends Controller
     public function profil()
     {
         $user = Auth::user();
-        return view('public.profil', compact('user'));
+        $pointTransactions = $user->pointTransactions()->latest()->paginate(10);
+        return view('public.profil', compact('user', 'pointTransactions'));
     }
 
     public function updateProfil(Request $request)

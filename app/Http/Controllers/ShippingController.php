@@ -54,6 +54,36 @@ class ShippingController extends Controller
     }
 
     /**
+     * Get coordinates for a postal code via Nominatim (cached for 30 days)
+     */
+    protected function getCoordinates($postalCode)
+    {
+        return Cache::remember('geocode_postal_' . $postalCode, 60 * 24 * 30, function () use ($postalCode) {
+            try {
+                $response = Http::withHeaders([
+                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                ])->timeout(5)->get('https://nominatim.openstreetmap.org/search', [
+                    'q' => "$postalCode, Indonesia",
+                    'format' => 'json',
+                    'limit' => 1
+                ]);
+
+                if ($response->successful() && count($response->json()) > 0) {
+                    $item = $response->json()[0];
+                    return [
+                        'latitude' => (double)$item['lat'],
+                        'longitude' => (double)$item['lon']
+                    ];
+                }
+            } catch (\Exception $e) {
+                Log::error("Geocoding failed for postal code {$postalCode}: " . $e->getMessage());
+            }
+
+            return null;
+        });
+    }
+
+    /**
      * Get Shipping Cost from Biteship
      */
     public function getCost(Request $request)
@@ -73,10 +103,7 @@ class ShippingController extends Controller
             return Cache::remember($cacheKey, 60 * 24, function () use ($destinationPostalCode, $weight, $courier) {
                 Log::info("Biteship Cost Request (LIVE): From {$this->originPostalCode} to {$destinationPostalCode} ({$weight}g)");
 
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type' => 'application/json'
-                ])->post($this->baseUrl . '/rates/couriers', [
+                $payload = [
                     'origin_postal_code' => (int)$this->originPostalCode,
                     'destination_postal_code' => (int)$destinationPostalCode,
                     'couriers' => $courier,
@@ -89,7 +116,28 @@ class ShippingController extends Controller
                             'quantity' => 1
                         ]
                     ]
-                ]);
+                ];
+
+                // Paxel requires precise latitude and longitude for both origin and destination
+                if ($courier === 'paxel') {
+                    // Origin coordinates (Surabaya Gubeng store matching 60281)
+                    $payload['origin_latitude'] = -7.2756;
+                    $payload['origin_longitude'] = 112.7541;
+
+                    // Geocode the destination postal code to get coordinates
+                    $coords = $this->getCoordinates($destinationPostalCode);
+                    if ($coords) {
+                        $payload['destination_latitude'] = $coords['latitude'];
+                        $payload['destination_longitude'] = $coords['longitude'];
+                    } else {
+                        Log::warning("Could not geocode destination postal code {$destinationPostalCode} for Paxel rates.");
+                    }
+                }
+
+                $response = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Content-Type' => 'application/json'
+                ])->post($this->baseUrl . '/rates/couriers', $payload);
 
                 if ($response->failed()) {
                     Log::error('Biteship Cost Error: ' . $response->status() . ' - ' . $response->body());

@@ -33,6 +33,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'district_name',
         'postal_code',
         'avatar',
+        'points',
     ];
 
     /**
@@ -63,5 +64,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function pointTransactions()
+    {
+        return $this->hasMany(PointTransaction::class);
     }
 }

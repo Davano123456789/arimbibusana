@@ -92,19 +92,36 @@
                             </tr>
                             @endforeach
                         </tbody>
+                        @php
+                            $subtotalProducts = $order->items->sum(function($item) {
+                                return $item->price * $item->quantity;
+                            });
+                        @endphp
                         <tfoot>
                             <tr>
                                 <td colspan="3" class="text-end text-sm font-weight-bold">Subtotal Produk:</td>
-                                <td class="text-end text-sm">Rp {{ number_format($order->total_price - $order->shipping_cost, 0, ',', '.') }}</td>
+                                <td class="text-end text-sm">Rp {{ number_format($subtotalProducts, 0, ',', '.') }}</td>
                             </tr>
                             <tr>
                                 <td colspan="3" class="text-end text-sm font-weight-bold">Ongkos Kirim:</td>
                                 <td class="text-end text-sm">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</td>
                             </tr>
+                            @if($order->points_discount > 0)
                             <tr>
-                                <td colspan="3" class="text-end text-md font-weight-bolder">Total Tagihan Lunas:</td>
+                                <td colspan="3" class="text-end text-sm font-weight-bold text-success">Potongan Poin ({{ number_format($order->points_used, 0, ',', '.') }} Poin):</td>
+                                <td class="text-end text-sm text-success">-Rp {{ number_format($order->points_discount, 0, ',', '.') }}</td>
+                            </tr>
+                            @endif
+                            <tr>
+                                <td colspan="3" class="text-end text-md font-weight-bolder">Total Tagihan:</td>
                                 <td class="text-end text-md font-weight-bolder text-primary">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                             </tr>
+                            @if($order->points_earned > 0)
+                            <tr class="border-0">
+                                <td colspan="3" class="text-end text-xs text-muted border-0">Poin Diperoleh dari Pesanan Ini:</td>
+                                <td class="text-end text-xs text-muted font-weight-bold border-0">+{{ number_format($order->points_earned, 0, ',', '.') }} Poin</td>
+                            </tr>
+                            @endif
                         </tfoot>
                     </table>
                 </div>

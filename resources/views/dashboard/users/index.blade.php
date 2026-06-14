@@ -19,6 +19,7 @@
                                 <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Email</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tanggal Registrasi</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Jumlah Pembelian</th>
+                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Poin</th>
                                 <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Aksi</th>
                             </tr>
                         </thead>
@@ -50,6 +51,9 @@
                                     <span class="badge badge-sm bg-gradient-{{ $user->successful_purchases_count > 0 ? 'success' : 'secondary' }}">
                                         {{ $user->successful_purchases_count }} Kali
                                     </span>
+                                </td>
+                                <td class="align-middle text-center text-sm">
+                                    <span class="text-secondary text-xs font-weight-bold">{{ number_format($user->points, 0, ',', '.') }}</span>
                                 </td>
                                 <td class="align-middle text-center">
                                     <a href="{{ route('dashboard.users.show', $user->id) }}" class="text-info font-weight-bold text-xs me-3" data-toggle="tooltip" title="Lihat Detail Belanja">

@@ -50,6 +50,9 @@ class ExpireUnpaidOrders extends Command
                         'cancel_reason' => 'Batal otomatis: Pembayaran melewati batas 60 menit.'
                     ]);
 
+                    // Refund used points
+                    $order->refundPoints();
+
                     // 2. Return Stock
                     foreach ($order->items as $item) {
                         if ($item->product_size_id) {

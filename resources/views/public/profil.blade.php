@@ -82,6 +82,85 @@
             <!-- Right Side: Profile Details and Default Address -->
             <div class="lg:col-span-8 space-y-6">
                 
+                <!-- Loyalty Points Section -->
+                @if(\App\Models\Setting::getValue('loyalty_status', '0') == '1')
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-coins text-amber-500"></i> Poin Loyalitas Saya
+                    </h2>
+                    
+                    <!-- Loyalty Card -->
+                    <div class="relative overflow-hidden bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 rounded-2xl p-6 text-white shadow-md mb-6">
+                        <!-- Decorative Shapes -->
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-xl"></div>
+                        <div class="absolute right-4 top-4 opacity-15">
+                            <i class="fa-solid fa-crown text-8xl"></i>
+                        </div>
+                        
+                        <div class="relative z-10">
+                            <span class="text-[10px] uppercase tracking-widest text-amber-100 font-medium">Arimbi Queen Loyalty Card</span>
+                            <div class="mt-4 flex items-baseline gap-2">
+                                <span class="text-4xl font-extrabold tracking-tight">{{ number_format($user->points, 0, ',', '.') }}</span>
+                                <span class="text-sm font-medium text-amber-100 font-sans">POIN</span>
+                            </div>
+                            <div class="mt-2 text-xs text-amber-100">
+                                Setara dengan potongan belanja <span class="font-bold">Rp {{ number_format($user->points * \App\Models\Setting::getValue('loyalty_point_value', 100), 0, ',', '.') }}</span>
+                            </div>
+                            <div class="mt-6 flex justify-between items-center text-[10px] text-amber-100 font-mono tracking-wider">
+                                <span>ID MEMBER: AQ-{{ str_pad($user->id, 6, '0', STR_PAD_LEFT) }}</span>
+                                <span>SEJAK {{ $user->created_at->format('m/Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Point Transactions History -->
+                    <h3 class="text-sm font-bold text-gray-800 mb-3">Riwayat Transaksi Poin</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-500 uppercase font-semibold">
+                                    <th class="py-2.5 px-3 rounded-l-lg">Tanggal</th>
+                                    <th class="py-2.5 px-3">Tipe</th>
+                                    <th class="py-2.5 px-3 text-right">Jumlah</th>
+                                    <th class="py-2.5 px-3 rounded-r-lg">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-gray-600">
+                                @forelse($pointTransactions as $tx)
+                                <tr>
+                                    <td class="py-3 px-3">{{ $tx->created_at->format('d/m/Y H:i') }}</td>
+                                    <td class="py-3 px-3">
+                                        @if($tx->type == 'earn')
+                                            <span class="inline-block px-2 py-0.5 bg-green-50 text-green-700 font-semibold rounded-full text-[10px]">DAPAT</span>
+                                        @elseif($tx->type == 'redeem')
+                                            <span class="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 font-semibold rounded-full text-[10px]">TUKAR</span>
+                                        @elseif($tx->type == 'refund')
+                                            <span class="inline-block px-2 py-0.5 bg-amber-50 text-amber-700 font-semibold rounded-full text-[10px]">KEMBALI</span>
+                                        @else
+                                            <span class="inline-block px-2 py-0.5 bg-gray-50 text-gray-700 font-semibold rounded-full text-[10px] uppercase">{{ $tx->type }}</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-3 px-3 text-right font-bold {{ $tx->amount > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                        {{ $tx->amount > 0 ? '+' : '' }}{{ number_format($tx->amount, 0, ',', '.') }}
+                                    </td>
+                                    <td class="py-3 px-3 max-w-[200px] truncate" title="{{ $tx->description }}">{{ $tx->description }}</td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="text-center py-6 text-gray-400">Belum ada riwayat transaksi poin.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                    @if($pointTransactions->hasPages())
+                        <div class="mt-4">
+                            {{ $pointTransactions->links() }}
+                        </div>
+                    @endif
+                </div>
+                @endif
+
                 <!-- Account Info Card -->
                 <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -354,52 +433,12 @@
                 }
             });
 
-            // Handle District Change & Postal Code autofill
-            tsDistrict.on('change', async function(districtId) {
-                const postalCodeInput = document.getElementById('postal_code');
+            // Handle District Change
+            tsDistrict.on('change', function(districtId) {
                 if (!districtId) return;
 
                 // Save name
                 document.getElementById('district_name').value = tsDistrict.getItem(districtId).textContent;
-
-                // Only auto-fill postal code if not editing existing (user can change manually)
-                const isInitialLoad = (districtId === initialDistrictId && !postalCodeInput.value);
-                const isUserChange = (districtId !== initialDistrictId);
-
-                if (isUserChange) {
-                    try {
-                        const provinceName = tsProvince.getItem(tsProvince.getValue()).textContent;
-                        const cityName = tsCity.getItem(tsCity.getValue()).textContent;
-                        const districtName = tsDistrict.getItem(districtId).textContent;
-
-                        postalCodeInput.placeholder = 'Mencari kode pos...';
-                        postalCodeInput.classList.add('animate-pulse');
-
-                        const response = await fetch('/shipping/postal-code', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            body: JSON.stringify({
-                                province: provinceName,
-                                city: cityName,
-                                district: districtName
-                            })
-                        });
-
-                        const data = await response.json();
-                        
-                        if (data.postal_code) {
-                            postalCodeInput.value = data.postal_code;
-                            postalCodeInput.classList.remove('animate-pulse');
-                            postalCodeInput.placeholder = 'Contoh: 60111';
-                        }
-                    } catch (error) {
-                        console.error('Error fetching postal code:', error);
-                        postalCodeInput.classList.remove('animate-pulse');
-                    }
-                }
             });
         });
     </script>

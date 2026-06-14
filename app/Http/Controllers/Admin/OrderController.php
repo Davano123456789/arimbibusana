@@ -99,6 +99,10 @@ class OrderController extends Controller
             'status'         => 'refunded'
         ]);
 
+        // Revert loyalty points
+        $order->refundPoints();
+        $order->revokePoints();
+
         // Kirim email notifikasi refund selesai ke pelanggan
         if ($order->user && $order->user->email) {
             try {

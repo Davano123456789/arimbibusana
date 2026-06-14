@@ -123,16 +123,29 @@
                     <p>{{ $order->notes ?: 'Terima kasih telah berbelanja di Arimbi Queen. Pesanan Anda segera kami proses.' }}</p>
                 </div>
                 
+                @php
+                    $subtotalProducts = $order->items->sum(function($item) {
+                        return $item->price * $item->quantity;
+                    });
+                @endphp
                 <div class="w-full sm:w-auto min-w-[250px]">
                     <div class="space-y-3">
                         <div class="flex justify-between text-sm text-gray-600">
                             <span>Subtotal Produk</span>
-                            <span class="font-semibold text-gray-900">Rp {{ number_format($order->total_price - $order->shipping_cost, 0, ',', '.') }}</span>
+                            <span class="font-semibold text-gray-900">Rp {{ number_format($subtotalProducts, 0, ',', '.') }}</span>
                         </div>
-                        <div class="flex justify-between text-sm text-gray-600 pb-3 border-b border-gray-100">
+                        <div class="flex justify-between text-sm text-gray-600">
                             <span>Ongkos Kirim</span>
                             <span class="font-semibold text-gray-900">Rp {{ number_format($order->shipping_cost, 0, ',', '.') }}</span>
                         </div>
+                        @if($order->points_discount > 0)
+                        <div class="flex justify-between text-sm text-green-600 pb-3 border-b border-gray-100">
+                            <span>Potongan Poin ({{ number_format($order->points_used, 0, ',', '.') }} Poin)</span>
+                            <span class="font-semibold">-Rp {{ number_format($order->points_discount, 0, ',', '.') }}</span>
+                        </div>
+                        @else
+                        <div class="pb-3 border-b border-gray-100"></div>
+                        @endif
                         <div class="flex justify-between items-center text-lg mt-2">
                             <span class="font-bold text-gray-900">Total Tagihan</span>
                             <span class="font-black text-[#5B3A29] text-xl">Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
