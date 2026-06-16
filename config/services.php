@@ -33,7 +33,9 @@ return [
 
     'biteship' => [
         'key' => env('BITESHIP_API_KEY'),
-        'origin_postal_code' => env('STORE_POSTAL_CODE', '60111'),
+        'origin_postal_code' => env('STORE_POSTAL_CODE', '60281'),
+        'origin_latitude' => env('STORE_LATITUDE', -7.2756),
+        'origin_longitude' => env('STORE_LONGITUDE', 112.7541),
     ],
 
     'midtrans' => [

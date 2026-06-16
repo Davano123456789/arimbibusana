@@ -12,12 +12,16 @@ class ShippingController extends Controller
     protected $apiKey;
     protected $baseUrl;
     protected $originPostalCode;
+    protected $originLatitude;
+    protected $originLongitude;
 
     public function __construct()
     {
         $this->apiKey = config('services.biteship.key');
         $this->baseUrl = 'https://api.biteship.com/v1';
-        $this->originPostalCode = config('services.biteship.origin_postal_code', '60111');
+        $this->originPostalCode = config('services.biteship.origin_postal_code', '60281');
+        $this->originLatitude = config('services.biteship.origin_latitude', -7.2756);
+        $this->originLongitude = config('services.biteship.origin_longitude', 112.7541);
     }
 
     /**
@@ -53,34 +57,41 @@ class ShippingController extends Controller
         });
     }
 
-    /**
-     * Get coordinates for a postal code via Nominatim (cached for 30 days)
-     */
     protected function getCoordinates($postalCode)
     {
-        return Cache::remember('geocode_postal_' . $postalCode, 60 * 24 * 30, function () use ($postalCode) {
-            try {
-                $response = Http::withHeaders([
-                    'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-                ])->timeout(5)->get('https://nominatim.openstreetmap.org/search', [
-                    'q' => "$postalCode, Indonesia",
-                    'format' => 'json',
-                    'limit' => 1
-                ]);
-
-                if ($response->successful() && count($response->json()) > 0) {
-                    $item = $response->json()[0];
-                    return [
-                        'latitude' => (double)$item['lat'],
-                        'longitude' => (double)$item['lon']
-                    ];
-                }
-            } catch (\Exception $e) {
-                Log::error("Geocoding failed for postal code {$postalCode}: " . $e->getMessage());
+        $cacheKey = 'geocode_postal_' . $postalCode;
+        
+        if (Cache::has($cacheKey)) {
+            $cached = Cache::get($cacheKey);
+            if ($cached) {
+                return $cached;
             }
+        }
 
-            return null;
-        });
+        try {
+            $response = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+            ])->timeout(5)->get('https://nominatim.openstreetmap.org/search', [
+                'q' => "$postalCode, Indonesia",
+                'format' => 'json',
+                'limit' => 1
+            ]);
+
+            if ($response->successful() && count($response->json()) > 0) {
+                $item = $response->json()[0];
+                $coords = [
+                    'latitude' => (double)$item['lat'],
+                    'longitude' => (double)$item['lon']
+                ];
+                
+                Cache::put($cacheKey, $coords, 60 * 24 * 30);
+                return $coords;
+            }
+        } catch (\Exception $e) {
+            Log::error("Geocoding failed for postal code {$postalCode}: " . $e->getMessage());
+        }
+
+        return null;
     }
 
     /**
@@ -120,9 +131,9 @@ class ShippingController extends Controller
 
                 // Paxel requires precise latitude and longitude for both origin and destination
                 if ($courier === 'paxel') {
-                    // Origin coordinates (Surabaya Gubeng store matching 60281)
-                    $payload['origin_latitude'] = -7.2756;
-                    $payload['origin_longitude'] = 112.7541;
+                    // Origin coordinates (read from config)
+                    $payload['origin_latitude'] = $this->originLatitude;
+                    $payload['origin_longitude'] = $this->originLongitude;
 
                     // Geocode the destination postal code to get coordinates
                     $coords = $this->getCoordinates($destinationPostalCode);
@@ -145,15 +156,29 @@ class ShippingController extends Controller
                 }
 
                 $data = $response->json();
-                
                 $results = [];
                 if (isset($data['pricing']) && is_array($data['pricing'])) {
                     foreach ($data['pricing'] as $price) {
+                        $cost = $price['price'];
+                        $duration = $price['duration'];
+
+                        // Duration override logic for Paxel
+                        if ($courier === 'paxel') {
+                            // Check if destination is in East Java (postal codes starting with '6')
+                            $isJawaTimur = str_starts_with($destinationPostalCode, '6');
+
+                            if ($isJawaTimur) {
+                                $duration = 'Sameday'; // Override local Paxel duration
+                            } else {
+                                $duration = 'Nextday'; // Override out of province Paxel duration
+                            }
+                        }
+
                         $results[] = [
                             'service' => $price['courier_service_name'],
                             'description' => $price['description'],
-                            'cost' => $price['price'],
-                            'etd' => $price['duration']
+                            'cost' => $cost,
+                            'etd' => $duration
                         ];
                     }
                 }

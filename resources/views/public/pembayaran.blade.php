@@ -627,7 +627,14 @@
 
                         let parsedEtd = etd;
                         if (parsedEtd) {
-                            parsedEtd = parsedEtd.replace(/days?|hari/gi, '').trim() + ' Hari';
+                            let etdLower = parsedEtd.toLowerCase();
+                            if (etdLower.includes('sameday')) {
+                                parsedEtd = 'Sameday';
+                            } else if (etdLower.includes('nextday')) {
+                                parsedEtd = 'Nextday (1-2 Hari)';
+                            } else {
+                                parsedEtd = parsedEtd.replace(/days?|hari/gi, '').trim() + ' Hari';
+                            }
                             document.getElementById('shipping_etd').textContent = parsedEtd;
                             document.getElementById('shipping_etd').classList.remove('italic');
                         } else {
