@@ -39,7 +39,7 @@
         <div class="auth-card rounded-3xl shadow-2xl overflow-hidden">
             <div class="p-8 md:p-10">
                 <div class="text-center mb-10">
-                    <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Logo" class="w-16 h-16 rounded-full mx-auto mb-4 shadow-lg object-cover">
+                    <img src="{{ asset('images/logo-arimbi.png') }}" alt="Logo" class="w-16 h-16 rounded-full mx-auto mb-4 shadow-lg object-cover">
                     <h2 class="text-3xl font-bold text-gray-900 font-serif">Bergabung Sekarang</h2>
                     <p class="text-gray-500 text-sm mt-2">Dapatkan akses eksklusif ke koleksi premium kami</p>
                 </div>

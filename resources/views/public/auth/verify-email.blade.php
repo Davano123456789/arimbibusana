@@ -34,7 +34,7 @@
         <div class="auth-card rounded-3xl shadow-2xl overflow-hidden">
             <div class="p-8 md:p-10">
                 <div class="text-center mb-8">
-                    <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Logo" class="w-20 h-20 rounded-full mx-auto mb-4 shadow-lg object-cover">
+                    <img src="{{ asset('images/logo-arimbi.png') }}" alt="Logo" class="w-20 h-20 rounded-full mx-auto mb-4 shadow-lg object-cover">
                     <h2 class="text-2xl font-bold text-gray-900 font-serif">Verifikasi Email Kamu</h2>
                     <p class="text-gray-500 text-sm mt-2">
                         Kami sudah mengirim link verifikasi ke email kamu.<br>

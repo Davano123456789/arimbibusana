@@ -46,13 +46,13 @@
         <div class="relative max-w-sm mx-auto mb-12 group">
             <div class="aspect-[9/16] bg-black rounded-[2.5rem] border-8 border-gray-900 shadow-2xl overflow-hidden relative">
                 <!-- TikTok Placeholder Image -->
-                <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Live Preview" class="w-full h-full object-cover opacity-60">
+                <img src="{{ asset('images/logo-arimbi.png') }}" alt="Live Preview" class="w-full h-full object-cover opacity-60">
                 
                 @if(($settings['is_tiktok_live'] ?? '0') == '1')
                 <!-- Overlay Content when Live -->
                 <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-white text-center">
                     <div class="w-20 h-20 rounded-full border-4 border-white overflow-hidden mb-4 shadow-xl">
-                        <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Avatar" class="w-full h-full object-cover">
+                        <img src="{{ asset('images/logo-arimbi.png') }}" alt="Avatar" class="w-full h-full object-cover">
                     </div>
                     <h3 class="font-bold text-xl mb-2">{{ '@' . ($settings['tiktok_username'] ?? 'arimbiqueen') }}</h3>
                     <div class="flex items-center gap-2 px-3 py-1 bg-red-600 rounded-lg text-xs font-bold uppercase mb-8">

@@ -58,7 +58,7 @@
         <!-- Logo & Brand -->
         <div class="text-center mb-9">
             <a href="{{ url('/') }}" class="inline-flex flex-col items-center gap-3 group">
-                <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Arimbi Queen"
+                <img src="{{ asset('images/logo-arimbi.png') }}" alt="Arimbi Queen"
                     class="w-14 h-14 rounded-full object-cover shadow-md group-hover:shadow-lg transition-shadow">
                 <div>
                     <span class="block text-sm font-semibold tracking-widest uppercase text-accent/80">Arimbi Queen</span>

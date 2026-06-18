@@ -2,7 +2,7 @@
   <div class="sidenav-header">
     <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
     <a class="navbar-brand m-0" href="{{ url('/dashboard') }}">
-      <img src="{{ asset('dashboard-admin/assets/img/logo-ct-dark.png') }}" width="26" height="26" class="navbar-brand-img h-100" alt="logo">
+      <img src="{{ asset('images/logo-arimbi.png') }}" width="26" height="26" class="navbar-brand-img h-100 rounded-circle object-cover" alt="logo">
       <span class="ms-1 font-weight-bold">Arimbi Busana</span>
     </a>
   </div>

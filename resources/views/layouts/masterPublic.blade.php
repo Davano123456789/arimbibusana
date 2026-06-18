@@ -5,6 +5,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
   <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link rel="icon" type="image/png" href="{{ asset('images/logo-arimbi.png') }}">
+  <link rel="apple-touch-icon" href="{{ asset('images/logo-arimbi.png') }}">
   <title>@yield('title', 'Arimbi Queen')</title>
   <meta name="description"
     content="@yield('description', 'Arimbi Queen - Scarf premium, mukena, hijab, busana wanita. Toko wanita anggun, sopan, percaya diri.')" />

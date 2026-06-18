@@ -1,7 +1,7 @@
 <header class="bg-white/60 backdrop-blur-md sticky top-0 z-40 border-b">
     <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
         <a href="{{ url('/') }}" class="flex items-center gap-3">
-            <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Arimbi Queen Logo" class="w-12 h-12 rounded-full object-cover shadow-sm">
+            <img src="{{ asset('images/logo-arimbi.png') }}" alt="Arimbi Queen Logo" class="w-12 h-12 rounded-full object-cover shadow-sm">
             <div>
                 <h1 class="text-lg font-semibold">Arimbi Queen</h1>
                 <p class="text-sm text-gray-500">Anggun • Sopan • Percaya Diri</p>
@@ -79,7 +79,7 @@
     <div class="absolute right-0 top-0 h-full w-72 bg-white shadow-lg p-6 transform translate-x-full transition-transform duration-300 ease-in-out" id="mobileMenuContent">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center gap-3">
-                <img src="{{ asset('images/logo-arimbi.jpg') }}" alt="Arimbi Queen Logo" class="w-10 h-10 rounded-full object-cover">
+                <img src="{{ asset('images/logo-arimbi.png') }}" alt="Arimbi Queen Logo" class="w-10 h-10 rounded-full object-cover">
                 <div>
                     <h3 class="text-lg font-medium">Arimbi Queen</h3>
                     <p class="text-xs text-gray-500">Anggun • Sopan</p>
