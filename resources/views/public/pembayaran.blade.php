@@ -277,7 +277,6 @@
                                     required>
                                     <option value="jne" selected>JNE</option>
                                     <option value="jnt">J&T</option>
-                                    <option value="paxel">Paxel</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
                                     <i
