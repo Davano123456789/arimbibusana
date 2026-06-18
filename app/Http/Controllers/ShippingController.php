@@ -57,9 +57,14 @@ class ShippingController extends Controller
         });
     }
 
-    protected function getCoordinates($postalCode)
+    protected function getCoordinates($postalCode, $province = null, $city = null, $district = null)
     {
-        $cacheKey = 'geocode_postal_' . $postalCode;
+        $query = "$postalCode, Indonesia";
+        if ($district && $city && $province) {
+            $query = "$district, $city, $province, Indonesia";
+        }
+        
+        $cacheKey = 'geocode_location_' . md5($query);
         
         if (Cache::has($cacheKey)) {
             $cached = Cache::get($cacheKey);
@@ -68,11 +73,12 @@ class ShippingController extends Controller
             }
         }
 
+        // 1. Try Nominatim (OpenStreetMap) first
         try {
             $response = Http::withHeaders([
                 'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
             ])->timeout(5)->get('https://nominatim.openstreetmap.org/search', [
-                'q' => "$postalCode, Indonesia",
+                'q' => $query,
                 'format' => 'json',
                 'limit' => 1
             ]);
@@ -88,7 +94,36 @@ class ShippingController extends Controller
                 return $coords;
             }
         } catch (\Exception $e) {
-            Log::error("Geocoding failed for postal code {$postalCode}: " . $e->getMessage());
+            Log::error("Geocoding failed for query {$query}: " . $e->getMessage());
+        }
+
+        // 2. Fallback: Query Biteship area API which guarantees to have coordinates for serviced postal codes
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->apiKey,
+            ])->get($this->baseUrl . '/maps/areas', [
+                'countries' => 'ID',
+                'input' => $postalCode,
+                'type' => 'single'
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['areas']) && count($data['areas']) > 0) {
+                    $area = $data['areas'][0];
+                    if (isset($area['latitude']) && isset($area['longitude'])) {
+                        $coords = [
+                            'latitude' => (double)$area['latitude'],
+                            'longitude' => (double)$area['longitude']
+                        ];
+                        
+                        Cache::put($cacheKey, $coords, 60 * 24 * 30);
+                        return $coords;
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error("Biteship geocoding fallback failed for postal code {$postalCode}: " . $e->getMessage());
         }
 
         return null;
@@ -103,6 +138,9 @@ class ShippingController extends Controller
             $destinationPostalCode = $request->destination_postal_code;
             $weight = $request->weight ?? 1000;
             $courier = $request->courier ?? 'jnt';
+            $province = $request->province;
+            $city = $request->city;
+            $district = $request->district;
 
             if (!$destinationPostalCode) {
                 return response()->json(['error' => 'Kode pos tujuan diperlukan'], 400);
@@ -111,7 +149,7 @@ class ShippingController extends Controller
             // Create a unique cache key based on route, weight and courier
             $cacheKey = "biteship_cost_{$this->originPostalCode}_{$destinationPostalCode}_{$weight}_{$courier}";
 
-            return Cache::remember($cacheKey, 60 * 24, function () use ($destinationPostalCode, $weight, $courier) {
+            return Cache::remember($cacheKey, 60 * 24, function () use ($destinationPostalCode, $weight, $courier, $province, $city, $district) {
                 Log::info("Biteship Cost Request (LIVE): From {$this->originPostalCode} to {$destinationPostalCode} ({$weight}g)");
 
                 $payload = [
@@ -135,13 +173,13 @@ class ShippingController extends Controller
                     $payload['origin_latitude'] = $this->originLatitude;
                     $payload['origin_longitude'] = $this->originLongitude;
 
-                    // Geocode the destination postal code to get coordinates
-                    $coords = $this->getCoordinates($destinationPostalCode);
+                    // Geocode the destination postal code and text query to get coordinates
+                    $coords = $this->getCoordinates($destinationPostalCode, $province, $city, $district);
                     if ($coords) {
                         $payload['destination_latitude'] = $coords['latitude'];
                         $payload['destination_longitude'] = $coords['longitude'];
                     } else {
-                        Log::warning("Could not geocode destination postal code {$destinationPostalCode} for Paxel rates.");
+                        Log::warning("Could not geocode destination location {$destinationPostalCode} ({$district}, {$city}, {$province}) for Paxel rates.");
                     }
                 }
 
@@ -162,15 +200,25 @@ class ShippingController extends Controller
                         $cost = $price['price'];
                         $duration = $price['duration'];
 
-                        // Duration override logic for Paxel
+                        // Duration and cost override/markup logic for Paxel
                         if ($courier === 'paxel') {
-                            // Check if destination is in East Java (postal codes starting with '6')
-                            $isJawaTimur = str_starts_with($destinationPostalCode, '6');
+                            // Add a markup of 1.500 to match the retail/manual app price
+                            $cost = $cost + 1500;
 
-                            if ($isJawaTimur) {
-                                $duration = 'Sameday'; // Override local Paxel duration
+                            // Since Biteship API hardcodes Paxel description as "8 - 12 hours" for all routes,
+                            // we dynamically determine actual Paxel transit times based on destination postal code:
+                            $firstDigit = substr($destinationPostalCode, 0, 1);
+                            $firstTwoDigits = substr($destinationPostalCode, 0, 2);
+
+                            if ($firstDigit === '6') {
+                                // Jawa Timur (Same Province) -> Sameday
+                                $duration = 'Sameday';
+                            } elseif (in_array($firstDigit, ['1', '4', '5']) || $firstTwoDigits === '80') {
+                                // Jawa & Bali (DKI Jakarta, Banten, Jabar, Jateng, DIY, and Bali 80xxx) -> Nextday (1-2 days)
+                                $duration = 'Nextday';
                             } else {
-                                $duration = 'Nextday'; // Override out of province Paxel duration
+                                // Luar Jawa & Bali (Sumatera 2/3, Kalimantan 7, Sulawesi/Papua 9, NTB/NTT 83/85) -> Regular 3-5 days
+                                $duration = '3 - 5'; // Will display as "3 - 5 Hari" on the frontend
                             }
                         }
 

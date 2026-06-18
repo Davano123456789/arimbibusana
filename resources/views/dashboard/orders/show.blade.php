@@ -163,9 +163,9 @@
                     <p class="text-xs text-secondary mb-3">
                         Periksa apakah dana sudah masuk ke rekening/e-wallet QRIS Anda sebesar: <strong class="text-dark">Rp {{ number_format($order->total_price, 0, ',', '.') }}</strong>.
                     </p>
-                    <form action="{{ route('dashboard.orders.confirm-payment', $order->id) }}" method="POST">
+                    <form action="{{ route('dashboard.orders.confirm-payment', $order->id) }}" method="POST" id="confirm-payment-form">
                         @csrf
-                        <button type="submit" class="btn btn-success w-100 mb-0" onclick="return confirm('Apakah Anda yakin sudah memverifikasi transfer ini dan ingin menandai pesanan sebagai LUNAS?')">
+                        <button type="button" id="btn-confirm-payment" class="btn btn-success w-100 mb-0">
                             <i class="fas fa-check me-2"></i> Konfirmasi Pembayaran Lunas
                         </button>
                     </form>
@@ -201,9 +201,9 @@
                     </div>
 
                     @if($order->status == 'shipped')
-                        <form action="{{ route('dashboard.orders.complete', $order->id) }}" method="POST">
+                        <form action="{{ route('dashboard.orders.complete', $order->id) }}" method="POST" id="complete-order-form">
                             @csrf
-                            <button type="submit" class="btn btn-outline-success w-100 btn-sm mb-0 mt-3" onclick="return confirm('Yakin ingin memaksa pesanan ini ditandai Selesai?')">
+                            <button type="button" id="btn-complete-order" class="btn btn-outline-success w-100 btn-sm mb-0 mt-3">
                                 <i class="fas fa-check-double me-2"></i> Paksa Mode "Selesai" (Arrived)
                             </button>
                         </form>
@@ -268,3 +268,57 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnConfirmPayment = document.getElementById('btn-confirm-payment');
+        if (btnConfirmPayment) {
+            btnConfirmPayment.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = document.getElementById('confirm-payment-form');
+                
+                Swal.fire({
+                    title: 'Konfirmasi Pembayaran Lunas',
+                    text: 'Apakah Anda yakin sudah memverifikasi transfer ini dan ingin menandai pesanan sebagai LUNAS?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2dce89',
+                    cancelButtonColor: '#f5365c',
+                    confirmButtonText: 'Ya, Tandai Lunas!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        }
+
+        const btnCompleteOrder = document.getElementById('btn-complete-order');
+        if (btnCompleteOrder) {
+            btnCompleteOrder.addEventListener('click', function(e) {
+                e.preventDefault();
+                const form = document.getElementById('complete-order-form');
+
+                Swal.fire({
+                    title: 'Paksa Mode "Selesai"',
+                    text: 'Yakin ingin memaksa pesanan ini ditandai Selesai?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#2dce89',
+                    cancelButtonColor: '#f5365c',
+                    confirmButtonText: 'Ya, Tandai Selesai!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+        }
+    });
+</script>
+@endpush

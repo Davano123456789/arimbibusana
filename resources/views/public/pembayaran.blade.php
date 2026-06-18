@@ -580,6 +580,13 @@
                 shippingCostDisplay.textContent = 'Menghitung...';
                 shippingCostDisplay.classList.add('animate-pulse');
 
+                const provinceVal = tsProvince.getValue();
+                const cityVal = tsCity.getValue();
+                const districtVal = tsDistrict.getValue();
+                const provinceName = provinceVal ? tsProvince.getItem(provinceVal).textContent : '';
+                const cityName = cityVal ? tsCity.getItem(cityVal).textContent : '';
+                const districtName = districtVal ? tsDistrict.getItem(districtVal).textContent : '';
+
                 try {
                     const response = await fetch('/shipping/cost', {
                         method: 'POST',
@@ -590,7 +597,10 @@
                         body: JSON.stringify({
                             destination_postal_code: postalCode,
                             weight: totalWeight,
-                            courier: courier
+                            courier: courier,
+                            province: provinceName,
+                            city: cityName,
+                            district: districtName
                         })
                     });
 
