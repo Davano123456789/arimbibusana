@@ -107,7 +107,45 @@
                 Login
             </a>
         @endauth
-        <nav class="flex flex-col gap-4">
+        <nav class="flex flex-col gap-1">
+            @auth
+            <!-- Profil Saya -->
+            <a href="{{ url('/profil') }}" class="py-1 border-b mobile-nav-link flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    @if(Auth::user()->avatar)
+                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-5 h-5 rounded-full object-cover border border-gray-300" alt="Avatar">
+                    @else
+                        <i class="fa-solid fa-user text-gray-400 text-sm"></i>
+                    @endif
+                    Profil Saya
+                </span>
+                <i class="fa-solid fa-user-gear text-gray-400 text-xs"></i>
+            </a>
+
+            <!-- Pesanan Saya -->
+            <a href="{{ url('/pesanan') }}" class="py-1 border-b mobile-nav-link flex items-center justify-between">
+                <span class="flex items-center gap-2">
+                    Pesanan Saya
+                    @if($pendingOrdersCount > 0)
+                    <span class="flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                    </span>
+                    @endif
+                </span>
+                <i class="fa-solid fa-clipboard-list text-gray-400 text-xs"></i>
+            </a>
+            @endauth
+
+            <!-- Keranjang Belanja -->
+            <a href="{{ url('/keranjang') }}" class="py-1 border-b mobile-nav-link flex items-center justify-between">
+                Keranjang Belanja
+                @if($cartCount > 0)
+                <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{{ $cartCount }} Item</span>
+                @endif
+            </a>
+
+            <!-- Other Links -->
             <a href="{{ url('/') }}" class="py-2 border-b mobile-nav-link">Beranda</a>
             <a href="{{ url('/produk') }}" class="py-2 border-b mobile-nav-link">Produk</a>
             <a href="{{ url('/produk-unggulan') }}" class="py-2 border-b mobile-nav-link">Produk Unggulan</a>
@@ -124,37 +162,6 @@
             <a href="{{ url('/tentang') }}" class="py-2 border-b mobile-nav-link">Tentang Kami</a>
             <a href="{{ route('public.blog') }}" class="py-2 border-b mobile-nav-link">Blog</a>
             <a href="#informasi" class="py-2 border-b mobile-nav-link">Informasi Kami</a>
-            @auth
-            <a href="{{ url('/profil') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    @if(Auth::user()->avatar)
-                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-6 h-6 rounded-full object-cover border border-gray-300" alt="Avatar">
-                    @else
-                        <i class="fa-solid fa-user text-gray-400 text-sm"></i>
-                    @endif
-                    Profil Saya
-                </span>
-                <i class="fa-solid fa-user-gear text-gray-400"></i>
-            </a>
-            <a href="{{ url('/pesanan') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
-                <span class="flex items-center gap-2">
-                    Pesanan Saya
-                    @if($pendingOrdersCount > 0)
-                    <span class="flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                    </span>
-                    @endif
-                </span>
-                <i class="fa-solid fa-clipboard-list text-gray-400"></i>
-            </a>
-            @endauth
-            <a href="{{ url('/keranjang') }}" class="py-2 border-b mobile-nav-link flex items-center justify-between">
-                Keranjang Belanja
-                @if($cartCount > 0)
-                <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $cartCount }} Item</span>
-                @endif
-            </a>
         </nav>
     </div>
 </div>
