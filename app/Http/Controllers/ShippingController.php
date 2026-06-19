@@ -190,7 +190,12 @@ class ShippingController extends Controller
 
                 if ($response->failed()) {
                     Log::error('Biteship Cost Error: ' . $response->status() . ' - ' . $response->body());
-                    throw new \Exception('Gagal menghitung ongkos kirim');
+                    $errorMsg = 'Gagal menghitung ongkos kirim';
+                    $resJson = $response->json();
+                    if (isset($resJson['error'])) {
+                        $errorMsg = $resJson['error'];
+                    }
+                    throw new \Exception($errorMsg);
                 }
 
                 $data = $response->json();
@@ -236,7 +241,7 @@ class ShippingController extends Controller
 
         } catch (\Exception $e) {
             Log::error('Biteship Exception: ' . $e->getMessage());
-            return response()->json(['error' => 'Terjadi kesalahan sistem'], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
     }
     /**

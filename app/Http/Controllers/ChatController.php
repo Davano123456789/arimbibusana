@@ -177,7 +177,7 @@ class ChatController extends Controller
         $message = Message::findOrFail($id);
 
         // Otorisasi: Hanya pengirim pesan yang boleh menghapus
-        if (auth()->id() !== $message->sender_id) {
+        if ((int)auth()->id() !== (int)$message->sender_id) {
             return response()->json(['error' => 'Anda tidak memiliki akses untuk menghapus pesan ini.'], 403);
         }
 

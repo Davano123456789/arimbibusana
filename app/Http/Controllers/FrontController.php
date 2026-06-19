@@ -556,7 +556,7 @@ class FrontController extends Controller
         $order = \App\Models\Order::with(['items.product'])->where('order_number', $order_number)->firstOrFail();
 
         // Ensure user can only view their own order
-        if ($order->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        if ((int)$order->user_id !== (int)\Illuminate\Support\Facades\Auth::id()) {
             abort(403);
         }
 
@@ -567,7 +567,7 @@ class FrontController extends Controller
     {
         $order = \App\Models\Order::with(['items.product', 'user'])->where('order_number', $order_number)->firstOrFail();
 
-        if ($order->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        if ((int)$order->user_id !== (int)\Illuminate\Support\Facades\Auth::id()) {
             abort(403);
         }
 

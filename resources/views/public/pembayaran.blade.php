@@ -258,10 +258,12 @@
                                         class="fa-solid fa-envelope text-gray-400 group-focus-within:text-accent transition-colors"></i>
                                 </div>
                                 <input type="text" id="postal_code" name="postal_code" maxlength="5"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                     value="{{ old('postal_code', Auth::check() ? Auth::user()->postal_code : '') }}"
                                     class="w-full pl-11 pr-4 py-3 rounded-xl border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 focus:bg-white focus:border-accent focus:ring-4 focus:ring-accent/10 transition-all duration-200"
                                     placeholder="Contoh: 60111" required>
                             </div>
+                            <p id="postal_code_error" class="text-[10px] text-red-500 mt-1 font-bold italic hidden"></p>
                         </div>
 
                         <!-- Kurir Pengiriman -->
@@ -559,9 +561,16 @@
                 calculateShippingCost();
             });
             async function calculateShippingCost() {
-                const postalCode = document.getElementById('postal_code').value;
+                const postalCodeInput = document.getElementById('postal_code');
+                const postalCodeError = document.getElementById('postal_code_error');
+                const postalCode = postalCodeInput.value;
                 const courier = document.getElementById('courier').value;
                 const courierName = document.getElementById('courier').options[document.getElementById('courier').selectedIndex].text;
+
+                // Clear previous errors
+                postalCodeError.classList.add('hidden');
+                postalCodeError.textContent = '';
+                postalCodeInput.classList.remove('border-red-500', 'ring-4', 'ring-red-500/10');
 
                 // Save metadata for the order
                 const cityId = tsCity.getValue();
@@ -572,7 +581,24 @@
 
                 document.getElementById('selected_courier_label').textContent = courierName.split(' ')[0]; // Placeholder initial label
 
-                if (!postalCode || postalCode.length < 5) {
+                if (!postalCode) {
+                    resetShipping();
+                    return;
+                }
+
+                if (postalCode.startsWith('0')) {
+                    postalCodeError.textContent = 'Kode pos Indonesia tidak boleh diawali dengan angka 0.';
+                    postalCodeError.classList.remove('hidden');
+                    postalCodeInput.classList.add('border-red-500', 'ring-4', 'ring-red-500/10');
+                    resetShipping('Kode pos salah');
+                    return;
+                }
+
+                if (postalCode.length < 5) {
+                    postalCodeError.textContent = 'Kode pos harus terdiri dari 5 digit angka.';
+                    postalCodeError.classList.remove('hidden');
+                    postalCodeInput.classList.add('border-red-500', 'ring-4', 'ring-red-500/10');
+                    resetShipping('Kode pos kurang');
                     return;
                 }
 
@@ -652,10 +678,17 @@
 
                         updateSummary();
                     } else {
+                        const errorMsg = data.error || 'Gagal menghitung ongkos kirim. Silakan periksa kembali kode pos Anda.';
+                        postalCodeError.textContent = errorMsg;
+                        postalCodeError.classList.remove('hidden');
+                        postalCodeInput.classList.add('border-red-500', 'ring-4', 'ring-red-500/10');
                         resetShipping('Tidak tersedia');
                     }
                 } catch (error) {
                     console.error('Error calculating cost:', error);
+                    postalCodeError.textContent = 'Terjadi kesalahan koneksi. Gagal menghitung ongkos kirim.';
+                    postalCodeError.classList.remove('hidden');
+                    postalCodeInput.classList.add('border-red-500', 'ring-4', 'ring-red-500/10');
                     resetShipping('Gagal');
                 }
             }

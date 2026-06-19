@@ -57,7 +57,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         
         // Prevent deleting current user
-        if ($user->id === auth()->id()) {
+        if ((int)$user->id === (int)auth()->id()) {
             return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
