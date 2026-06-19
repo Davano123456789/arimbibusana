@@ -339,7 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
             adminChatLoading.classList.add('d-none');
 
             messages.forEach(msg => {
-                const type = msg.sender_id === currentUserId ? 'admin' : 'client';
+                const type = parseInt(msg.sender_id) === parseInt(currentUserId) ? 'admin' : 'client';
                 appendMessage(msg, type);
             });
             scrollToBottom();

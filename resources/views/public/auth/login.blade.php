@@ -90,6 +90,28 @@
                     </button>
                 </form>
 
+                <!-- Divider -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs uppercase">
+                        <span class="bg-white px-4 text-gray-500 font-bold tracking-wider">atau</span>
+                    </div>
+                </div>
+
+                <!-- Google Sign-In Button -->
+                <a href="{{ route('google.login') }}" 
+                    class="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3.5 px-4 border border-gray-300 rounded-2xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-3 text-sm active:scale-[0.98]">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.68 1.54 14.98 1 12 1 7.35 1 3.37 3.67 1.39 7.56l3.85 2.99c.9-2.69 3.42-4.51 6.76-4.51z"/>
+                        <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.35H12v4.51h6.48c-.29 1.48-1.14 2.73-2.4 3.58l3.72 2.88c2.18-2.01 3.69-4.97 3.69-8.62z"/>
+                        <path fill="#FBBC05" d="M5.24 14.75c-.24-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29L1.39 7.18C.5 8.98 0 10.99 0 13s.5 4.02 1.39 5.82l3.85-3.07z"/>
+                        <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.72-2.88c-1.04.7-2.38 1.12-4.24 1.12-3.34 0-5.86-1.82-6.76-4.51L1.39 16.9C3.37 20.33 7.35 23 12 23z"/>
+                    </svg>
+                    <span>Masuk dengan Google</span>
+                </a>
+
                 <div class="mt-10 text-center">
                     <p class="text-sm text-gray-500">
                         Belum punya akun? 

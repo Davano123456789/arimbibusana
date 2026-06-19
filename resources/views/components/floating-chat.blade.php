@@ -258,8 +258,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         </div>
                     `;
                 } else {
-                    messages.forEach(msg => {
-                        const senderType = msg.sender_id === currentUserId ? 'client' : 'admin';
+                     messages.forEach(msg => {
+                        const senderType = parseInt(msg.sender_id) === parseInt(currentUserId) ? 'client' : 'admin';
                         appendMessage(msg, senderType);
                     });
                 }
