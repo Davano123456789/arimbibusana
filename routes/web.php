@@ -8,10 +8,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\GoogleController;
 
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login')->middleware('guest');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+Route::post('/register', [AuthController::class, 'register'])->middleware(['guest', 'throttle:registration']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Google OAuth Routes
@@ -34,6 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/keranjang/{id}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/keranjang/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::get('/pembayaran', [FrontController::class, 'pembayaran'])->name('checkout.index');
+    Route::post('/pembayaran', [\App\Http\Controllers\FrontController::class, 'storeOrder'])->name('checkout.store')->middleware('throttle:checkout');
     Route::get('/pesanan', [FrontController::class, 'pesanan'])->name('pesanan.index');
     Route::post('/pesanan/{id}/cancel', [FrontController::class, 'cancelOrder'])->name('pesanan.cancel');
     Route::post('/pesanan/{id}/refund', [FrontController::class, 'requestRefund'])->name('pesanan.refund');
@@ -76,7 +77,7 @@ Route::get('/detail-produk/{id}', [FrontController::class, 'detailProduk']);
 Route::post('/detail-produk/{id}/like', [FrontController::class, 'toggleLike']);
 Route::get('/testimoni', [FrontController::class, 'testimoni']);
 Route::get('/tentang', [FrontController::class, 'tentang']);
-Route::post('/testimoni', [FrontController::class, 'storeGeneralTestimonial']);
+Route::post('/testimoni', [FrontController::class, 'storeGeneralTestimonial'])->middleware('throttle:testimonials');
 
 // Shipping (RajaOngkir/Biteship)
 Route::get('/shipping/provinces', [\App\Http\Controllers\ShippingController::class, 'getProvinces']);
@@ -87,7 +88,6 @@ Route::post('/shipping/cost', [\App\Http\Controllers\ShippingController::class, 
 Route::get('/pembayaran/finish', [\App\Http\Controllers\FrontController::class, 'finishOrder'])->name('checkout.finish');
 Route::get('/pembayaran/berhasil/{order_number}', [\App\Http\Controllers\FrontController::class, 'paymentSuccess'])->name('checkout.success');
 Route::post('/midtrans/notification', [FrontController::class, 'handleNotification']);
-Route::post('/pembayaran', [\App\Http\Controllers\FrontController::class, 'storeOrder'])->name('checkout.store');
 
 Route::get('/blog', [FrontController::class, 'blog'])->name('public.blog');
 Route::get('/blog/{slug}', [FrontController::class, 'blogDetail'])->name('public.blog.detail');

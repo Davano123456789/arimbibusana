@@ -376,6 +376,11 @@
                         id="reviewForm" novalidate>
                         @csrf
 
+                        <!-- Honeypot Field -->
+                        <div style="display: none !important;" aria-hidden="true">
+                            <input type="text" name="website_url" autocomplete="off" tabindex="-1">
+                        </div>
+
                         {{-- Name + Product --}}
                         <div class="grid sm:grid-cols-2 gap-5">
                             <div>
@@ -383,7 +388,7 @@
                                     <i class="fa-solid fa-user text-[#B78A58] mr-1"></i> Nama Anda <span
                                         class="text-red-400">*</span>
                                 </label>
-                                <input type="text" id="name" name="name" value="{{ old('name') }}" required
+                                <input type="text" id="name" name="name" value="{{ old('name') }}" required maxlength="50"
                                     placeholder="Mis. Nadhira Putri"
                                     class="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#B78A58]/30 focus:border-[#B78A58] transition-all shadow-sm @error('name') border-red-400 @enderror">
                                 @error('name')<p class="text-red-500 text-xs mt-1">{{ $message }}</p>@enderror

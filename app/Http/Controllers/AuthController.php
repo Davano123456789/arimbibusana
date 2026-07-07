@@ -51,10 +51,24 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Honeypot check: If the hidden field is filled, fail silently.
+        if ($request->filled('website_url')) {
+            return redirect()->route('verification.notice')
+                ->with('success', 'Registrasi berhasil! Kami sudah mengirim email verifikasi ke email kamu. Silakan cek inbox kamu.');
+        }
+
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
+            'name'     => [
+                'required', 
+                'string', 
+                'max:50',
+                'not_regex:/(http|https|ftp|www|\.com|\.net|\.org|\.xyz|\.co|href|html|<|>)/i'
+            ],
             'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'name.not_regex' => 'Nama tidak boleh mengandung tautan (link) atau kode HTML.',
+            'name.max' => 'Nama tidak boleh lebih dari 50 karakter.',
         ]);
 
         $user = User::create([

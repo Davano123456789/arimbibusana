@@ -258,12 +258,31 @@ class FrontController extends Controller
 
     public function storeGeneralTestimonial(Request $request)
     {
+        // Honeypot check: If the hidden field is filled, fail silently.
+        if ($request->filled('website_url')) {
+            return back()->with('success', 'Terima kasih atas ulasan Anda! Ulasan Anda akan ditinjau terlebih dahulu oleh admin.');
+        }
+
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required', 
+                'string', 
+                'max:50',
+                'not_regex:/(http|https|ftp|www|\.com|\.net|\.org|\.xyz|\.co|href|html|<|>)/i'
+            ],
             'product_id' => 'required|exists:products,id',
-            'comment' => 'required|string|max:1000',
+            'comment' => [
+                'required', 
+                'string', 
+                'max:1000',
+                'not_regex:/(http|https|ftp|www|\.com|\.net|\.org|\.xyz|\.co|href|html|<|>)/i'
+            ],
             'rating' => 'required|integer|min:1|max:5',
             'image' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webm|max:20480',
+        ], [
+            'name.not_regex' => 'Nama tidak boleh mengandung tautan (link) atau kode HTML.',
+            'name.max' => 'Nama tidak boleh lebih dari 50 karakter.',
+            'comment.not_regex' => 'Ulasan tidak boleh mengandung tautan (link) atau kode HTML.',
         ]);
 
         $imagePath = null;
@@ -278,10 +297,10 @@ class FrontController extends Controller
             'comment' => $request->comment,
             'rating' => $request->rating,
             'image' => $imagePath,
-            'is_displayed' => true,
+            'is_displayed' => false, // Set to false to require admin approval
         ]);
 
-        return back()->with('success', 'Terima kasih atas ulasan Anda!');
+        return back()->with('success', 'Terima kasih atas ulasan Anda! Ulasan Anda akan ditinjau terlebih dahulu oleh admin.');
     }
 
     public function testimoni()
