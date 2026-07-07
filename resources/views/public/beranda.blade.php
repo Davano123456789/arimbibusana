@@ -735,7 +735,7 @@
     <section id="informasi" class="py-20 bg-[#FBF8F3]">
       <div class="max-w-6xl mx-auto px-6">
       <h3 class="text-2xl font-semibold mb-8">Informasi Kami</h3>
-      <div class="grid md:grid-cols-2 gap-10 items-center bg-cream/20 p-8 rounded-3xl">
+      <div class="grid md:grid-cols-2 gap-10 items-center bg-cream/20 p-4 sm:p-8 rounded-3xl">
         <!-- Left: Google Map -->
         <div class="overflow-hidden rounded-2xl shadow-lg h-80">
           <iframe class="w-full h-full"
@@ -751,38 +751,38 @@
               minggunya melalui media sosial resmi kami.</p>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-4 sm:grid-cols-2 gap-2 sm:gap-4">
             <a href="https://instagram.com/arimbiqueen.scarves"
-              class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
+              class="flex items-center justify-center sm:justify-start gap-3 p-2 sm:p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
                 class="shrink-0 w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-purple-600 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-brands fa-instagram fa-lg"></i>
               </div>
-              <span class="text-sm font-medium text-gray-700">Instagram</span>
+              <span class="hidden sm:inline text-sm font-medium text-gray-700">Instagram</span>
             </a>
             <a href="https://www.tiktok.com/@arimbiqueenscarves" target="_blank"
-              class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
+              class="flex items-center justify-center sm:justify-start gap-3 p-2 sm:p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
                 class="shrink-0 w-10 h-10 rounded-full bg-black flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-brands fa-tiktok fa-lg"></i>
               </div>
-              <span class="text-sm font-medium text-gray-700">TikTok</span>
+              <span class="hidden sm:inline text-sm font-medium text-gray-700">TikTok</span>
             </a>
             <a href="https://shopee.co.id/ArimbiQueen.Scarves" target="_blank"
-              class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
+              class="flex items-center justify-center sm:justify-start gap-3 p-2 sm:p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
                 class="shrink-0 w-10 h-10 rounded-full bg-[#EE4D2D] flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-solid fa-bag-shopping"></i>
               </div>
-              <span class="text-sm font-medium text-gray-700">Shopee</span>
+              <span class="hidden sm:inline text-sm font-medium text-gray-700">Shopee</span>
             </a>
             <a href="https://wa.me/6282337115553" target="_blank"
-              class="flex items-center gap-3 p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
+              class="flex items-center justify-center sm:justify-start gap-3 p-2 sm:p-4 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all group">
               <div
                 class="shrink-0 w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform">
                 <i class="fa-brands fa-whatsapp fa-lg"></i>
               </div>
-              <span class="text-sm font-medium text-gray-700">WhatsApp</span>
+              <span class="hidden sm:inline text-sm font-medium text-gray-700">WhatsApp</span>
             </a>
           </div>
         </div>

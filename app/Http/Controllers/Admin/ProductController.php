@@ -51,11 +51,11 @@ class ProductController extends Controller
             'size_stocks' => 'required|array',
             'size_stocks.*' => 'required|array',
             'size_stocks.*.*' => 'required|integer|min:0',
-            'images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'images.*' => 'image|mimes:jpeg,png,jpg|max:20480',
             'image_colors' => 'nullable|array',
             'image_colors.*' => 'nullable|string|max:255',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'size_guide' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:20480',
+            'size_guide' => 'nullable|image|mimes:jpeg,png,jpg|max:20480',
             'discount_price' => 'nullable|numeric|lt:price',
         ]);
 
@@ -137,8 +137,8 @@ class ProductController extends Controller
             'price' => 'required|numeric',
             'description' => 'nullable|string',
             'status' => 'nullable|string',
-            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'size_guide' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,jpg|max:20480',
+            'size_guide' => 'nullable|image|mimes:jpeg,png,jpg|max:20480',
             'discount_price' => 'nullable|numeric|lt:price',
             
             // Existing Variations
@@ -151,7 +151,7 @@ class ProductController extends Controller
             
             // Completely New Variations
             'new_images' => 'nullable|array',
-            'new_images.*' => 'image|mimes:jpeg,png,jpg|max:2048',
+            'new_images.*' => 'image|mimes:jpeg,png,jpg|max:20480',
             'new_image_colors' => 'nullable|array',
             'new_image_colors.*' => 'nullable|string|max:255',
             'new_sizes' => 'nullable|array',

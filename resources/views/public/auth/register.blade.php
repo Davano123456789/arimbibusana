@@ -82,13 +82,16 @@
                             <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
                                 <i class="fa-solid fa-lock"></i>
                             </span>
-                            <input type="password" name="password" required 
-                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border @error('password') border-red-500 @else border-gray-100 @enderror rounded-2xl text-sm transition-all input-focus outline-none" 
+                            <input type="password" id="password" name="password" required 
+                                class="w-full pl-11 pr-12 py-3.5 bg-gray-50 border @error('password') border-red-500 @else border-gray-100 @enderror rounded-2xl text-sm transition-all input-focus outline-none" 
                                 placeholder="••••••••">
-                            @error('password')
-                                <p class="text-[10px] text-red-500 mt-1 font-bold italic">{{ $message }}</p>
-                            @enderror
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10">
+                                <i class="fa-solid fa-eye-slash" id="eyeIcon"></i>
+                            </button>
                         </div>
+                        @error('password')
+                            <p class="text-[10px] text-red-500 mt-1 font-bold italic">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div>
@@ -97,9 +100,12 @@
                             <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
                                 <i class="fa-solid fa-shield-check"></i>
                             </span>
-                            <input type="password" name="password_confirmation" required 
-                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm transition-all input-focus outline-none" 
+                            <input type="password" id="password_confirmation" name="password_confirmation" required 
+                                class="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm transition-all input-focus outline-none" 
                                 placeholder="••••••••">
+                            <button type="button" id="togglePasswordConfirm" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10">
+                                <i class="fa-solid fa-eye-slash" id="eyeIconConfirm"></i>
+                            </button>
                         </div>
                     </div>
 
@@ -158,4 +164,50 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Toggle password visibility for main password input
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (togglePassword && passwordInput && eyeIcon) {
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                if (type === 'password') {
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                } else {
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+            });
+        }
+
+        // Toggle password visibility for password confirmation input
+        const togglePasswordConfirm = document.getElementById('togglePasswordConfirm');
+        const passwordConfirmInput = document.getElementById('password_confirmation');
+        const eyeIconConfirm = document.getElementById('eyeIconConfirm');
+
+        if (togglePasswordConfirm && passwordConfirmInput && eyeIconConfirm) {
+            togglePasswordConfirm.addEventListener('click', function () {
+                const type = passwordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordConfirmInput.setAttribute('type', type);
+                
+                if (type === 'password') {
+                    eyeIconConfirm.classList.remove('fa-eye');
+                    eyeIconConfirm.classList.add('fa-eye-slash');
+                } else {
+                    eyeIconConfirm.classList.remove('fa-eye-slash');
+                    eyeIconConfirm.classList.add('fa-eye');
+                }
+            });
+        }
+    });
+</script>
 @endsection

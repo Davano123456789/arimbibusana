@@ -70,13 +70,16 @@
                             <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400">
                                 <i class="fa-solid fa-lock"></i>
                             </span>
-                            <input type="password" name="password" required 
-                                class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border @error('password') border-red-500 @else border-gray-100 @enderror rounded-2xl text-sm transition-all input-focus outline-none" 
+                            <input type="password" id="password" name="password" required 
+                                class="w-full pl-11 pr-12 py-3.5 bg-gray-50 border @error('password') border-red-500 @else border-gray-100 @enderror rounded-2xl text-sm transition-all input-focus outline-none" 
                                 placeholder="••••••••">
-                            @error('password')
-                                <p class="text-[10px] text-red-500 mt-1 font-bold italic">{{ $message }}</p>
-                            @enderror
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors z-10">
+                                <i class="fa-solid fa-eye-slash" id="eyeIcon"></i>
+                            </button>
                         </div>
+                        @error('password')
+                            <p class="text-[10px] text-red-500 mt-1 font-bold italic">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="flex items-center">
@@ -128,4 +131,30 @@
         </div>
     </div>
 </section>
+@endsection
+
+@section('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        if (togglePassword && passwordInput && eyeIcon) {
+            togglePassword.addEventListener('click', function () {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                
+                // toggle the eye icon class
+                if (type === 'password') {
+                    eyeIcon.classList.remove('fa-eye');
+                    eyeIcon.classList.add('fa-eye-slash');
+                } else {
+                    eyeIcon.classList.remove('fa-eye-slash');
+                    eyeIcon.classList.add('fa-eye');
+                }
+            });
+        }
+    });
+</script>
 @endsection
